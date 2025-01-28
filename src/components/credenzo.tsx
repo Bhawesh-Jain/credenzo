@@ -58,7 +58,7 @@ export function Credenzo() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              What's on your mind?
+              {`What's on your mind?`}
             </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => setAction('Support')}
