@@ -8,6 +8,14 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
+
+
+  const { data: navData, isLoading } = useQuery({
+    queryKey: ['navigation'],
+    queryFn: fetchNavData,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
+
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center lg:items-start gap-5 text-center mb-5">
