@@ -25,7 +25,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavSettings({
+export function NavShortcuts({
   projects,
 }: {
   projects: {
@@ -38,7 +38,7 @@ export function NavSettings({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Settings</SidebarGroupLabel>
+      <SidebarGroupLabel>Shortcuts</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
