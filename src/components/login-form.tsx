@@ -7,14 +7,7 @@ import Link from "next/link"
 export function LoginForm({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"form">) {
-
-
-  const { data: navData, isLoading } = useQuery({
-    queryKey: ['navigation'],
-    queryFn: fetchNavData,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  })
+}: React.ComponentPropsWithoutRef<"form">) {  
 
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>
