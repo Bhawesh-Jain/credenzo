@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation"
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters long"),
-  password: z.string().min(4, "Password must be at least 6 characters long"),
+  password: z.string().min(4, "Password must be at least 4 characters long"),
 })
 
 export function LoginForm({
@@ -51,10 +51,18 @@ export function LoginForm({
       if (res.success) {
         router.push('/dashboard');
       } else {
-        setError(res.message);
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: res.message,
+        })
       }
     } catch (error) {
-      setError("Unexpected Error!")
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Unexpected Error!",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -62,11 +70,7 @@ export function LoginForm({
 
   useEffect(() => {
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: error,
-      })
+      
     }
   }, [error]);
 
