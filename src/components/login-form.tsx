@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react"
 import { handleLoginForm } from "@/lib/actions/auth"
 import { useToast } from "@/hooks/use-toast"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 const loginSchema = z.object({
@@ -25,7 +25,6 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('');
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -67,12 +66,6 @@ export function LoginForm({
       setIsLoading(false)
     }
   }
-
-  useEffect(() => {
-    if (error) {
-      
-    }
-  }, [error]);
 
   return (
     <Form {...form}>
