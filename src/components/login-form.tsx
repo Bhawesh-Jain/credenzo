@@ -41,10 +41,10 @@ export function LoginForm({
     setIsLoading(true)
 
     try {
+ 
       const formData = new FormData()
       formData.append("username", values.username)
       formData.append("password", values.password)
-      formData.append("clientIp", "IP_ADDRESS_HERE")
 
       const res = await handleLoginForm(formData)
 

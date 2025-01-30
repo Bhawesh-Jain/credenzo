@@ -1,7 +1,7 @@
 "use server"
-import { redirect } from "next/navigation";
 import { getSession } from "../session";
 import { UserRepository } from "../repositories/userRepository";
+import { cookies } from "next/headers";
 
 export type UserData = {
   user_id: string;
@@ -16,12 +16,14 @@ export type UserData = {
 export async function handleLoginForm(formData: FormData) {
   const formObject = Object.fromEntries(formData.entries());
 
-  let { username, password, clientIp } = formObject;
+  const ip = cookies().get('client-ip')?.value || 'undefined';
+
+  let { username, password } = formObject;
 
   try {
     const authService = new UserRepository();
 
-    const result = await authService.login(username.toString(), password.toString(), clientIp.toString());
+    const result = await authService.login(username.toString(), password.toString(), ip.toString());
 
     if (result.success) {
       if (result.user == null) {
