@@ -1,44 +1,67 @@
+"use server"
 import { redirect } from "next/navigation";
 import { getSession } from "../session";
+import { UserRepository } from "../repositories/userRepository";
+
+export type UserData = {
+  user_id: string;
+  user_phone: string;
+  user_email: string;
+  user_avatar: string;
+  company_name: string;
+  company_id: string;
+};
 
 
-export const login = async (
-  body: {
-    user_id: String,
-    user_phone: String,
-    user_email: String,
-    user_avatar: String,
-    company_name: String,
-    company_id: String,
+export async function handleLoginForm(formData: FormData) {
+  const formObject = Object.fromEntries(formData.entries());
+
+  let { username, password, clientIp } = formObject;
+
+  try {
+    const authService = new UserRepository();
+
+    const result = await authService.login(username.toString(), password.toString(), clientIp.toString());
+
+    if (result.success) {
+      if (result.user == null) {
+        throw new Error("Invalid User!");
+      }
+
+      await login(result.user);
+
+      return {
+        success: true,
+        message: "Login Succesfull!"
+      }
+    } else {
+      return {
+        success: false,
+        message: result.error
+      }
+    }
+  } catch (error) {
+    console.log('auth.ts', error);
+
+    return {
+      success: false,
+      message: "Login Request Not Processed!"
+    };
   }
-) => {
-  const session = await getSession();
-
-  const user_id = body['user_id'] as string
-  const user_phone = body['user_phone'] as string
-  const user_email = body['user_email'] as string
-  const user_avatar = body['user_avatar'] as string
-  const company_name = body['company_name'] as string
-  const company_id = body['company_id'] as string
-
-  session.user_id = user_id
-  session.user_phone = user_phone
-  session.user_email = user_email
-  session.user_avatar = user_avatar
-  session.company_name = company_name
-  session.company_id = company_id
-  session.isLoggedIn = true
-
-  await session.save()
-
-  redirect("/dashboard")
 }
 
+export async function login(userData: UserData) {
+  const session = await getSession();
 
+  Object.assign(session, {
+    ...userData,
+    isLoggedIn: true,
+  });
 
-export const logout = async () => {
-  const session = await getSession()
+  await session.save();
+}
 
-  session.destroy()
-  redirect("/")
+export async function logout() {
+  const session = await getSession();
+  session.destroy();
 }

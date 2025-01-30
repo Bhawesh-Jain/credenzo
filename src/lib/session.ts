@@ -3,9 +3,11 @@ import { cookies } from "next/headers"
 
 export const sessionOptions: SessionOptions = {
   password: process.env.SECRET_KEY!, 
-  cookieName: "session",
+  cookieName: "2vym218dd0",
   cookieOptions: {
     httpOnly: true,
+    maxAge: 24 * 60 * 60, 
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), 
     secure: process.env.NODE_ENV === "production"
   }
 }
