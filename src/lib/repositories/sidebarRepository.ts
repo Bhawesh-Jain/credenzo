@@ -24,8 +24,10 @@ export class SidebarRepository extends RepositoryBase {
       }
       
       const permissions = await executeQuery<any[]>(`
-        SELECT ir.*
-        FROM info_roles ir
+        SELECT ir.role_name, im.name
+        FROM info_modules im
+        LEFT JOIN info_roles ir
+          ON im.id IN (ir.permissions)
         WHERE ir.id = ?
       `, [user.result.role]);
 

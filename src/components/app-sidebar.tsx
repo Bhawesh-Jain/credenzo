@@ -112,6 +112,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
     redirect('/login')
   }
 
+  console.log(sidebar);
   
 
   return (
