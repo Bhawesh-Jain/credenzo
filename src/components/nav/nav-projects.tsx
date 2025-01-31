@@ -2,8 +2,8 @@
 
 import {
   Folder,
-  Forward,
   MoreHorizontal,
+  Share,
   Trash2,
   type LucideIcon,
 } from "lucide-react"
@@ -25,26 +25,24 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavShortcuts({
+export function NavProjects({
   projects,
 }: {
   projects: {
     name: string
     url: string
-    icon?: LucideIcon
   }[]
 }) {
   const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Shortcuts</SidebarGroupLabel>
+      <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
-                {item.icon && <item.icon />}
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
@@ -56,7 +54,7 @@ export function NavShortcuts({
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-48 rounded-lg"
+                className="w-48"
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
@@ -65,7 +63,7 @@ export function NavShortcuts({
                   <span>View Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
+                  <Share className="text-muted-foreground" />
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -78,8 +76,8 @@ export function NavShortcuts({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
+          <SidebarMenuButton>
+            <MoreHorizontal />
             <span>More</span>
           </SidebarMenuButton>
         </SidebarMenuItem>

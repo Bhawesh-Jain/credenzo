@@ -1,5 +1,8 @@
-export default function Dashboard() {
+
+export default function Page() {
   return (
-    <div className="">Page</div>
+    <>
+      Page
+    </>
   )
 }

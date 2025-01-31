@@ -1,6 +1,7 @@
 import { UserData } from "../actions/auth";
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import bcrypt from 'bcryptjs';
+import { RepositoryBase } from "../helpers/repository-base";
 
 type LoginResponse = {
   success: boolean;
@@ -8,10 +9,11 @@ type LoginResponse = {
   error: string;
 };
 
-export class UserRepository {
+export class UserAuthRepository extends RepositoryBase {
   private builder: QueryBuilder;
 
   constructor() {
+    super()
     this.builder = new QueryBuilder('info_user');
   }
 
@@ -20,7 +22,7 @@ export class UserRepository {
     hashedPassword: string
   ): Promise<boolean> {
     return password == hashedPassword;
-    return bcrypt.compare(password, hashedPassword);
+    // return bcrypt.compare(password, hashedPassword);
   }
 
   private async logAttempt(
@@ -35,7 +37,7 @@ export class UserRepository {
     const logId = await attemptBuilder.insert({
       user_id: userId,
       identifier_used: identifier,
-      password_used: password,
+      password_used: 'N/A',
       success,
       ip_address: ipAddress
     });
@@ -72,10 +74,10 @@ export class UserRepository {
         LEFT JOIN company_master cm
           ON cm.company_id = iu.company_id
           AND cm.is_active = 1
-        WHERE iu.id = ? 
+        WHERE (iu.id = ? 
           OR iu.employee_code = ? 
           OR iu.email = ? 
-          OR iu.phone = ?
+          OR iu.phone = ?)
           AND iu.status = 1
         LIMIT 1
       `, [identifier, identifier, identifier, identifier]);
@@ -125,12 +127,39 @@ export class UserRepository {
         error: ''
       };
     } catch (error) {
-      console.log('userRepository', error);
-
-      return {
-        success: false,
-        error: 'Internal Server Error!'
-      };
+      return this.handleError(error);
     }
   }
+}
+
+
+export class UserRepository extends RepositoryBase {
+  private builder: QueryBuilder;
+
+  constructor() {
+    super()
+    this.builder = new QueryBuilder('info_user');
+  }
+
+  async getUserById(
+    userId: string
+  ) {
+    try {
+      var user = await executeQuery<any[]>(`
+          SELECT *
+          FROM info_user
+          WHERE id = ?
+            AND status > 0
+          LIMIT 1
+        `, [userId]);
+
+      if (user && user.length > 0) {
+        return this.success(user[0])
+      }
+      return this.failure('Invalid User!')
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
 }

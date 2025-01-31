@@ -1,29 +1,19 @@
-"use client"
 
 import * as React from "react"
-import {
-  BookOpen,
-  Bot,
-  Frame,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
-
 import { NavMain } from "@/components/nav/nav-main"
-import { NavShortcuts } from "@/components/nav/nav-settings"
+import { NavSecondary } from "@/components/nav/nav-secondary"
 import { NavUser } from "@/components/nav/nav-user"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
+  SidebarMenu
 } from "@/components/ui/sidebar"
 import { Credenzo } from "./credenzo"
+import { getSidebarData } from "@/lib/actions/sidebar"
+import { redirect } from "next/navigation"
 
-// This is sample data.
 const data = {
   user: {
     name: "shadcn",
@@ -34,7 +24,6 @@ const data = {
     {
       title: "Playground",
       url: "#",
-      icon: SquareTerminal,
       isActive: true,
       items: [
         {
@@ -54,7 +43,6 @@ const data = {
     {
       title: "Models",
       url: "#",
-      icon: Bot,
       items: [
         {
           title: "Genesis",
@@ -73,7 +61,6 @@ const data = {
     {
       title: "Documentation",
       url: "#",
-      icon: BookOpen,
       items: [
         {
           title: "Introduction",
@@ -96,7 +83,6 @@ const data = {
     {
       title: "Settings",
       url: "#",
-      icon: Settings2,
       items: [
         {
           title: "General",
@@ -116,40 +102,32 @@ const data = {
         },
       ],
     },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  ]
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  var sidebar = await getSidebarData();
+
+  if (!sidebar.success) {
+    redirect('/login')
+  }
+
+  
+
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar variant="inset" {...props}>
       <SidebarHeader>
-        <Credenzo />
+        <SidebarMenu>
+          <Credenzo />
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavShortcuts projects={data.projects} />
+        <NavSecondary className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   )
 }

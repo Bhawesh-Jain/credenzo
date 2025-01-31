@@ -1,6 +1,6 @@
 "use server"
 import { getSession } from "../session";
-import { UserRepository } from "../repositories/userRepository";
+import { UserAuthRepository } from "../repositories/userRepository";
 import { cookies } from "next/headers";
 
 export type UserData = {
@@ -21,7 +21,7 @@ export async function handleLoginForm(formData: FormData) {
   let { username, password } = formObject;
 
   try {
-    const authService = new UserRepository();
+    const authService = new UserAuthRepository();
 
     const result = await authService.login(username.toString(), password.toString(), ip.toString());
 
