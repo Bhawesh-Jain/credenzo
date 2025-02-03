@@ -112,9 +112,6 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
     redirect('/login')
   }
 
-  console.log(sidebar);
-  
-
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -123,7 +120,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={sidebar.result} />
         <NavSecondary className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
