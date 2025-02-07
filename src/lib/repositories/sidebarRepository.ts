@@ -50,8 +50,14 @@ export class SidebarRepository extends RepositoryBase {
       const nestedMenu = buildTree(permissions);
 
       const filtered = nestedMenu.filter((item) => item.items != null && item.items.length > 0)
+      const userData = {
+        name: user.result.name,
+        email: user.result.email,
+        avatar: user.result.avatar,
+      }
 
-      return this.success(filtered);
+
+      return this.success({menu: filtered, user: userData});
     } catch (error) {
       return this.handleError(error)
     }
