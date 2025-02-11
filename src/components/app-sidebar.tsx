@@ -1,7 +1,6 @@
 
 import * as React from "react"
 import { NavMain } from "@/components/nav/nav-main"
-import { NavSecondary } from "@/components/nav/nav-secondary"
 import { NavUser } from "@/components/nav/nav-user"
 import {
   Sidebar,
