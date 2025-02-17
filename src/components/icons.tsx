@@ -1,6 +1,7 @@
 import {
   User,
   DollarSign,
+  ReceiptIndianRupee,
   FileText,
   Loader2,
   Mail,
@@ -13,6 +14,7 @@ import {
 export const Icons = {
   user: User,
   dollarSign: DollarSign,
+  receiptIndianRupee: ReceiptIndianRupee,
   fileText: FileText,
   spinner: Loader2,
   mail: Mail,

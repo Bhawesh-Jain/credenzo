@@ -93,8 +93,8 @@ export default function CreateLead() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <Card className="w-full shadow-lg">
+    <div className="container mx-auto py-4 px-4">
+      <div className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-gray-800">
             Create New Lead
@@ -201,7 +201,7 @@ export default function CreateLead() {
                     name="amount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabelWithIcon icon={Icons.dollarSign}>Loan Amount</FormLabelWithIcon>
+                        <FormLabelWithIcon icon={Icons.receiptIndianRupee}>Loan Amount</FormLabelWithIcon>
                         <FormControl>
                           <Input
                             type="number"
@@ -251,7 +251,6 @@ export default function CreateLead() {
               {/* Additional Information Section */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Icons.fileText className="h-5 w-5 text-gray-500" />
                   <h3 className="text-lg font-semibold text-gray-700">Additional Information</h3>
                 </div>
                 <FormField
@@ -296,7 +295,7 @@ export default function CreateLead() {
             </form>
           </Form>
         </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }
