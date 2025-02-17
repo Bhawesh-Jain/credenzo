@@ -100,7 +100,7 @@ export default function CreateLead() {
             Create New Lead
           </CardTitle>
           <CardDescription>
-            Enter the customer's information to create a new loan lead
+            Enter the customer&apos;s information to create a new loan lead
           </CardDescription>
         </CardHeader>
         <CardContent>
