@@ -7,11 +7,7 @@ export default async function ModuleSettings() {
 
   return (
     <Container>
-      {roles && roles.result && roles.result.map((role: any) => (
-        <div key={role.id}>
-          {role.role_name}
-        </div>
-      ))}
+      
     </Container>
   )
 }
