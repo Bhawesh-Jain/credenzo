@@ -30,6 +30,7 @@ import { Icons } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast"
 import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
 import { createLead } from '@/lib/actions/customer-boarding';
+import { useGlobalDialog } from '@/providers/DialogProvider'
 
 const leadFormSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"), 
@@ -66,38 +67,39 @@ const defaultValues: Partial<LeadFormValues> = {
 
 export default function CreateLead() {
   const { toast } = useToast()
-  const [loading, setLoading] = useState(false);
+  const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog()
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
     defaultValues,
-  });
+  })
 
   async function onSubmit(data: LeadFormValues) {
-    try {
-      setLoading(true);
-      
-      const result = await createLead('1', data);
+    showConfirmation(
+      'Create Lead',
+      'Are you sure you want to create this lead?',
+      async () => {
+        try {
+          setLoading(true)
+          const result = await createLead('1', data)
+          setLoading(false)
 
-      console.log(result);
-      toast({
-        title: "Lead Created Successfully",
-        description: "The lead has been created and saved.",
-      });
-      // form.reset();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "There was a problem creating the lead.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+          if (result.success) {
+            showSuccess('Lead Created', 'The lead has been created.')
+            form.reset()
+          } else {
+            showError('Error', result.error)
+          }
+        } catch (error) {
+          setLoading(false)
+          showError('Error', 'There was a problem creating the lead.')
+        }
+      }
+    )
   }
 
   return (
-    <div className="container mx-auto py-4 px-4">
+    <div className="w-full mx-auto py-4 md:px-4">
       <div className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-gray-800">
@@ -299,23 +301,8 @@ export default function CreateLead() {
               </div>
 
               <div className="flex justify-end space-x-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => window.history.back()}
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    "Create Lead"
-                  )}
+                <Button type="submit">
+                  Create Lead
                 </Button>
               </div>
             </form>
