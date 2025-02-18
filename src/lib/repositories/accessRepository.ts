@@ -19,7 +19,7 @@ export class AccessRepository extends RepositoryBase {
       const result = await this.roleBuilder
         .where('company_id = ?', this.companyId)
         .where('status = ?', 1)
-        .select(['id', 'role_name'])
+        .select(['id', 'role_name', 'user_count'])
 
       return this.success(result);
     } catch (error) {
