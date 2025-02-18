@@ -4,20 +4,30 @@ import { UserRepository } from "./userRepository";
 
 interface MenuItem {
   id: number;
-  parent_id: number;
+  parent_id: number | null;
   url: string;
   title: string;
   menu_order: number;
   items?: MenuItem[];
 }
 
-const buildTree = (items: MenuItem[], parentId: number = 0): MenuItem[] => {
-  return items
-    .filter((item) => item.parent_id === parentId)
-    .map((item) => ({
+const buildTree = (items: MenuItem[], parentId: number | null = 0): MenuItem[] => {
+  const currentLevelItems = items.filter((item) => {
+    if (parentId === 0) {
+      return item.parent_id === 0;
+    }
+    return item.parent_id === parentId;
+  });
+
+  const sortedItems = currentLevelItems.sort((a, b) => a.menu_order - b.menu_order);
+
+  return sortedItems.map((item) => {
+    const children = buildTree(items, item.id);
+    return {
       ...item,
-      items: buildTree(items, item.id),
-    }));
+      items: children.length > 0 ? children : undefined
+    };
+  });
 };
 
 export class SidebarRepository extends RepositoryBase {
@@ -33,7 +43,6 @@ export class SidebarRepository extends RepositoryBase {
   async getSidebarData() {
     try {
       const userRepo = new UserRepository();
-
       const user = await userRepo.getUserById(this.userId)
 
       if (!user.success) {
@@ -41,23 +50,30 @@ export class SidebarRepository extends RepositoryBase {
       }
 
       const permissions = await executeQuery<MenuItem[]>(`
-          SELECT im.id, im.parent_id, im.url, im.title, im.menu_order
-          FROM info_modules im
-          JOIN info_roles ir ON FIND_IN_SET(im.id, ir.permissions) > 0
-          WHERE ir.id = ?
-          ORDER BY im.parent_id ASC, im.menu_order ASC
-       `, [user.result.role]);
-      const nestedMenu = buildTree(permissions);
+        SELECT 
+          im.id, 
+          im.parent_id, 
+          im.url, 
+          im.title, 
+          im.menu_order
+        FROM info_modules im
+        JOIN info_roles ir ON FIND_IN_SET(im.id, ir.permissions) > 0
+        WHERE ir.id = ?
+        ORDER BY 
+          CASE WHEN im.parent_id = 0 THEN 0 ELSE 1 END,
+          im.parent_id ASC,
+          im.menu_order ASC
+      `, [user.result.role]);
 
-      const filtered = nestedMenu.filter((item) => item.items != null && item.items.length > 0)
+      const nestedMenu = buildTree(permissions);
+      
       const userData = {
         name: user.result.name,
         email: user.result.email,
         avatar: user.result.avatar,
       }
 
-
-      return this.success({menu: filtered, user: userData});
+      return this.success({ menu: nestedMenu, user: userData });
     } catch (error) {
       return this.handleError(error)
     }

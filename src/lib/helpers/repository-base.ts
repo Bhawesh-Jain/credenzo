@@ -9,7 +9,7 @@ export class RepositoryBase {
   }
 
   handleError(error: any) {
-    console.log(this.getClassName, error);
+    console.log(this.getClassName(), error);
 
     return {
       success: false,

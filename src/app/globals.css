@@ -98,3 +98,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add these to your existing styles */
+.sidebar-menu-button[data-active="true"] {
+  @apply bg-accent text-accent-foreground;
+}
+
+.sidebar-menu-sub-button[data-active="true"] {
+  @apply bg-accent text-accent-foreground;
+}
