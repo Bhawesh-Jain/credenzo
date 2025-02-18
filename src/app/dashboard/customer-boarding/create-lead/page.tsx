@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
-  Card,
   CardContent,
   CardHeader,
   CardTitle,
@@ -25,12 +24,12 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel, 
   FormMessage,
 } from "@/components/ui/form";
 import { Icons } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast"
 import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
+import { createLead } from '@/lib/actions/customer-boarding';
 
 const leadFormSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"), 
@@ -40,13 +39,16 @@ const leadFormSchema = z.object({
   loanType: z.enum(["personal", "business", "mortgage", "auto"], {
     required_error: "Please select a loan type",
   }),
+  gender: z.enum(["Male", "Female", "Other"], {
+    required_error: "Please select gender",
+  }),
   amount: z.number({
     required_error: "Please enter a loan amount",
     invalid_type_error: "Please enter a valid number",
   })
     .min(1000, "Minimum loan amount is 1,000")
-    .max(1000000, "Maximum loan amount is 1,000,000"),
-  purpose: z.string().min(10, "Please provide a detailed purpose"),
+    .max(1000000000, "Maximum loan amount is 1,000,000,000"),
+  purpose: z.string().min(3, "Please provide a detailed purpose"),
   term: z.number({
     required_error: "Please enter a loan term",
     invalid_type_error: "Please enter a valid number",
@@ -56,7 +58,7 @@ const leadFormSchema = z.object({
   notes: z.string().optional(),
 });
 
-type LeadFormValues = z.infer<typeof leadFormSchema>;
+export type LeadFormValues = z.infer<typeof leadFormSchema>;
 
 const defaultValues: Partial<LeadFormValues> = {
   notes: "",
@@ -74,13 +76,15 @@ export default function CreateLead() {
   async function onSubmit(data: LeadFormValues) {
     try {
       setLoading(true);
-      // TODO: Implement API call to save lead
-      console.log(data);
+      
+      const result = await createLead('1', data);
+
+      console.log(result);
       toast({
         title: "Lead Created Successfully",
         description: "The lead has been created and saved.",
       });
-      form.reset();
+      // form.reset();
     } catch (error) {
       toast({
         title: "Error",
@@ -160,6 +164,28 @@ export default function CreateLead() {
                         <FormControl>
                           <Input type="tel" placeholder="Enter phone number" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.gender}>Gender</FormLabelWithIcon>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Male">Male</SelectItem>
+                            <SelectItem value="Female">Female</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
