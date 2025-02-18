@@ -1,6 +1,6 @@
 'use client'
 
-import { Dialog, DialogPanel, DialogTitle, Transition } from '@headlessui/react'
+import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { 
   CheckCircle, 
@@ -85,7 +85,7 @@ export default function DialogWrapper({
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={handleClose}>
-        <Transition
+        <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -95,11 +95,11 @@ export default function DialogWrapper({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black bg-opacity-25" />
-        </Transition>
+        </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition
+            <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -108,17 +108,17 @@ export default function DialogWrapper({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex flex-col items-center">
                   <div className="mb-4">
                     <Icon className={`h-12 w-12 ${config.iconClass} ${type === 'success' && !isLoading ? 'animate-bounce' : ''}`} />
                   </div>
-                  <DialogTitle
+                  <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900 text-center"
                   >
                     {isLoading ? 'Processing...' : title}
-                  </DialogTitle>
+                  </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 text-center">
                       {isLoading ? 'Please wait while we process your request.' : message}
@@ -157,8 +157,8 @@ export default function DialogWrapper({
                     )}
                   </div>
                 </div>
-              </DialogPanel>
-            </Transition>
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
         </div>
       </Dialog>
