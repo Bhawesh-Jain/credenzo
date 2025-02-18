@@ -1,35 +1,7 @@
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import { UserRepository } from "./userRepository";
-
-interface MenuItem {
-  id: number;
-  parent_id: number | null;
-  url: string;
-  title: string;
-  menu_order: number;
-  items?: MenuItem[];
-}
-
-const buildTree = (items: MenuItem[], parentId: number | null = 0): MenuItem[] => {
-  const currentLevelItems = items.filter((item) => {
-    if (parentId === 0) {
-      return item.parent_id === 0;
-    }
-    return item.parent_id === parentId;
-  });
-
-  const sortedItems = currentLevelItems.sort((a, b) => a.menu_order - b.menu_order);
-
-  return sortedItems.map((item) => {
-    const children = buildTree(items, item.id);
-    return {
-      ...item,
-      items: children.length > 0 ? children : undefined
-    };
-  });
-};
-
+import { buildTree, PermissionItem } from "../helpers/permission-helper";
 export class SidebarRepository extends RepositoryBase {
   private builder: QueryBuilder;
   private userId: string;
@@ -49,7 +21,7 @@ export class SidebarRepository extends RepositoryBase {
         return this.failure(user.error)
       }
 
-      const permissions = await executeQuery<MenuItem[]>(`
+      const permissions = await executeQuery<PermissionItem[]>(`
         SELECT 
           im.id, 
           im.parent_id, 

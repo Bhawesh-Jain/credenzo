@@ -1,4 +1,5 @@
 import { QueryBuilder } from "../helpers/db-helper";
+import { buildTree, PermissionItem } from "../helpers/permission-helper";
 import { RepositoryBase } from "../helpers/repository-base"
 
 export class AccessRepository extends RepositoryBase {
@@ -17,9 +18,9 @@ export class AccessRepository extends RepositoryBase {
   async getRoles() {
     try {
       const result = await this.roleBuilder
-        .where('company_id = ?', this.companyId)
+        .where('? in (company_id)', this.companyId)
         .where('status = ?', 1)
-        .select(['id', 'role_name', 'user_count'])
+        .select(['id', 'role_name', 'user_count', 'permissions'])
 
       return this.success(result);
     } catch (error) {
@@ -27,7 +28,20 @@ export class AccessRepository extends RepositoryBase {
     }
   }
 
+  async getAllPermissions() {
+    try {
+      const result = await this.moduleBuilder
+        .where('? in (company_id)', this.companyId)
+        .where('status = ?', 1)
+        .select(['id', 'parent_id', 'url', 'title', 'menu_order'])
 
+      const permissions = buildTree(result as PermissionItem[]);
+
+      return this.success(permissions);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 
 }
 

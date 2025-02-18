@@ -8,3 +8,10 @@ export async function getRoles() {
   const accessRepository = new AccessRepository(session.company_id);
   return await accessRepository.getRoles();
 }
+
+export async function getAllPermissions() {
+  const session = await getSession();
+  const accessRepository = new AccessRepository(session.company_id);
+  return await accessRepository.getAllPermissions();
+}
+

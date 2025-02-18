@@ -1,0 +1,29 @@
+
+export interface PermissionItem {
+  id: number;
+  parent_id: number | null;
+  url: string;
+  title: string;
+  menu_order: number;
+  items?: PermissionItem[];
+  checked?: boolean;
+}
+
+export const buildTree = (items: PermissionItem[], parentId: number | null = 0): PermissionItem[] => {
+  const currentLevelItems = items.filter((item) => {
+    if (parentId === 0) {
+      return item.parent_id === 0;
+    }
+    return item.parent_id === parentId;
+  });
+
+  const sortedItems = currentLevelItems.sort((a, b) => a.menu_order - b.menu_order);
+
+  return sortedItems.map((item) => {
+    const children = buildTree(items, item.id);
+    return {
+      ...item,
+      items: children.length > 0 ? children : undefined
+    };
+  });
+};
