@@ -10,6 +10,7 @@ export type UserData = {
   user_avatar: string;
   company_name: string;
   company_id: string;
+  role: string;
 };
 
 

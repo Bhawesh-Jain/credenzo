@@ -119,6 +119,7 @@ export class UserAuthRepository extends RepositoryBase {
         user_avatar: user.image,
         company_name: user.company_name,
         company_id: user.company_id,
+        role: user.role,
       }
 
       return {

@@ -1,4 +1,4 @@
-import { SessionOptions, getIronSession } from "iron-session";
+import { SessionOptions, getIronSession, IronSession } from "iron-session";
 import { cookies } from "next/headers"
 
 export const sessionOptions: SessionOptions = {
@@ -13,22 +13,47 @@ export const sessionOptions: SessionOptions = {
 }
 
 export interface SessionData {
-  user_id?: String;
-  user_phone?: String;
-  user_email?: String;
-  user_avatar?: String;
-  company_name?: String;
-  company_id?: String;
+  user_id: string;
+  user_phone: string;
+  user_email: string;
+  user_avatar: string;
+  company_name: string;
+  company_id: string;
+  role: string;
   isLoggedIn: boolean;
 }
 
+// Create a type for validated session
+export type ValidatedSession = Required<SessionData>;
+
 export const defaultSession: SessionData = {
-  isLoggedIn:false
+  user_id: '',
+  user_phone: '',
+  user_email: '',
+  user_avatar: '',
+  company_name: '',
+  company_id: '',
+  role: '',
+  isLoggedIn: false
 }
 
+export class SessionError extends Error {
+  constructor(message: string = 'Invalid session') {
+    super(message);
+    this.name = 'SessionError';
+  }
+}
 
-export const getSession = async () => {
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+export async function getSession(): Promise<IronSession<SessionData>> {
+  return getIronSession<SessionData>(cookies(), sessionOptions);
+}
+
+export async function validateSession(): Promise<ValidatedSession> {
+  const session = await getSession();
   
-  return session;
+  if (!session.isLoggedIn || !session.user_id || !session.company_id) {
+    throw new SessionError('User not authenticated');
+  }
+
+  return session as ValidatedSession;
 }

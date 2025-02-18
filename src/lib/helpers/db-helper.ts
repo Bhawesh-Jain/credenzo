@@ -101,6 +101,7 @@ export class QueryBuilder {
       this.parameters.push(this.offsetValue);
     }
     
+    
     return executeQuery<T[]>(query, this.parameters);
   }
   
@@ -114,6 +115,7 @@ export class QueryBuilder {
       (${fields.join(', ')}) 
       VALUES (${placeholders})
     `;
+
     
     const result = await executeQuery<mysql.ResultSetHeader>(query, values);
     return result.insertId;

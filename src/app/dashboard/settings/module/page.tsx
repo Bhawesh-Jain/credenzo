@@ -1,7 +1,17 @@
-export default function ModuleSettings() {
+import { Container } from "@/components/ui/container";
+import { getRoles } from "@/lib/actions/settings";
+
+export default async function ModuleSettings() {
+
+  const roles = await getRoles();
+
   return (
-    <>
-      Module settings
-    </>
+    <Container>
+      {roles && roles.result && roles.result.map((role: any) => (
+        <div key={role.id}>
+          {role.role_name}
+        </div>
+      ))}
+    </Container>
   )
 }
