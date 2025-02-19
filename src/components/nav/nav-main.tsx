@@ -33,7 +33,6 @@ export function NavMain({
 }) {
   const pathname = usePathname()
 
-  // Function to check if a menu item contains the active path
   const containsActivePath = (item: MenuItem): boolean => {
     if (item.url === pathname) return true
     if (item.items) {
@@ -42,7 +41,6 @@ export function NavMain({
     return false
   }
 
-  // Recursive function to render menu items
   const renderMenuItem = (item: MenuItem) => {
     const hasChildren = item.items && item.items.length > 0
     const isActive = item.url === pathname
