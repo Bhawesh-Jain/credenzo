@@ -4,8 +4,8 @@ import { Container } from "@/components/ui/container"
 import { useState, useEffect } from "react"
 import { collectCheckedPermissions, PermissionItem } from "@/lib/helpers/permission-helper";
 import { getAllPermissions, getRoles, updateRolePermissions } from "@/lib/actions/settings";
-import RoleList from "./RoleList";
-import PermissionTree from "./PermissionTree";
+import RoleList from "./components/RoleList";
+import PermissionTree from "./components/PermissionTree";
 import Loading from "../../loading";
 import { useToast } from "@/hooks/use-toast";
 

@@ -8,7 +8,7 @@ import { Role } from "./RoleList";
 import { cn } from "@/lib/utils"
 import { SubmitButton } from "@/components/ui/submit-button";
 import { updateRolePermissions } from "@/lib/actions/settings";
-import Loading from "../../loading";
+import Loading from "../../../loading";
 
 export default function PermissionTree({
   permissions,
