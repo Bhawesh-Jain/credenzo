@@ -57,7 +57,7 @@ export default function RoleList({
               index > 0 && 'border-t'
             )}
           >
-            <span className="font-medium">{role.role_name}<span className="text-muted-foreground"> - {role.department}</span></span>
+            <span className="font-medium">{role.role_name}<span className="text-muted-foreground"> {role.department.length > 0 && '-'} {role.department}</span></span>
             <span className="text-sm text-muted-foreground text-nowrap">{role.user_count} User{role.user_count > 1 ? 's' : ''}</span>
           </li>
         ))}
