@@ -1,3 +1,4 @@
+"use client"
 
 import * as React from "react"
 import { NavMain } from "@/components/nav/nav-main"
@@ -13,13 +14,21 @@ import {
 import { Credenzo } from "./credenzo"
 import { getSidebarData } from "@/lib/actions/sidebar"
 import { redirect } from "next/navigation"
+import { useState, useEffect } from "react"
+import Loading from "@/app/loading"
 
-export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  var sidebar = await getSidebarData();
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
-  if (!sidebar.success) {
-    redirect('/login')
-  }
+  const [loading, setLoading] = useState(true);
+  const [sidebar, setSidebar] = useState<any | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      var sidebar = await getSidebarData();
+      setSidebar(sidebar.result);
+      setLoading(false);
+    })();
+  }, []);
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -29,10 +38,18 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={sidebar.result.menu} />
+        {loading ? (
+          <Loading />
+        ) : (
+          <NavMain items={sidebar.menu} />
+        )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={sidebar.result.user} />
+        {loading ? (
+          <Loading />
+        ) : (
+          <NavUser user={sidebar.user} />
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
