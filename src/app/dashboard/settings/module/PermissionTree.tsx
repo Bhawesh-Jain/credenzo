@@ -1,26 +1,57 @@
 "use client"
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PermissionItem } from "@/lib/helpers/permission-helper";
 import { Container } from "@/components/ui/container";
 import { Role } from "./RoleList";
+import { cn } from "@/lib/utils"
+import { SubmitButton } from "@/components/ui/submit-button";
+import { updateRolePermissions } from "@/lib/actions/settings";
 
+export default function PermissionTree({
+  permissions,
+  selectedRole
+}: {
+  permissions: PermissionItem[],
+  selectedRole: Role
+}) {
 
-export default function PermissionTree({ permissions, selectedRole }: { permissions: PermissionItem[], selectedRole: Role }) {
-  const rolePermissions = selectedRole.permissions.split(',');
+  const rolePermissions = selectedRole.permissions.split(',').map(id => parseInt(id));
 
-  const [updatedPermissions, setUpdatedPermissions] = useState<PermissionItem[]>(permissions);
+  const initializePermissions = (perms: PermissionItem[]): PermissionItem[] => {
+    return perms.map((perm) => ({
+      ...perm,
+      checked: rolePermissions.includes(perm.id),
+      items: perm.items ? initializePermissions(perm.items) : undefined
+    }));
+  };
+
+  const [updatedPermissions, setUpdatedPermissions] = useState<PermissionItem[]>([]);
+
+  useEffect(() => {
+    setUpdatedPermissions(initializePermissions(permissions));
+  }, [permissions, selectedRole]);
 
   const handleCheckboxChange = (id: number, checked: boolean) => {
     const updatePermission = (perms: PermissionItem[]): PermissionItem[] => {
       return perms.map((perm) => {
         if (perm.id === id) {
-          return { ...perm, checked };
+          // Update current permission
+          const updatedPerm = { ...perm, checked };
+
+          // If has children, update all children to match parent
+          if (perm.items) {
+            updatedPerm.items = perm.items.map(child => ({
+              ...child,
+              checked,
+              items: child.items ? updatePermission(child.items) : undefined
+            }));
+          }
+          return updatedPerm;
         }
         if (perm.items) {
-          return { ...perm, children: updatePermission(perm.items) };
+          return { ...perm, items: updatePermission(perm.items) };
         }
         return perm;
       });
@@ -28,30 +59,88 @@ export default function PermissionTree({ permissions, selectedRole }: { permissi
 
     setUpdatedPermissions(updatePermission(updatedPermissions));
   };
-  const renderPermissions = (perms: PermissionItem[]) => {
-    return perms.map((perm) => (
-      <div key={perm.id} className="ml-4 w-full">
-        <div className="flex items-center space-x-2 p-1 text-sm">
-          <Checkbox id={perm.id.toString()}
-            checked={perm.checked}
-            onCheckedChange={(checked) => handleCheckboxChange(perm.id, checked === true)} />
-          <label
-            htmlFor={perm.id.toString()}
-            className="text-sm leading-none cursor-pointer peer-disabled:opacity-70">
-            {perm.title}
-          </label>
+
+  const renderPermissions = (perms: PermissionItem[], level = 0) => {
+    return perms.map((perm, index) => {
+      const isLast = index === perms.length - 1;
+      const hasChildren = perm.items && perm.items.length > 0;
+
+      return (
+        <div key={perm.id} className={cn(
+          "relative",
+          level > 0 && "ml-6",
+        )}>
+          {level > 0 && (
+            <div className="absolute -left-6 top-0 h-full w-6">
+              <div className="absolute left-0 -top-[1px] h-7 w-6 border-l-2 border-gray-200" />
+              {!isLast && <div className="absolute left-0 top-0 h-full border-l-2 border-gray-200" />}
+              <div className="absolute left-0 top-3 h-0.5 w-6 bg-gray-200" />
+            </div>
+          )}
+
+          <div className={cn(
+            "relative flex items-center gap-2 rounded-lg border border-transparent p-2",
+            "hover:bg-accent/50 hover:border-accent",
+            "transition-colors duration-200"
+          )}>
+            <Checkbox
+              id={perm.id.toString()}
+              checked={perm.checked}
+              onCheckedChange={(checked) => handleCheckboxChange(perm.id, checked === true)}
+              className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            />
+            <label
+              htmlFor={perm.id.toString()}
+              className="flex-1 cursor-pointer text-sm">
+              {perm.title}
+            </label>
+          </div>
+
+          {hasChildren && (
+            <div className="relative mt-1">
+              {renderPermissions(perm.items!, level + 1)}
+            </div>
+          )}
         </div>
-        {perm.items && <div>{renderPermissions(perm.items)}</div>}
-      </div>
-    ));
+      );
+    });
   };
 
+  const handleSaveChanges = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let permissions = [];
+
+    for (const perm of updatedPermissions) {
+      if (perm.checked) {
+        permissions.push(perm.id);
+      }
+
+      if (perm.items) {
+        for (const item of perm.items) {
+          if (item.checked) {
+            permissions.push(item.id);
+          }
+        }
+      }
+    }
+    const response = await updateRolePermissions(selectedRole.id, permissions);
+    
+  }
+
   return (
-    <Container>
-      <h2 className="text-lg font-semibold">Permission Tree</h2>
-      <div>{renderPermissions(updatedPermissions)}</div>
-      <Button className="mt-4">Save Changes</Button>
+    <Container className="p-6">
+      <form onSubmit={handleSaveChanges}>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Permission Tree</h2>
+          <SubmitButton>
+            Save Changes
+          </SubmitButton>
+        </div>
+        <div className="">
+          {renderPermissions(updatedPermissions)}
+        </div>
+      </form>
     </Container>
   );
-
 }
+

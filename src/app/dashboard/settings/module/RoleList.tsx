@@ -14,7 +14,12 @@ export interface Role {
   permissions: string;
 }
 
-export default function RoleList({ roles, permissions }: { roles: Role[], permissions: PermissionItem[] }) {
+export default function RoleList({
+  roles, permissions
+}: {
+  roles: Role[],
+  permissions: PermissionItem[]
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
@@ -28,14 +33,14 @@ export default function RoleList({ roles, permissions }: { roles: Role[], permis
 
   return (
     <div className="border rounded-lg">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={30} minSize={20}>
+      <div className="flex flex-col md:flex-row">
+        <div className="md:w-1/3 border-b md:border-r">
           <div className="flex flex-col gap-2 p-4">
             <div className="flex justify-between items-center gap-5">
-              <Input 
-                placeholder="Search" 
-                value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} 
+              <Input
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex-grow max-w-md"
               />
               <Button>Add Role</Button>
@@ -49,12 +54,11 @@ export default function RoleList({ roles, permissions }: { roles: Role[], permis
               ))}
             </ul>
           </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={70} minSize={40}>
+        </div>
+        <div className="md:w-2/3">
           {selectedRole && <PermissionTree permissions={permissions} selectedRole={selectedRole} />}
-        </ResizablePanel>
-      </ResizablePanelGroup>
+        </div>
+      </div>
     </div>
   )
 }

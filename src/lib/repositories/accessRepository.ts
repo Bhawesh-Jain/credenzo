@@ -43,5 +43,14 @@ export class AccessRepository extends RepositoryBase {
     }
   }
 
+  async updateRolePermissions(roleId: string, permissions: number[]) {
+    try {
+      await this.roleBuilder.where('id = ?', roleId).update({ permissions: permissions.join(',')  });
+      return this.success(true);
+    } catch (error) {
+      return this.handleError(error); 
+    }
+  }
+
 }
 

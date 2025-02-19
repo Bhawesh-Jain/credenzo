@@ -15,3 +15,8 @@ export async function getAllPermissions() {
   return await accessRepository.getAllPermissions();
 }
 
+export async function updateRolePermissions(roleId: string, permissions: number[]) {
+  const session = await getSession();
+  const accessRepository = new AccessRepository(session.company_id);
+  return await accessRepository.updateRolePermissions(roleId, permissions);
+} 
