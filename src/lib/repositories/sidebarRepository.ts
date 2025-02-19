@@ -14,6 +14,8 @@ export class SidebarRepository extends RepositoryBase {
 
   async getSidebarData() {
     try {
+      console.log("getSidebarData");
+      
       const userRepo = new UserRepository();
       const user = await userRepo.getUserById(this.userId)
 

@@ -27,3 +27,18 @@ export const buildTree = (items: PermissionItem[], parentId: number | null = 0):
     };
   });
 };
+
+
+export function collectCheckedPermissions(permissionsList: any[], collected: number[] = []) {
+  for (const perm of permissionsList) {
+    if (perm.checked) {
+      collected.push(perm.id);
+    }
+    
+    // If there are nested items, recursively check them
+    if (perm.items && Array.isArray(perm.items)) {
+      collectCheckedPermissions(perm.items, collected);
+    }
+  }
+  return collected;
+}

@@ -8,13 +8,16 @@ import { Role } from "./RoleList";
 import { cn } from "@/lib/utils"
 import { SubmitButton } from "@/components/ui/submit-button";
 import { updateRolePermissions } from "@/lib/actions/settings";
+import Loading from "../../loading";
 
 export default function PermissionTree({
   permissions,
-  selectedRole
+  selectedRole,
+  handleSaveChanges
 }: {
   permissions: PermissionItem[],
-  selectedRole: Role
+  selectedRole: Role,
+  handleSaveChanges: (updatedPermissions: PermissionItem[], e: React.FormEvent<HTMLFormElement>) => void
 }) {
 
   const rolePermissions = selectedRole.permissions.split(',').map(id => parseInt(id));
@@ -37,17 +40,7 @@ export default function PermissionTree({
     const updatePermission = (perms: PermissionItem[]): PermissionItem[] => {
       return perms.map((perm) => {
         if (perm.id === id) {
-          // Update current permission
           const updatedPerm = { ...perm, checked };
-
-          // If has children, update all children to match parent
-          if (perm.items) {
-            updatedPerm.items = perm.items.map(child => ({
-              ...child,
-              checked,
-              items: child.items ? updatePermission(child.items) : undefined
-            }));
-          }
           return updatedPerm;
         }
         if (perm.items) {
@@ -106,30 +99,9 @@ export default function PermissionTree({
     });
   };
 
-  const handleSaveChanges = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    let permissions = [];
-
-    for (const perm of updatedPermissions) {
-      if (perm.checked) {
-        permissions.push(perm.id);
-      }
-
-      if (perm.items) {
-        for (const item of perm.items) {
-          if (item.checked) {
-            permissions.push(item.id);
-          }
-        }
-      }
-    }
-    const response = await updateRolePermissions(selectedRole.id, permissions);
-    
-  }
-
   return (
     <Container className="p-6">
-      <form onSubmit={handleSaveChanges}>
+      <form onSubmit={(e) => handleSaveChanges(updatedPermissions, e)}>
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Permission Tree</h2>
           <SubmitButton>
