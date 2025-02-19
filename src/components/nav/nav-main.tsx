@@ -21,6 +21,7 @@ import Link from "next/link"
 
 interface MenuItem {
   title: string
+  parent_name: string
   url: string
   items?: MenuItem[]
 }
@@ -74,7 +75,7 @@ export function NavMain({
               asChild
               className={isActive ? 'bg-accent text-accent-foreground' : ''}
             >
-              <Link href={item.url}>
+              <Link href={`${item.url}?h=${item.parent_name.length > 0 ? item.parent_name : item.title}`}>
                 <span>{item.title}</span>
               </Link>
             </SidebarMenuSubButton>

@@ -8,6 +8,7 @@ export type UserData = {
   user_phone: string;
   user_email: string;
   user_avatar: string;
+  user_name: string;
   company_name: string;
   company_id: string;
   role: string;

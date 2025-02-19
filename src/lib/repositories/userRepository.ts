@@ -117,6 +117,7 @@ export class UserAuthRepository extends RepositoryBase {
         user_phone: user.phone,
         user_email: user.email,
         user_avatar: user.image,
+        user_name: user.name,
         company_name: user.company_name,
         company_id: user.company_id,
         role: user.role,

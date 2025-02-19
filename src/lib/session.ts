@@ -17,6 +17,7 @@ export interface SessionData {
   user_phone: string;
   user_email: string;
   user_avatar: string;
+  user_name: string;
   company_name: string;
   company_id: string;
   role: string;
@@ -29,8 +30,9 @@ export type ValidatedSession = Required<SessionData>;
 export const defaultSession: SessionData = {
   user_id: '',
   user_phone: '',
-  user_email: '',
+  user_email: '', 
   user_avatar: '',
+  user_name: '',
   company_name: '',
   company_id: '',
   role: '',
