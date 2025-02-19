@@ -28,7 +28,8 @@ export default function RoleList({
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredRoles = roles.filter((role: Role) =>
-    role.role_name.toLowerCase().includes(searchTerm.toLowerCase())
+    role.role_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    role.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleClickRole = (role: Role) => {
@@ -57,8 +58,8 @@ export default function RoleList({
               index > 0 && 'border-t'
             )}
           >
-            <span className="font-medium">{role.role_name} - {role.department}</span>
-            <span className="text-gray-500 text-nowrap">{role.user_count} User{role.user_count > 1 ? 's' : ''}</span>
+            <span className="font-medium">{role.role_name}<span className="text-muted-foreground"> - {role.department}</span></span>
+            <span className="text-sm text-muted-foreground text-nowrap">{role.user_count} User{role.user_count > 1 ? 's' : ''}</span>
           </li>
         ))}
       </ul>

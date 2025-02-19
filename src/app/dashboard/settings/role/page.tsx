@@ -8,6 +8,7 @@ import RoleList from "./blocks/RoleList";
 import PermissionTree from "./blocks/PermissionTree";
 import Loading from "../../loading";
 import { useToast } from "@/hooks/use-toast";
+import EmptyList from "@/components/ui/empty-list";
 
 export interface Role {
   id: string;
@@ -76,7 +77,9 @@ export default function RoleSettings(
             <RoleList setReload={setReload} roles={roles} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
           </div>
           <div className="md:w-2/3">
-            {selectedRole && <PermissionTree permissions={permissions} selectedRole={selectedRole} handleSaveChanges={handleSaveChanges} />}
+            {selectedRole
+              ? <PermissionTree permissions={permissions} selectedRole={selectedRole} handleSaveChanges={handleSaveChanges} />
+              : <EmptyList text="No role selected" />}
           </div>
         </div>}
     </Container>
