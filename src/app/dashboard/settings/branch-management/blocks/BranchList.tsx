@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import formatDate from "@/lib/utils/date"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 
@@ -47,7 +48,7 @@ export function BranchList() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold tracking-tight">Branches</h2>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Add Branch
         </Button>
       </div>
@@ -78,7 +79,7 @@ export function BranchList() {
                     {branch.status}
                   </span>
                 </TableCell>
-                <TableCell>{new Date(branch.created_at).toLocaleDateString()}</TableCell>
+                <TableCell>{formatDate(branch.created_at)}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="sm">
                     Edit
