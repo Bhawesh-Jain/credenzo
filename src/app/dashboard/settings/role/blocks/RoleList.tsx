@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import AddRole from "./AddRole";
 
 export interface Role {
   id: string;
   role_name: string;
+  department: string;
   user_count: number;
   permissions: string;
 }
@@ -15,11 +17,13 @@ export interface Role {
 export default function RoleList({
   roles,
   selectedRole,
-  setSelectedRole
+  setSelectedRole,
+  setReload
 }: {
   roles: Role[],
   selectedRole: Role | null,
-  setSelectedRole: (role: Role) => void
+  setSelectedRole: (role: Role) => void,
+  setReload: (reload: boolean) => void
 }) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -40,20 +44,21 @@ export default function RoleList({
           onChange={(e) => setSearchTerm(e.target.value)}
           className="flex-grow max-w-md"
         />
-        <Button>Add Role</Button>
+        <AddRole setReload={setReload} />
       </div>
-      <ul className="mt-2 text-sm">
-        {filteredRoles.map((role: Role) => (
+      <ul className="mt-2 text-sm border rounded-lg">
+        {filteredRoles.map((role: Role, index: number) => (
           <li
             onClick={() => handleClickRole(role)}
             key={role.id}
             className={cn(
-              "flex justify-between items-center gap-5 py-2 border p-3 shadow-sm cursor-pointer hover:shadow-md hover:bg-gray-50 rounded-lg",
-              selectedRole?.id === role.id && "bg-gray-100"
+              "flex justify-between items-center gap-5 py-2 p-3 shadow-sm cursor-pointer hover:shadow-md hover:bg-gray-50",
+              selectedRole?.id === role.id && "bg-gray-100",
+              index > 0 && 'border-t'
             )}
           >
-            <span className="font-medium">{role.role_name}</span>
-            <span className="text-gray-500">{role.user_count} User{role.user_count > 1 ? 's' : ''}</span>
+            <span className="font-medium">{role.role_name} - {role.department}</span>
+            <span className="text-gray-500 text-nowrap">{role.user_count} User{role.user_count > 1 ? 's' : ''}</span>
           </li>
         ))}
       </ul>

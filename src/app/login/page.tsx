@@ -1,6 +1,4 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/app/login/blocks/login-form"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 export default function LoginPage() {

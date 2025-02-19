@@ -9,11 +9,13 @@ import {
   Phone,
   CreditCard,
   Target,
-  Calendar
+  Calendar,
+  Users
 } from "lucide-react"
 
 export const Icons = {
   user: User,
+  users: Users,
   dollarSign: DollarSign,
   receiptIndianRupee: ReceiptIndianRupee,
   fileText: FileText,

@@ -7,8 +7,6 @@ import { Container } from "@/components/ui/container";
 import { Role } from "./RoleList";
 import { cn } from "@/lib/utils"
 import { SubmitButton } from "@/components/ui/submit-button";
-import { updateRolePermissions } from "@/lib/actions/settings";
-import Loading from "../../../loading";
 
 export default function PermissionTree({
   permissions,
@@ -103,7 +101,7 @@ export default function PermissionTree({
     <Container className="p-6">
       <form onSubmit={(e) => handleSaveChanges(updatedPermissions, e)}>
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Permission Tree</h2>
+          <h2 className="text-xl font-semibold">{selectedRole.role_name} Permissions</h2>
           <SubmitButton>
             Save Changes
           </SubmitButton>

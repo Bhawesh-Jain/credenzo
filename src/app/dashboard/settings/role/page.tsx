@@ -4,8 +4,8 @@ import { Container } from "@/components/ui/container"
 import { useState, useEffect } from "react"
 import { collectCheckedPermissions, PermissionItem } from "@/lib/helpers/permission-helper";
 import { getAllPermissions, getRoles, updateRolePermissions } from "@/lib/actions/settings";
-import RoleList from "./components/RoleList";
-import PermissionTree from "./components/PermissionTree";
+import RoleList from "./blocks/RoleList";
+import PermissionTree from "./blocks/PermissionTree";
 import Loading from "../../loading";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,8 +14,8 @@ export interface Role {
   role_name: string;
   user_count: number;
   permissions: string;
+  department: string;
 }
-
 
 export default function RoleSettings(
 
@@ -73,7 +73,7 @@ export default function RoleSettings(
         ? <Loading />
         : <div className="flex flex-col gap-4 md:flex-row border rounded-lg ">
           <div className="md:w-1/3 border-b md:border-r md:border-b-0">
-            <RoleList roles={roles} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
+            <RoleList setReload={setReload} roles={roles} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
           </div>
           <div className="md:w-2/3">
             {selectedRole && <PermissionTree permissions={permissions} selectedRole={selectedRole} handleSaveChanges={handleSaveChanges} />}

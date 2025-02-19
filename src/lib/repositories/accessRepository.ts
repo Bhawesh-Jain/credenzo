@@ -20,7 +20,7 @@ export class AccessRepository extends RepositoryBase {
       const result = await this.roleBuilder
         .where('? in (company_id)', this.companyId)
         .where('status = ?', 1)
-        .select(['id', 'role_name', 'user_count', 'permissions'])
+        .select(['id', 'role_name', 'user_count', 'permissions', 'department'])
 
       return this.success(result);
     } catch (error) {
@@ -45,12 +45,30 @@ export class AccessRepository extends RepositoryBase {
 
   async updateRolePermissions(roleId: string, permissions: number[]) {
     try {
-      await this.roleBuilder.where('id = ?', roleId).update({ permissions: permissions.join(',')  });
+      await this.roleBuilder.where('id = ?', roleId).update({ permissions: permissions.join(',') });
       return this.success(true);
     } catch (error) {
-      return this.handleError(error); 
+      return this.handleError(error);
     }
   }
 
+  async createRole(
+    name: string,
+    department: string,
+    userId: string
+  ) {
+    try {
+      await this.roleBuilder.insert({
+        role_name: name,
+        company_id: this.companyId,
+        department: department,
+        status: 1,
+        created_by: userId
+      });
+      return this.success(true);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 }
 
