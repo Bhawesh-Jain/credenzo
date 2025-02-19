@@ -9,21 +9,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, usePathname } from "next/navigation"
+import { getHeadingFromPath } from "@/lib/utils/getHeading"
 
 interface TopBarProps {
   user: UserData;
 }
 
 const TopBar: React.FC<TopBarProps> = ({ user }) => {
-
   const searchParams = useSearchParams();
-  const heading = searchParams.get('h');
+  const pathname = usePathname();
+  const headingFromQuery = searchParams.get('h');
+  const heading = headingFromQuery || getHeadingFromPath(pathname);
 
   return (
     <div className="flex justify-between items-center w-full py-4 px-2 bg-background">
       <div className="flex items-center gap-2">
-        <h1 className="text-lg font-semibold">{heading || "Credenzo - Complete Loan Solution"}</h1>
+        <h1 className="text-lg font-semibold">{heading}</h1>
       </div>
       
       <div className="flex items-center gap-4">
