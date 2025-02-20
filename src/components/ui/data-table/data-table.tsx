@@ -117,13 +117,13 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2">
         {searchable && (
           <Input
             placeholder="Search..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="max-w-xs "
           />
         )}
         <DropdownMenu>
@@ -133,7 +133,7 @@ export function DataTable<T extends Record<string, any>>({
               Columns
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent className="max-h-80 overflow-y-auto">
             {columns.map(column => (
               <DropdownMenuCheckboxItem
                 key={column.id}
@@ -162,7 +162,7 @@ export function DataTable<T extends Record<string, any>>({
                         column.sortable && handleSort(column.accessorKey)
                       }
                     >
-                      <div className="flex items-center gap-2 select-none">
+                      <div className="flex items-center gap-2 select-none text-nowrap">
                         {column.header}
                         {column.sortable && (sortConfig.key === column.accessorKey ? (
                           {
