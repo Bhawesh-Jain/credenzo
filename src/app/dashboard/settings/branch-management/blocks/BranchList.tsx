@@ -42,22 +42,26 @@ export function BranchList() {
       header: "Branch Name",
       accessorKey: "name",
       sortable: true,
+      visible: true,
     },
     {
       id: "code",
       header: "Code",
       accessorKey: "code",
       sortable: true,
+      visible: true,
     },
     {
       id: "address",
       header: "Address",
       accessorKey: "address",
+      visible: true,
     },
     {
       id: "status",
       header: "Status",
       accessorKey: "status",
+      visible: true,
       sortable: true,
       cell: (row) => (
         <span
@@ -76,12 +80,411 @@ export function BranchList() {
       header: "Created At",
       accessorKey: "created_at",
       cell: (row) => formatDate(row.created_at),
+      visible: true,
       sortable: true,
     },
     {
       id: "actions",
       header: "Actions",
       accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },{
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
       cell: (row) => (
         <Button variant="ghost" size="sm">
           Edit

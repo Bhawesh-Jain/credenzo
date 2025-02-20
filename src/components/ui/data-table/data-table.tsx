@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronUp, Settings2, SortAscIcon, SortDescIcon } from "lucide-react"
+import { ArrowUpDownIcon, ChevronDown, ChevronUp, Settings2, SortAscIcon, SortDescIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface Column<T> {
@@ -25,7 +25,7 @@ export interface Column<T> {
   cell?: (row: T) => React.ReactNode
   sortable?: boolean
   filterable?: boolean
-  visible?: boolean
+  visible: boolean
 }
 
 interface DataTableProps<T> {
@@ -54,11 +54,11 @@ export function DataTable<T extends Record<string, any>>({
 
   // Column visibility toggle
   const toggleColumnVisibility = (columnId: string) => {
-    setColumns(prev =>
-      prev.map(col =>
+    setColumns(prev => 
+      prev.map(col => 
         col.id === columnId ? { ...col, visible: !col.visible } : col
       )
-    )
+    );
   }
 
   // Sorting logic
@@ -149,30 +149,32 @@ export function DataTable<T extends Record<string, any>>({
 
       <div className={cn("rounded-md border", className)}>
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted">
             <TableRow>
               {columns
                 .filter(col => col.visible !== false)
-                .map(column => (
-                  <TableHead
-                    key={column.id}
-                    className={cn(column.sortable && "cursor-pointer")}
-                    onClick={() =>
-                      column.sortable && handleSort(column.accessorKey)
-                    }
-                  >
-                    <div className="flex items-center gap-2 select-none">
-                      {column.header}
-                      {column.sortable && (sortConfig.key === column.accessorKey ? (
-                        {
-                          asc: <SortAscIcon className="h-4 w-4" />,
-                          desc: <SortDescIcon className="h-4 w-4" />,
-                        }[sortConfig.direction!]
-                      ) : <SortAscIcon className="h-4 w-4" />
-                    )}
-                    </div>
-                  </TableHead>
-                ))}
+                .map((column) => {
+                  return (
+                    <TableHead
+                      key={column.id}
+                      className={cn(column.sortable && "cursor-pointer")}
+                      onClick={() =>
+                        column.sortable && handleSort(column.accessorKey)
+                      }
+                    >
+                      <div className="flex items-center gap-2 select-none">
+                        {column.header}
+                        {column.sortable && (sortConfig.key === column.accessorKey ? (
+                          {
+                            asc: <SortAscIcon className="h-3 w-3" />,
+                            desc: <SortDescIcon className="h-3 w-3" />,
+                          }[sortConfig.direction!]
+                        ) : <ArrowUpDownIcon className="h-3 w-3" />
+                        )}
+                      </div>
+                    </TableHead>
+                  );
+                })}
             </TableRow>
           </TableHeader>
           <TableBody>
