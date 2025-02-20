@@ -3,38 +3,36 @@
 import { DataTable, Column } from "@/components/ui/data-table/data-table"
 import formatDate from "@/lib/utils/date"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AddBranch from "./AddBranch"
+import { getBranches } from "@/lib/actions/settings"
 
 interface Branch {
   id: number
   name: string
-  code: string
-  address: string
-  status: "active" | "inactive"
-  created_at: string
+  branch_code: string
+  location: string
+  pincode: string
+  status: "1" | "-1"
+  created_on: string
 }
 
 export function BranchList() {
-  const [branches, setBranches] = useState<Branch[]>([
-    // Temporary dummy data
-    {
-      id: 1,
-      name: "Main Branch",
-      code: "MB001",
-      address: "123 Main Street",
-      status: "active",
-      created_at: "2024-03-20"
-    },
-    {
-      id: 2,
-      name: "Downtown Branch",
-      code: "DB002",
-      address: "456 Downtown Ave",
-      status: "inactive",
-      created_at: "2024-03-21"
-    }
-  ])
+  const [branches, setBranches] = useState<Branch[]>([])
+  const [reload, setReload] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setReload(false);
+      setLoading(true);
+
+      const branches = await getBranches();
+      setBranches(branches.result);
+
+      setLoading(false);
+    })();
+  }, [reload]);
 
   const columns: Column<Branch>[] = [
     {
@@ -45,16 +43,22 @@ export function BranchList() {
       visible: true,
     },
     {
-      id: "code",
+      id: "branch_code",
       header: "Code",
-      accessorKey: "code",
+      accessorKey: "branch_code",
       sortable: true,
       visible: true,
     },
     {
-      id: "address",
-      header: "Address",
-      accessorKey: "address",
+      id: "location",
+      header: "Location",
+      accessorKey: "location",
+      visible: true,
+    },
+    {
+      id: "pincode",
+      header: "Pincode",
+      accessorKey: "pincode",
       visible: true,
     },
     {
@@ -66,20 +70,20 @@ export function BranchList() {
       cell: (row) => (
         <span
           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-            row.status === "active"
+            row.status === "1"
               ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
               : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
           }`}
         >
-          {row.status}
+          {row.status === "1" ? "Active" : "Inactive"}
         </span>
       ),
     },
     {
-      id: "created_at",
-      header: "Created At",
-      accessorKey: "created_at",
-      cell: (row) => formatDate(row.created_at),
+      id: "created_on",
+      header: "Created On",
+      accessorKey: "created_on",
+      cell: (row) => formatDate(row.created_on),
       visible: true,
       sortable: true,
     },
@@ -88,175 +92,16 @@ export function BranchList() {
       header: "Actions",
       accessorKey: "id",
       visible: true,
+      end: true,
       cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
+        <div className="flex gap-2 justify-end">
+          <Button variant="ghost" size="sm">
+            Edit
+          </Button>
+          <Button variant="destructive" size="sm">
+            Delete
+          </Button>
+        </div>
       ),
     },
   ]
@@ -265,11 +110,9 @@ export function BranchList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold tracking-tight">Branches</h2>
-        <AddBranch setReload={() => {}} />
+        <AddBranch setReload={setReload} />
       </div>
-      <div className="">
-        <DataTable data={branches} columns={columns} />
-      </div>
+      <DataTable data={branches} columns={columns} loading={loading} setReload={setReload} />
     </div>
   )
 } 

@@ -33,3 +33,11 @@ export async function createBranch(name: string, branch_code: string, pincode: s
   const branchRepository = new BranchRepository(session.company_id);
   return await branchRepository.createBranch(name, branch_code, pincode, location, session.user_id);
 }
+
+export async function getBranches() {
+  const session = await getSession();
+  const branchRepository = new BranchRepository(session.company_id);
+  return await branchRepository.getBranches();
+}
+
+

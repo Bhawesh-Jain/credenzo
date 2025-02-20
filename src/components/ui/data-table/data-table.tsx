@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ArrowUpDownIcon, ChevronDown, ChevronUp, Settings2, SortAscIcon, SortDescIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Skeleton } from "../skeleton"
 
 export interface Column<T> {
   id: string
@@ -25,6 +26,7 @@ export interface Column<T> {
   cell?: (row: T) => React.ReactNode
   sortable?: boolean
   filterable?: boolean
+  end?: boolean
   visible: boolean
 }
 
@@ -34,6 +36,8 @@ interface DataTableProps<T> {
   pageSize?: number
   searchable?: boolean
   className?: string
+  loading?: boolean
+  setReload?: (reload: boolean) => void
 }
 
 export function DataTable<T extends Record<string, any>>({
@@ -42,6 +46,8 @@ export function DataTable<T extends Record<string, any>>({
   pageSize = 10,
   searchable = true,
   className,
+  loading = false,
+  setReload
 }: DataTableProps<T>) {
   // State management
   const [columns, setColumns] = useState(defaultColumns)
@@ -54,8 +60,8 @@ export function DataTable<T extends Record<string, any>>({
 
   // Column visibility toggle
   const toggleColumnVisibility = (columnId: string) => {
-    setColumns(prev => 
-      prev.map(col => 
+    setColumns(prev =>
+      prev.map(col =>
         col.id === columnId ? { ...col, visible: !col.visible } : col
       )
     );
@@ -72,6 +78,7 @@ export function DataTable<T extends Record<string, any>>({
 
   // Filter and sort data
   const processedData = useMemo(() => {
+    if (!data) return [];
     let filtered = [...data]
 
     // Search filter
@@ -100,8 +107,8 @@ export function DataTable<T extends Record<string, any>>({
             ? 1
             : -1
           : bValue > aValue
-          ? 1
-          : -1
+            ? 1
+            : -1
       })
     }
 
@@ -162,7 +169,7 @@ export function DataTable<T extends Record<string, any>>({
                         column.sortable && handleSort(column.accessorKey)
                       }
                     >
-                      <div className="flex items-center gap-2 select-none text-nowrap">
+                      <div className={cn("flex gap-2 select-none text-nowrap", column.end ? "justify-end items-end" : 'items-center')}>
                         {column.header}
                         {column.sortable && (sortConfig.key === column.accessorKey ? (
                           {
@@ -178,19 +185,40 @@ export function DataTable<T extends Record<string, any>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {columns
-                  .filter(col => col.visible !== false)
-                  .map(column => (
-                    <TableCell key={column.id}>
-                      {column.cell
-                        ? column.cell(row)
-                        : String(row[column.accessorKey] ?? "")}
-                    </TableCell>
-                  ))}
-              </TableRow>
-            ))}
+            {!loading ? (
+              paginatedData && paginatedData.length > 0 ? paginatedData.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {columns
+                    .filter(col => col.visible !== false)
+                    .map(column => (
+                      <TableCell key={column.id} align={column.end ? "right" : "left"}>
+                        {column.cell
+                          ? column.cell(row)
+                          : String(row[column.accessorKey] ?? "")}
+                      </TableCell>
+                    ))}
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-64 text-center gap-2 items-center justify-center">
+                    <p className="text-sm text-muted-foreground">No data</p>
+                    {setReload && <Button className="mt-4" variant="outline" size="sm" onClick={() => setReload(true)}>Reload</Button>}
+                  </TableCell>
+                </TableRow>
+              )
+            ) :
+              (
+                Array.from({ length: pageSize }).map((_, index) => (
+                  <TableRow key={index}>
+                    {columns
+                      .filter(col => col.visible !== false)
+                      .map(column => (
+                        <TableCell key={column.id}>
+                          <Skeleton className="h-4 w-full" />
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                )))}
           </TableBody>
         </Table>
       </div>

@@ -70,5 +70,22 @@ export class BranchRepository extends RepositoryBase {
     }
   }
 
+  async getBranches() {
+    try {
+      const result = await this.queryBuilder
+        .where('company_id = ?', this.companyId)
+        .where('status = ?', this.companyId)
+        .orderBy('branch_id', 'ASC')
+        .select(['id', 'name', 'branch_code', 'location', 'pincode', 'status', 'created_on']);
+
+      if (result.length > 0) {
+        return this.success(result);
+      } else {
+        return this.failure('No branches found');
+      }
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 
 }
