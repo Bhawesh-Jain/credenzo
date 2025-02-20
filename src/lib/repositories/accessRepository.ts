@@ -58,14 +58,19 @@ export class AccessRepository extends RepositoryBase {
     userId: string
   ) {
     try {
-      await this.roleBuilder.insert({
+      const insert = await this.roleBuilder.insert({
         role_name: name,
         company_id: this.companyId,
         department: department,
         status: 1,
         created_by: userId
       });
-      return this.success(true);
+
+      if (insert) {
+        return this.success(insert);
+      } else {
+        return this.failure('Failed to create role');
+      }
     } catch (error) {
       return this.handleError(error);
     }

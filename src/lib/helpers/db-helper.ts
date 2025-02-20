@@ -130,7 +130,7 @@ export class QueryBuilder {
       SET ${fields.map(field => `${field} = ?`).join(', ')}
       ${this.conditions.length ? `WHERE ${this.conditions.join(' AND ')}` : ''}
     `;
-    
+    console.log(query, values, this.parameters);
     const result = await executeQuery<any>(query, [...values, ...this.parameters]);
     return result.affectedRows;
   }

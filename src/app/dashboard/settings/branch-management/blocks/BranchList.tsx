@@ -12,6 +12,7 @@ import {
 import formatDate from "@/lib/utils/date"
 import { Plus } from "lucide-react"
 import { useState } from "react"
+import AddBranch from "./AddBranch"
 
 interface Branch {
   id: number
@@ -43,14 +44,15 @@ export function BranchList() {
     }
   ])
 
+  const [reload, setReload] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold tracking-tight">Branches</h2>
-        <Button>
-          <Plus className="h-4 w-4" />
-          Add Branch
-        </Button>
+        <AddBranch setReload={setReload} />
       </div>
       <div className="rounded-md border">
         <Table>
