@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronUp, Settings2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Settings2, SortAscIcon, SortDescIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface Column<T> {
@@ -161,14 +161,15 @@ export function DataTable<T extends Record<string, any>>({
                       column.sortable && handleSort(column.accessorKey)
                     }
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 select-none">
                       {column.header}
-                      {column.sortable && sortConfig.key === column.accessorKey && (
+                      {column.sortable && (sortConfig.key === column.accessorKey ? (
                         {
-                          asc: <ChevronUp className="h-4 w-4" />,
-                          desc: <ChevronDown className="h-4 w-4" />,
+                          asc: <SortAscIcon className="h-4 w-4" />,
+                          desc: <SortDescIcon className="h-4 w-4" />,
                         }[sortConfig.direction!]
-                      )}
+                      ) : <SortAscIcon className="h-4 w-4" />
+                    )}
                     </div>
                   </TableHead>
                 ))}
