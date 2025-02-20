@@ -1,16 +1,8 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { DataTable, Column } from "@/components/ui/data-table/data-table"
 import formatDate from "@/lib/utils/date"
-import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import AddBranch from "./AddBranch"
 
@@ -39,59 +31,72 @@ export function BranchList() {
       name: "Downtown Branch",
       code: "DB002",
       address: "456 Downtown Ave",
-      status: "active",
+      status: "inactive",
       created_at: "2024-03-21"
     }
   ])
 
-  const [reload, setReload] = useState(false)
-  const [loading, setLoading] = useState(false)
-
+  const columns: Column<Branch>[] = [
+    {
+      id: "name",
+      header: "Branch Name",
+      accessorKey: "name",
+      sortable: true,
+    },
+    {
+      id: "code",
+      header: "Code",
+      accessorKey: "code",
+      sortable: true,
+    },
+    {
+      id: "address",
+      header: "Address",
+      accessorKey: "address",
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessorKey: "status",
+      sortable: true,
+      cell: (row) => (
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+            row.status === "active"
+              ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
+              : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+    },
+    {
+      id: "created_at",
+      header: "Created At",
+      accessorKey: "created_at",
+      cell: (row) => formatDate(row.created_at),
+      sortable: true,
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+  ]
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold tracking-tight">Branches</h2>
-        <AddBranch setReload={setReload} />
+        <AddBranch setReload={() => {}} />
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Branch Name</TableHead>
-              <TableHead>Code</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {branches.map((branch) => (
-              <TableRow key={branch.id}>
-                <TableCell className="font-medium">{branch.name}</TableCell>
-                <TableCell>{branch.code}</TableCell>
-                <TableCell>{branch.address}</TableCell>
-                <TableCell>
-                  <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                    branch.status === 'active' 
-                      ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' 
-                      : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'
-                  }`}>
-                    {branch.status}
-                  </span>
-                </TableCell>
-                <TableCell>{formatDate(branch.created_at)}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">
-                    Edit
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable data={branches} columns={columns} />
     </div>
   )
 } 
