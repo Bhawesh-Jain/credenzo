@@ -10,6 +10,7 @@ import { UserData } from "@/lib/actions/auth"
 import { validateSession } from "@/lib/session"
 import { redirect } from "next/navigation"
 import TopBar from "@/components/ui/top-bar"
+import { App } from "@/components/app"
 
 export default async function DashboardLayout({
   children,
@@ -35,14 +36,16 @@ export default async function DashboardLayout({
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <header className="flex h-16 shrink-0 sticky top-0 bg-background items-center gap-2">
-              <SidebarTrigger className="ml-2" />
-              <Separator orientation="vertical" className="h-5" />
-              <TopBar user={user} />
-            </header>
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-              {children}
-            </div>
+            <App>
+              <header className="flex h-16 shrink-0 sticky top-0 bg-background items-center gap-2">
+                <SidebarTrigger className="ml-2" />
+                <Separator orientation="vertical" className="h-5" />
+                <TopBar user={user} />
+              </header>
+              <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                {children}
+              </div>
+            </App>
           </SidebarInset>
         </SidebarProvider>
       </UserProvider>

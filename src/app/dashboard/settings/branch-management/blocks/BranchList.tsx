@@ -170,7 +170,19 @@ export function BranchList() {
           Edit
         </Button>
       ),
-    },{
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      cell: (row) => (
+        <Button variant="ghost" size="sm">
+          Edit
+        </Button>
+      ),
+    },
+    {
       id: "actions",
       header: "Actions",
       accessorKey: "id",
@@ -202,16 +214,6 @@ export function BranchList() {
           Edit
         </Button>
       ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
     },
     {
       id: "actions",
@@ -225,240 +227,6 @@ export function BranchList() {
       ),
     },
     {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      accessorKey: "id",
-      visible: true,
-      cell: (row) => (
-        <Button variant="ghost" size="sm">
-          Edit
-        </Button>
-      ),
-    },{
       id: "actions",
       header: "Actions",
       accessorKey: "id",
@@ -499,7 +267,9 @@ export function BranchList() {
         <h2 className="text-2xl font-bold tracking-tight">Branches</h2>
         <AddBranch setReload={() => {}} />
       </div>
-      <DataTable data={branches} columns={columns} />
+      <div className="">
+        <DataTable data={branches} columns={columns} />
+      </div>
     </div>
   )
 } 
