@@ -22,11 +22,11 @@ import { Skeleton } from "../skeleton"
 export interface Column<T> {
   id: string
   header: string
+  align?: 'center' | 'left' | 'right' | 'justify' | 'char'
   accessorKey: keyof T
   cell?: (row: T) => React.ReactNode
   sortable?: boolean
   filterable?: boolean
-  end?: boolean
   visible: boolean
 }
 
@@ -165,11 +165,12 @@ export function DataTable<T extends Record<string, any>>({
                     <TableHead
                       key={column.id}
                       className={cn(column.sortable && "cursor-pointer")}
+                      align={column.align || 'left'}
                       onClick={() =>
                         column.sortable && handleSort(column.accessorKey)
                       }
                     >
-                      <div className={cn("flex gap-2 select-none text-nowrap", column.end ? "justify-end items-end" : 'items-center')}>
+                      <div className={cn("flex gap-2 select-none text-nowrap items-center", column.align == 'right' ? 'justify-end mr-2' : 'justify-start')}>
                         {column.header}
                         {column.sortable && (sortConfig.key === column.accessorKey ? (
                           {
@@ -191,7 +192,7 @@ export function DataTable<T extends Record<string, any>>({
                   {columns
                     .filter(col => col.visible !== false)
                     .map(column => (
-                      <TableCell key={column.id} align={column.end ? "right" : "left"}>
+                      <TableCell key={column.id} align={column.align || 'left'}>
                         {column.cell
                           ? column.cell(row)
                           : String(row[column.accessorKey] ?? "")}

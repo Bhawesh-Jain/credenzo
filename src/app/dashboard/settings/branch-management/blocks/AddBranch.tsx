@@ -19,6 +19,13 @@ import Loading from "@/app/loading";
 import { useState } from "react";
 import { DefaultFormTextField, DefaultFormTextArea } from "@/components/ui/default-form-field";
 
+export interface Branch {
+  id: number;
+  name: string;
+  branch_code: string;
+  pincode: string;
+  location: string;
+}
 const formScheme = z.object({
   name: z.string().min(2, "Add a role name").max(255, "Role name must be less than 255 characters"),
   location: z.string().max(150, "Location must be less than 150 characters"),
@@ -36,9 +43,11 @@ const defaultValues: Partial<FormValues> = {
 };
 
 export default function AddBranch({
-  setReload
+  setReload,
+  branch
 }: {
-  setReload: (reload: boolean) => void
+  setReload: (reload: boolean) => void,
+  branch?: Branch | null
 }) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);

@@ -60,6 +60,7 @@ export function BranchList() {
       header: "Pincode",
       accessorKey: "pincode",
       visible: true,
+      sortable: true,
     },
     {
       id: "status",
@@ -92,12 +93,9 @@ export function BranchList() {
       header: "Actions",
       accessorKey: "id",
       visible: true,
-      end: true,
+      align: 'right',
       cell: (row) => (
-        <div className="flex gap-2 justify-end">
-          <Button variant="ghost" size="sm">
-            Edit
-          </Button>
+        <div className="">
           <Button onClick={() => handleDisableBranch(row.id, row.status == "1" ? -1 : 1)} variant={row.status == "1" ? "destructive" : "default"} size="sm">
             {row.status == "1" ? "Disable" : "Enable"}
           </Button>
