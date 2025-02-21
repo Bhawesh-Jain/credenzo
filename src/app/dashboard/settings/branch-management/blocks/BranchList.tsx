@@ -5,7 +5,7 @@ import formatDate from "@/lib/utils/date"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import AddBranch from "./AddBranch"
-import { getBranches } from "@/lib/actions/settings"
+import { disableBranch, getBranches } from "@/lib/actions/settings"
 
 interface Branch {
   id: number
@@ -70,12 +70,12 @@ export function BranchList() {
       cell: (row) => (
         <span
           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-            row.status === "1"
+            row.status == "1"
               ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
               : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
           }`}
         >
-          {row.status === "1" ? "Active" : "Inactive"}
+          {row.status == "1" ? "Active" : "Inactive"}
         </span>
       ),
     },
@@ -98,13 +98,20 @@ export function BranchList() {
           <Button variant="ghost" size="sm">
             Edit
           </Button>
-          <Button variant="destructive" size="sm">
-            Delete
+          <Button onClick={() => handleDisableBranch(row.id, row.status == "1" ? -1 : 1)} variant={row.status == "1" ? "destructive" : "default"} size="sm">
+            {row.status == "1" ? "Disable" : "Enable"}
           </Button>
         </div>
       ),
     },
   ]
+
+  const handleDisableBranch = async (id: number, status: number) => {
+    const result = await disableBranch(id, status);
+    if (result.success) {
+      setReload(true);
+    }
+  }
 
   return (
     <div className="space-y-4">

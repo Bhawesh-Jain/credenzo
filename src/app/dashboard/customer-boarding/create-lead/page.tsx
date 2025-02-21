@@ -103,7 +103,7 @@ export default function CreateLead() {
       <div className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-gray-800">
-            Create New Lead
+            Create New LeadCreate New Lead
           </CardTitle>
           <CardDescription>
             Enter the customer&apos;s information to create a new loan lead

@@ -55,8 +55,7 @@ export class BranchRepository extends RepositoryBase {
 
       if (insert) {
         var branchId = 1000 + insert;
-        console.log(branchId, insert);
-        
+
         await this.queryBuilder
           .where('id = ?', insert)
           .update({ branch_id: branchId })
@@ -74,7 +73,6 @@ export class BranchRepository extends RepositoryBase {
     try {
       const result = await this.queryBuilder
         .where('company_id = ?', this.companyId)
-        .where('status = ?', this.companyId)
         .orderBy('branch_id', 'ASC')
         .select(['id', 'name', 'branch_code', 'location', 'pincode', 'status', 'created_on']);
 
@@ -82,6 +80,22 @@ export class BranchRepository extends RepositoryBase {
         return this.success(result);
       } else {
         return this.failure('No branches found');
+      }
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async disableBranch(id: number, userId: string, status: number) {
+    try {
+      const result = await this.queryBuilder
+        .where('id = ?', id)
+        .update({ status: status, updated_by: userId, updated_on: new Date() });
+
+      if (result) {
+        return this.success(result);
+      } else {
+        return this.failure('Failed to disable branch');
       }
     } catch (error) {
       return this.handleError(error);

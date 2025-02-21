@@ -40,4 +40,8 @@ export async function getBranches() {
   return await branchRepository.getBranches();
 }
 
-
+export async function disableBranch(id: number, status: number) {
+  const session = await getSession();
+  const branchRepository = new BranchRepository(session.company_id);
+  return await branchRepository.disableBranch(id, session.user_id, status);
+}
