@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form";
-import { createBranch, createRole, getBranchById } from "@/lib/actions/settings";
+import { editBranch, getBranchById } from "@/lib/actions/settings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -73,7 +73,7 @@ export default function EditBranch({
   async function onSubmit(data: FormValues) {
     setLoading(true);
 
-    const result = await createBranch(data.name, data.branch_code || '', data.pincode || '', data.location || '')
+    const result = await editBranch(branchId, data.name, data.branch_code || '', data.pincode || '', data.location || '')
 
     setLoading(false);
     if (result.success) {
@@ -136,7 +136,7 @@ export default function EditBranch({
               />
 
               <div className="flex justify-end">
-                <Button type="submit">Add Branch</Button>
+                <Button type="submit">Save</Button>
               </div>
             </form>
           </Form>}

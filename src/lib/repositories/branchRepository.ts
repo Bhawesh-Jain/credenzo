@@ -117,4 +117,20 @@ export class BranchRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+
+  async editBranch(id: number, name: string, branch_code: string, pincode: string, location: string, userId: string) {
+    try {
+      const result = await this.queryBuilder
+        .where('id = ?', id)
+        .update({ name: name, branch_code: branch_code, pincode: pincode, location: location, updated_by: userId, updated_on: new Date() });
+
+      if (result) {
+        return this.success(result);
+      } else {
+        return this.failure('Failed to edit branch');
+      }
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 }

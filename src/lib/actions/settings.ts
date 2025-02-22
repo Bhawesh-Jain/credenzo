@@ -53,3 +53,9 @@ export async function getBranchById(id: number) {
 }
 
 
+export async function editBranch(branchId: number, name: string, branch_code: string, pincode: string, location: string) {
+  const session = await getSession();
+  const branchRepository = new BranchRepository(session.company_id);
+  return await branchRepository.editBranch(branchId, name, branch_code, pincode, location, session.user_id);
+}
+
