@@ -86,7 +86,7 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map(item => renderMenuItem(item))}
+        {items && items.length > 0 && items.map(item => renderMenuItem(item))}
       </SidebarMenu>
     </SidebarGroup>
   )

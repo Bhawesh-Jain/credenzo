@@ -3,8 +3,9 @@
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import AddRole from "./AddRole";
+import { Button } from "@/components/ui/button";
 import { Role } from "@/lib/repositories/accessRepository";
+
 
 export default function RoleList({
   roles,
@@ -35,9 +36,8 @@ export default function RoleList({
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-grow max-w-md"
+          className="flex-grow max-w-lg"
         />
-        <AddRole setReload={setReload} />
       </div>
       <ul className="mt-2 text-sm border rounded-lg">
         {filteredRoles.map((role: Role, index: number) => (

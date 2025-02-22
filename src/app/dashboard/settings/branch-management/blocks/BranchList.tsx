@@ -1,6 +1,6 @@
 "use client"
 
-import { DataTable, Column } from "@/components/ui/data-table/data-table"
+import { DataTable, Column } from "@/components/data-table/data-table"
 import formatDate from "@/lib/utils/date"
 import { Button, ButtonTooltip } from "@/components/ui/button"
 import { useEffect, useState } from "react"

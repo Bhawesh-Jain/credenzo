@@ -20,6 +20,7 @@ export interface SessionData {
   user_name: string;
   company_name: string;
   company_id: string;
+  company_abbr: string;
   role: string;
   isLoggedIn: boolean;
 }
@@ -35,6 +36,7 @@ export const defaultSession: SessionData = {
   user_name: '',
   company_name: '',
   company_id: '',
+  company_abbr: '',
   role: '',
   isLoggedIn: false
 }

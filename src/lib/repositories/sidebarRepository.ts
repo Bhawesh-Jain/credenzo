@@ -5,16 +5,18 @@ import { buildTree, PermissionItem } from "../helpers/permission-helper";
 export class SidebarRepository extends RepositoryBase {
   private builder: QueryBuilder;
   private userId: string;
+  private companyId: string;
 
-  constructor(userId: string) {
+  constructor(userId: string, companyId: string) {
     super()
     this.builder = new QueryBuilder('info_modules');
     this.userId = userId;
+    this.companyId = companyId;
   }
 
   async getSidebarData() {
     try {      
-      const userRepo = new UserRepository();
+      const userRepo = new UserRepository(this.companyId);
       const user = await userRepo.getUserById(this.userId)
 
       if (!user.success) {

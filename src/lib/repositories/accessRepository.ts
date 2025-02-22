@@ -2,6 +2,14 @@ import { QueryBuilder } from "../helpers/db-helper";
 import { buildTree, PermissionItem } from "../helpers/permission-helper";
 import { RepositoryBase } from "../helpers/repository-base"
 
+export interface Role {
+  id: string;
+  role_name: string;
+  user_count: number;
+  permissions: string;
+  department: string;
+}
+
 export class AccessRepository extends RepositoryBase {
   private roleBuilder: QueryBuilder;
   private moduleBuilder: QueryBuilder;

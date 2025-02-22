@@ -9,6 +9,22 @@ type LoginResponse = {
   error: string;
 };
 
+export interface User {
+  id: number;
+  employee_code: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  avatar: string;
+  status: number;
+  created_at: Date;
+  updated_at: Date;
+  last_login: Date;
+  company_id: string;
+  branch_id: string;
+}
+
 export class UserAuthRepository extends RepositoryBase {
   private builder: QueryBuilder;
 
@@ -69,7 +85,7 @@ export class UserAuthRepository extends RepositoryBase {
 
       const users = await executeQuery<any[]>(`
         SELECT iu.*, 
-        cm.company_id, cm.company_name 
+        cm.company_id, cm.company_name, cm.abbr
         FROM info_user iu
         LEFT JOIN company_master cm
           ON cm.company_id = iu.company_id
@@ -120,6 +136,7 @@ export class UserAuthRepository extends RepositoryBase {
         user_name: user.name,
         company_name: user.company_name,
         company_id: user.company_id,
+        company_abbr: user.abbr,
         role: user.role,
       }
 
@@ -136,11 +153,13 @@ export class UserAuthRepository extends RepositoryBase {
 
 
 export class UserRepository extends RepositoryBase {
-  private builder: QueryBuilder;
+  private queryBuilder: QueryBuilder;
+  private companyId: string;
 
-  constructor() {
+  constructor(companyId: string) {
     super()
-    this.builder = new QueryBuilder('info_user');
+    this.queryBuilder = new QueryBuilder('info_user');
+    this.companyId = companyId;
   }
 
   async getUserById(
@@ -151,9 +170,10 @@ export class UserRepository extends RepositoryBase {
           SELECT *
           FROM info_user
           WHERE id = ?
+            AND company_id = ?
             AND status > 0
           LIMIT 1
-        `, [userId]);
+        `, [userId, this.companyId]);
 
       if (user && user.length > 0) {
         return this.success(user[0])
@@ -164,4 +184,40 @@ export class UserRepository extends RepositoryBase {
     }
   }
 
+  async getUsersByRoleId(
+    roleId: string
+  ) {
+    try {
+      var users = await this.queryBuilder
+        .where('role = ?', roleId)
+        .where('company_id = ?', this.companyId)
+        .select(['*']);
+
+      if (users && users.length > 0) {
+        return this.success(users);
+      }
+      return this.failure('No users found');
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async disableUser(
+    userId: number,
+    status: number,
+    updatedBy: string
+  ) {
+    try {
+      const result = await this.queryBuilder
+        .where('id = ?', userId)
+        .update({ status: status });
+
+      if (result > 0) {
+        return this.success('User disabled successfully');
+      }
+      return this.failure('User not found');
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 }

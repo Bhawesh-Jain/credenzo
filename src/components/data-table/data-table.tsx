@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ArrowUpDownIcon, ChevronDown, ChevronUp, Settings2, SortAscIcon, SortDescIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Skeleton } from "../skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export interface Column<T> {
   id: string
@@ -77,9 +77,10 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   // Filter and sort data
-  const processedData = useMemo(() => {
-    if (!data) return [];
-    let filtered = [...data]
+  const processedData = useMemo(() => {   
+    if (!data || data.length === 0) return [];
+    try {
+      let filtered = [...data]
 
     // Search filter
     if (searchTerm) {
@@ -112,7 +113,10 @@ export function DataTable<T extends Record<string, any>>({
       })
     }
 
-    return filtered
+      return filtered
+    } catch (error) {
+      return [];
+    }
   }, [data, searchTerm, sortConfig])
 
   // Pagination

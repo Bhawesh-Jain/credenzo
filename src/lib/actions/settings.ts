@@ -2,6 +2,7 @@
 
 import { AccessRepository } from "../repositories/accessRepository";
 import { BranchRepository } from "../repositories/branchRepository";
+import { UserRepository } from "../repositories/userRepository";
 import { getSession } from "../session";
 
 export async function getRoles() {
@@ -52,10 +53,21 @@ export async function getBranchById(id: number) {
   return await branchRepository.getBranchById(id);
 }
 
-
 export async function editBranch(branchId: number, name: string, branch_code: string, pincode: string, location: string) {
   const session = await getSession();
   const branchRepository = new BranchRepository(session.company_id);
   return await branchRepository.editBranch(branchId, name, branch_code, pincode, location, session.user_id);
+}
+
+export async function getUsersByRoleId(roleId: string) {
+  const session = await getSession();
+  const userRepository = new UserRepository(session.company_id);
+  return await userRepository.getUsersByRoleId(roleId);
+}
+
+export async function disableUser(id: number, status: number) {
+  const session = await getSession();
+  const userRepository = new UserRepository(session.company_id);
+  return await userRepository.disableUser(id, status, session.user_id);
 }
 

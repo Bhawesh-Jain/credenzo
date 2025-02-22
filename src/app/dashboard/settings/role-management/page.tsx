@@ -9,19 +9,11 @@ import PermissionTree from "./blocks/PermissionTree";
 import Loading from "../../loading";
 import { useToast } from "@/hooks/use-toast";
 import EmptyList from "@/components/ui/empty-list";
-
-export interface Role {
-  id: string;
-  role_name: string;
-  user_count: number;
-  permissions: string;
-  department: string;
-}
+import { Role } from "@/lib/repositories/accessRepository";
 
 export default function RoleSettings(
 
 ) {
-
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<PermissionItem[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);

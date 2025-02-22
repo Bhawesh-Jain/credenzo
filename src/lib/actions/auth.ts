@@ -11,6 +11,7 @@ export type UserData = {
   user_name: string;
   company_name: string;
   company_id: string;
+  company_abbr: string;
   role: string;
 };
 
