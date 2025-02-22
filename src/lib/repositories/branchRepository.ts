@@ -102,4 +102,19 @@ export class BranchRepository extends RepositoryBase {
     }
   }
 
+  async getBranchById(id: number) {
+    try {
+      const result = await this.queryBuilder
+        .where('id = ?', id)
+        .select(['*']);
+
+      if (result.length > 0) {
+        return this.success(result[0]);
+      } else {
+        return this.failure('Branch not found');
+      }
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 }

@@ -2,10 +2,13 @@
 
 import { DataTable, Column } from "@/components/ui/data-table/data-table"
 import formatDate from "@/lib/utils/date"
-import { Button } from "@/components/ui/button"
+import { Button, ButtonTooltip } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import AddBranch from "./AddBranch"
 import { disableBranch, getBranches } from "@/lib/actions/settings"
+import EditBranch from "./EditBranch"
+import { RotateCcw } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface Branch {
   id: number
@@ -70,11 +73,10 @@ export function BranchList() {
       sortable: true,
       cell: (row) => (
         <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-            row.status == "1"
+          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${row.status == "1"
               ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
               : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
-          }`}
+            }`}
         >
           {row.status == "1" ? "Active" : "Inactive"}
         </span>
@@ -95,10 +97,11 @@ export function BranchList() {
       visible: true,
       align: 'right',
       cell: (row) => (
-        <div className="">
-          <Button onClick={() => handleDisableBranch(row.id, row.status == "1" ? -1 : 1)} variant={row.status == "1" ? "destructive" : "default"} size="sm">
-            {row.status == "1" ? "Disable" : "Enable"}
-          </Button>
+        <div className="flex justify-end">
+          <EditBranch branchId={row.id} setReload={setReload} />
+          <ButtonTooltip title={row.status == "-1" ? "Enable Branch" : "Disable Branch"} onClick={() => handleDisableBranch(row.id, row.status == "1" ? -1 : 1)} variant={"ghost"} size="icon">
+            <RotateCcw className={cn(row.status == "-1" ? "text-green-500" : "text-red-500")} />
+          </ButtonTooltip>
         </div>
       ),
     },
