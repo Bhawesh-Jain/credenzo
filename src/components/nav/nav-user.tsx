@@ -29,6 +29,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Form } from "../ui/form"
+import { Button } from "../ui/button"
+import { logout } from "@/lib/actions/auth"
+import { useRouter } from "next/navigation"
 
 export function NavUser({
   user,
@@ -40,6 +44,13 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter();
+
+  const signOut = async () => {
+    await logout();
+
+    router.push("/login");
+  }
 
   return (
     <SidebarMenu>
@@ -52,7 +63,7 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user?.avatar} alt={user?.name} />
-                <AvatarFallback className="rounded-lg">{user?.name.slice(0,2)}</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{user?.name.slice(0, 2)}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.name}</span>
@@ -71,7 +82,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback className="rounded-lg">{user?.name.slice(0,2)}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{user?.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user?.name}</span>
@@ -103,8 +114,12 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
-              Log out
+              <form onSubmit={signOut}>
+                <button type="submit" className="w-full flex items-center gap-2">
+                  <LogOut size={16} />
+                  Log out
+                </button>
+              </form>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
