@@ -78,6 +78,6 @@ const ButtonTooltip = React.forwardRef<HTMLButtonElement, ButtonProps>(
     )
   }
 )
-Button.displayName = "Button"
+ButtonTooltip.displayName = "ButtonTooltip"
 
 export { Button, buttonVariants, ButtonTooltip }
