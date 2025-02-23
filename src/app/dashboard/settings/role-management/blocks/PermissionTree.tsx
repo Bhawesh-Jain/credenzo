@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PermissionItem } from "@/lib/helpers/permission-helper";
 import { Container } from "@/components/ui/container";
-import { Role } from "./RoleList";
 import { cn } from "@/lib/utils"
 import { SubmitButton } from "@/components/ui/submit-button";
+import { Role } from "@/lib/repositories/accessRepository";
 
 export default function PermissionTree({
   permissions,
