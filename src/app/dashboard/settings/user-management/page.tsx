@@ -31,11 +31,11 @@ export default function UserManagement() {
     <Container>
       {loading
         ? <Loading />
-        : <div className="flex flex-col md:flex-row border rounded-lg ">
-          <div className="md:w-1/3 border-b md:border-r md:border-b-0">
+        : <div className="flex flex-col lg:flex-row border rounded-lg ">
+          <div className="lg:w-1/3 border-b md:border-r md:border-b-0">
             <RoleList setReload={setReload} roles={roles} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
           </div>
-          <div className="md:w-2/3">
+          <div className="lg:w-2/3">
             {selectedRole
               ? <UserList role={selectedRole} />
               : <EmptyList text="No role selected" />}

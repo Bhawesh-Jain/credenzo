@@ -21,7 +21,7 @@ export async function updateRolePermissions(roleId: string, permissions: number[
   const session = await getSession();
   const accessRepository = new AccessRepository(session.company_id);
   return await accessRepository.updateRolePermissions(roleId, permissions);
-} 
+}
 
 export async function createRole(name: string, department: string) {
   const session = await getSession();
@@ -71,3 +71,16 @@ export async function disableUser(id: number, status: number) {
   return await userRepository.disableUser(id, status, session.user_id);
 }
 
+export async function createUser(
+  employee_code: string,
+  name: string,
+  email: string,
+  phone: string,
+  password: string,
+  role: string,
+  branch: string
+) {
+  const session = await getSession();
+  const userRepository = new UserRepository(session.company_id);
+  return await userRepository.createUser(employee_code, name, email, phone, password, role, branch, session.user_id);
+}

@@ -70,7 +70,7 @@ export function NavMain({
           ) : (
             <SidebarMenuSubButton 
               asChild
-              className={isActive ? 'bg-accent text-accent-foreground' : ''}
+              className={isActive ? 'bg-primary text-primary-foreground' : ''}
             >
               <Link href={`${item.url}?h=${item.parent_name.length > 0 ? item.parent_name : item.title}`}>
                 <span>{item.title}</span>

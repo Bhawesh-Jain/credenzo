@@ -220,4 +220,79 @@ export class UserRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+
+  async checkExisting(
+    employee_code: string,
+    email: string,
+    phone: string
+  ) {
+    try {
+      const result = await this.queryBuilder
+        .where('employee_code = ?', employee_code)
+        .where('email = ?', email)
+        .where('phone = ?', phone)
+        .select(['id']);
+
+      if (result && result.length > 0) {
+        return this.success('User already exists');
+      }
+      return this.failure('User not found');
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async createUser(
+    employee_code: string,
+    name: string,
+    email: string,
+    phone: string,
+    password: string,
+    role: string,
+    branch: string,
+    updated_by: string
+  ) {
+    try {
+      const existing = await this.checkExisting(employee_code, email, phone);
+      if (existing.success) {
+        return this.failure(existing.error);
+      }
+
+      const result = await this.queryBuilder
+        .insert({
+          employee_code: employee_code,
+          name: name,
+          email: email,
+          phone: phone,
+          password: password,
+          role: role,
+          branch: branch,
+          company_id: this.companyId,
+          created_by: updated_by,
+          status: 1,
+          updated_at: new Date()
+        });
+
+    await executeQuery<any[]>(`
+        UPDATE info_roles
+        SET user_count = (select count(*) from info_user where role = ? and company_id = ?)
+        WHERE id = ?
+          AND company_id = ?
+      `, [role, this.companyId, role, this.companyId]);
+
+      await executeQuery<any[]>(`
+        UPDATE info_branch
+        SET user_count = (select count(*) from info_user where branch in (?) and company_id = ?)
+        WHERE id = ?
+          AND company_id = ?
+      `, [branch, this.companyId, branch, this.companyId]);
+
+      if (result > 0) {
+        return this.success('User created successfully');
+      }
+      return this.failure('User not created');
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 }

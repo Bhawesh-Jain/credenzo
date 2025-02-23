@@ -22,8 +22,6 @@ export function getUserStatus(status: number) {
 
 
 export function getUserDisplayClass(status: number) {
-  console.log(status);
-  
   let statusClass = "text-muted-foreground";
   switch (status) {
     case 1:

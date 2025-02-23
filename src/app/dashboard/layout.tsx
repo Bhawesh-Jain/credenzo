@@ -28,6 +28,7 @@ export default async function DashboardLayout({
       user_name: session.user_name,
       company_name: session.company_name,
       company_id: session.company_id,
+      company_abbr: session.company_abbr,
       role: session.role,
     }
 

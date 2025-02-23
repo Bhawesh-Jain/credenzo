@@ -30,14 +30,14 @@ const TopBar: React.FC<TopBarProps> = ({ user }) => {
       
       <div className="flex items-center gap-4">
         {/* Help Button */}
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+        <Button variant="outline" size="icon" className="text-muted-foreground hover:text-foreground">
           <HelpCircle className="h-5 w-5" />
         </Button>
 
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
+            <Button variant="outline" size="icon" className="relative text-muted-foreground hover:text-foreground">
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
                 3
@@ -65,7 +65,7 @@ const TopBar: React.FC<TopBarProps> = ({ user }) => {
         </DropdownMenu>
 
         {/* Settings */}
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+        <Button variant="outline" size="icon" className="text-muted-foreground hover:text-foreground">
           <Search className="h-5 w-5" />
         </Button>
       </div>

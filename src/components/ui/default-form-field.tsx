@@ -1,5 +1,6 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./form";
 import { Input } from "./input";
+import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "./select";
 import { Textarea } from "./textarea";
 
 export function DefaultFormTextField({
@@ -58,3 +59,51 @@ export function DefaultFormTextArea({
     />
   )
 };
+
+
+export function DefaultFormSelect({
+  label,
+  name,
+  placeholder,
+  options,
+  form,
+}: {
+  label: string,
+  name: string,
+  options: any[],
+  placeholder: string,
+  form: any,
+}) {
+  return (  
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value}
+              defaultValue={field.value}
+              form={form}
+            > 
+              <SelectTrigger>
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
+};
+

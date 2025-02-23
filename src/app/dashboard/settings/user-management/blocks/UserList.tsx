@@ -9,7 +9,7 @@ import AddUser from "./AddUser";
 import formatDate from "@/lib/utils/date";
 import { getUserDisplayClass, getUserStatus } from "@/lib/utils/user";
 import { cn } from "@/lib/utils";
-import { ButtonTooltip } from "@/components/ui/button";
+import { Button, ButtonTooltip } from "@/components/ui/button";
 import { Lock } from "lucide-react";
 
 export default function UserList({
@@ -20,6 +20,7 @@ export default function UserList({
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [reload, setReload] = useState(true);
+  const [addUser, setAddUser] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -72,7 +73,11 @@ export default function UserList({
       header: "Last Login",
       accessorKey: "last_login",
       cell: (row) => {
-        return formatDate(row.last_login.toString(), 'dd-MM-yyyy hh:mm a');
+        if (row.last_login) {
+          return formatDate(row.last_login.toString(), 'dd-MM-yyyy hh:mm a');
+        } else {
+          return "N/A";
+        }
       },
       visible: true,
       sortable: true,
@@ -108,9 +113,15 @@ export default function UserList({
           <Heading>User List</Heading>
           <Paragraph>List of {role.role_name} users</Paragraph>
         </div>
-        <AddUser setReload={setReload} />
+        {addUser
+          ? <Button variant={"outline"} onClick={() => setAddUser(false)}>Close</Button>
+          : <Button onClick={() => setAddUser(true)}>Add User</Button>
+        }
       </div>
-      <DataTable data={users} columns={columns} loading={loading} setReload={setReload} />
+      {addUser
+        ? <AddUser setReload={setReload} setAddUser={setAddUser} currentRole={role} />
+        : <DataTable data={users} columns={columns} loading={loading} setReload={setReload} />
+      }
     </Container>
   )
 }
