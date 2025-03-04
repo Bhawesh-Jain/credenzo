@@ -23,7 +23,7 @@ const TopBar: React.FC<TopBarProps> = ({ user }) => {
   const heading = headingFromQuery || getHeadingFromPath(pathname);
 
   return (
-    <div className="flex justify-between items-center w-full py-4 px-2 bg-background">
+    <div className="flex justify-between items-center w-full py-4 px-2 bg-background rounded-lg">
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold">{heading}</h1>
       </div>

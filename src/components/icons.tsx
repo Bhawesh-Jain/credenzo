@@ -10,7 +10,9 @@ import {
   CreditCard,
   Target,
   Calendar,
-  Users
+  Users,
+  Briefcase,
+  UserCheck
 } from "lucide-react"
 
 export const Icons = {
@@ -24,6 +26,8 @@ export const Icons = {
   gender: PersonStanding,
   phone: Phone,
   creditCard: CreditCard,
+  userCheck: UserCheck,
+  briefcase: Briefcase,
   target: Target,
   calendar: Calendar
 } 

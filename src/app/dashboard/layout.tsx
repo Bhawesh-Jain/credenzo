@@ -38,7 +38,7 @@ export default async function DashboardLayout({
           <AppSidebar />
           <SidebarInset>
             <App>
-              <header className="flex h-16 shrink-0 sticky top-0 bg-background items-center gap-2">
+              <header className="flex h-16 shrink-0 sticky top-0 bg-background items-center gap-2  rounded-lg">
                 <SidebarTrigger className="ml-2" />
                 <Separator orientation="vertical" className="h-5" />
                 <TopBar user={user} />

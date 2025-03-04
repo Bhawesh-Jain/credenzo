@@ -1,5 +1,8 @@
-export default function CreateProposal () {
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+
+export default function CreateProposal() {
   return (
-    <>CreateProposal</>
+    <div>
+    </div>
   )
 }
