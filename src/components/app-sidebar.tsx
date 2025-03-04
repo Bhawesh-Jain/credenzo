@@ -38,11 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {loading ? (
-          <Loading />
-        ) : (
-          <NavMain items={sidebar.menu} />
-        )}
+        <NavMain items={sidebar?.menu || []} loading={loading} />
       </SidebarContent>
       <SidebarFooter>
         {loading ? (

@@ -17,6 +17,7 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { Skeleton } from "../ui/skeleton"
 
 interface MenuItem {
   title: string
@@ -27,8 +28,10 @@ interface MenuItem {
 
 export function NavMain({
   items,
+  loading
 }: {
-  items: MenuItem[]
+  items: MenuItem[],
+  loading: boolean
 }) {
   const pathname = usePathname()
 
@@ -68,7 +71,7 @@ export function NavMain({
               </CollapsibleContent>
             </>
           ) : (
-            <SidebarMenuSubButton 
+            <SidebarMenuSubButton
               asChild
               className={isActive ? 'bg-primary text-primary-foreground' : ''}
             >
@@ -86,7 +89,16 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items && items.length > 0 && items.map(item => renderMenuItem(item))}
+        {loading
+          ? Array.from({ length: 15 }).map((_, index) => (
+            <SidebarMenuItem className="my-1">
+              {((index + Math.round(Math.random())) % 2) === 0
+                ? <Skeleton className={`h-4 w-3/5`} />
+                : <Skeleton className={`h-4 w-4/5`} />
+              }
+            </SidebarMenuItem>
+          ))
+          : (items && items.length > 0 && items.map(item => renderMenuItem(item)))}
       </SidebarMenu>
     </SidebarGroup>
   )
