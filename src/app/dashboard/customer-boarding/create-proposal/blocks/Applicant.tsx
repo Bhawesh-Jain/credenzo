@@ -76,7 +76,7 @@ const defaultValues: Partial<ProposalFormValues> = {
   notes: "",
 };
 
-export default function CreateProposal() {
+export default function PersonalDetails() {
   const { toast } = useToast()
   const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog()
 
