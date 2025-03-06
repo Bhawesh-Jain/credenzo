@@ -91,7 +91,7 @@ export function NavMain({
       <SidebarMenu>
         {loading
           ? Array.from({ length: 15 }).map((_, index) => (
-            <SidebarMenuItem className="my-1">
+            <SidebarMenuItem key={index} className="my-1">
               {((index + Math.round(Math.random())) % 2) === 0
                 ? <Skeleton className={`h-4 w-3/5`} />
                 : <Skeleton className={`h-4 w-4/5`} />
