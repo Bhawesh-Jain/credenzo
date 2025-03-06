@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useGlobalDialog } from "@/providers/DialogProvider";
 import { Form } from "@/components/ui/form";
@@ -23,6 +23,8 @@ import { SubHeading } from "@/components/text/heading";
 import { twMerge } from "tailwind-merge";
 import IncomeDetails from "./blocks/Income";
 import { zodPatterns } from "@/lib/utils/zod-patterns";
+import { getLoanProductTypes } from "@/lib/actions/loan-product";
+import LoanProductDetails from "./blocks/LoanProduct";
 
 const proposalFormSchema = z.object({
   // Personal Details
@@ -53,25 +55,47 @@ const proposalFormSchema = z.object({
   incomeAmount: z.number(),
   incomeAddress: zodPatterns.addressDef.schema(),
   incomeContact: zodPatterns.phone.schema(),
+
+  // Loan Details
+  productType: z.string(),
+  purpose: z.string().min(2, "Enter at least 5 characters"),
+  loanAmount: z.number()
 });
 
 export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 
-const defaultValues: Partial<ProposalFormValues> = {
+const year18Ago = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
 
+const defaultValues: Partial<ProposalFormValues> = {
+  dob: (`${year18Ago.getFullYear()}-${year18Ago.getMonth()}-${year18Ago.getDay()}`)
 };
 
 export default function createProposal() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [productTypeList, setProductTypeList] = useState([]);
   const { toast } = useToast()
   const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog()
 
   const steps = [
-    { title: "Personal Details", fields: [] },// ['firstName', 'lastName', 'email', 'phone', 'panCard', 'gender', 'dob'] },
-    { title: "Address Details", fields:  [] }, // ['add_line_1', 'add_line_2', 'add_line_3', 'landmark', 'pincode', 'city', 'state'] },
-    { title: "Income Details", fields: [] },
-    { title: "Loan Details", fields: [] }
+    { title: "Personal Details", fields: ['firstName', 'lastName', 'email', 'phone', 'panCard', 'gender', 'dob'] },
+    { title: "Address Details", fields: ['add_line_1', 'add_line_2', 'add_line_3', 'landmark', 'pincode', 'city', 'state'] },
+    { title: "Income Details", fields: ['empType', 'entityName', 'incomeAmount', 'incomeAddress', 'incomeContact',] },
+    { title: "Loan Details", fields: ['productType', 'purpose', 'loanAmount' ] }
   ];
+
+  useEffect(() => {
+    (async () => {
+      let list = await getLoanProductTypes()
+
+      if (list.success) {
+        const formattedData = list.result.map((item: any) => ({
+          label: item.name,
+          value: item.id.toString(),
+        }));
+        setProductTypeList(formattedData);
+      }
+    })();
+  }, []);
 
   const form = useForm<ProposalFormValues>({
     resolver: zodResolver(proposalFormSchema),
@@ -193,6 +217,21 @@ export default function createProposal() {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              {/* Loan Details */}
+              <TabsContent value="3">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      <SubHeading>Income Details</SubHeading>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <LoanProductDetails productTypeList={productTypeList} form={form} />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
 
               {/* Add other TabsContent for remaining steps */}
 
