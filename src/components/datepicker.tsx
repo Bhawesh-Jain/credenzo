@@ -1,12 +1,11 @@
+// DatePicker component
 "use client"
 
 import * as React from "react"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-// import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
@@ -14,7 +13,18 @@ import {
 } from "@/components/ui/popover"
 import { Calendar } from "./ui/calendar"
 
-export function DatePicker({date, onChange} : {date: Date, onChange: VoidFunction}) {
+interface DatePickerProps {
+  date: Date | undefined
+  onChange: (date: Date | undefined) => void
+  minYear?: number
+}
+
+export function DatePicker({ date, onChange, minYear = 0 }: DatePickerProps) {
+  const currentYear = new Date().getFullYear()
+  const yearAgo = currentYear - minYear
+  const maxDate = new Date()
+  maxDate.setFullYear(yearAgo)
+  maxDate.setHours(23, 59, 59, 999) // End of the day
 
   return (
     <Popover>
@@ -22,20 +32,23 @@ export function DatePicker({date, onChange} : {date: Date, onChange: VoidFunctio
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            "justify-start text-left font-normal",
             !date && "text-muted-foreground"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "yyyy-MM-dd") : <span>Pick a date</span>}
+          {date ? format(date, "PPP") : <span>Pick your birth date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-full p-0">
         <Calendar
           mode="single"
           selected={date}
           onSelect={onChange}
           initialFocus
+          fromYear={1900}
+          toDate={maxDate}
+          disabled={(date) => date > maxDate}
         />
       </PopoverContent>
     </Popover>

@@ -75,7 +75,7 @@ export default function PersonalDetails({
         <FormItem className='flex flex-col gap-2'>
           <FormLabel>Date of Birth</FormLabel>
           <FormControl>
-            <DatePicker date={field.value} onChange={field.onChange} />
+            <DatePicker minYear={18} date={field.value} onChange={field.onChange} />
           </FormControl>
           <FormMessage />
         </FormItem>
