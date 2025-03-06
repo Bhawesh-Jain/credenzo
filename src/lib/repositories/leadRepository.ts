@@ -7,7 +7,7 @@ export class LeadRepository extends RepositoryBase {
 
   constructor() {
     super()
-    this.builder = new QueryBuilder('info_leads');
+    this.builder = new QueryBuilder('leads');
   }
 
   async createLead(
