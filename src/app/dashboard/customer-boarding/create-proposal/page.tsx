@@ -25,6 +25,7 @@ import IncomeDetails from "./blocks/Income";
 import { zodPatterns } from "@/lib/utils/zod-patterns";
 import { getLoanProductTypes } from "@/lib/actions/loan-product";
 import LoanProductDetails from "./blocks/LoanProduct";
+import { createProposal } from "@/lib/actions/customer-boarding";
 
 const proposalFormSchema = z.object({
   // Personal Details
@@ -83,7 +84,7 @@ const defaultValues: Partial<ProposalFormValues> = {
   purpose: '',
 };
 
-export default function createProposal() {
+export default function CreateProposal() {
   const [currentStep, setCurrentStep] = useState(0);
   const [productTypeList, setProductTypeList] = useState([]);
   const { toast } = useToast()
@@ -131,18 +132,15 @@ export default function createProposal() {
 
 
   async function onSubmit(data: ProposalFormValues) {
-    console.log('data');
-    console.log(data);
-
-
     showConfirmation(
       'Create Proposal',
       'Are you sure you want to submit this proposal?',
       async () => {
         try {
           setLoading(true)
-          // const result = await createProposal('1', data)
-          const result = { success: true, error: "" };
+
+          const result = await createProposal(data)
+
           setLoading(false)
 
           if (result.success) {
