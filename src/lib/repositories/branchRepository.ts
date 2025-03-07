@@ -8,7 +8,7 @@ export class BranchRepository extends RepositoryBase {
 
   constructor(companyId: string) {
     super();
-    this.queryBuilder = new QueryBuilder('info_branch');
+    this.queryBuilder = new QueryBuilder('branches');
     this.companyId = companyId;
   }
 
