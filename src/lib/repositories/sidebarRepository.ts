@@ -9,7 +9,7 @@ export class SidebarRepository extends RepositoryBase {
 
   constructor(userId: string, companyId: string) {
     super()
-    this.builder = new QueryBuilder('info_modules');
+    this.builder = new QueryBuilder('modules');
     this.userId = userId;
     this.companyId = companyId;
   }
@@ -30,7 +30,7 @@ export class SidebarRepository extends RepositoryBase {
           im.url, 
           im.title, 
           im.menu_order
-        FROM info_modules im
+        FROM modules im
         JOIN roles ir ON FIND_IN_SET(im.id, ir.permissions) > 0
         WHERE ir.id = ?
         ORDER BY 
