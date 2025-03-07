@@ -15,7 +15,7 @@ import { Credenzo } from "./credenzo"
 import { getSidebarData } from "@/lib/actions/sidebar"
 import { redirect } from "next/navigation"
 import { useState, useEffect } from "react"
-import Loading from "@/app/loading"
+import Loading from "@/app/dashboard/loading"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 

@@ -1,6 +1,6 @@
 "use client"
 
-import Loading from "@/app/loading";
+import Loading from "@/app/dashboard/loading";
 import { Container } from "@/components/ui/container";
 import { getRoles } from "@/lib/actions/settings";
 import { Role } from "@/lib/repositories/accessRepository";

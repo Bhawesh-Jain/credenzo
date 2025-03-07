@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import Loading from "@/app/loading";
+import Loading from "@/app/dashboard/loading";
 import { useEffect, useState } from "react";
 import { DefaultFormTextField, DefaultFormTextArea } from "@/components/ui/default-form-field";
 import { Edit } from "lucide-react";
