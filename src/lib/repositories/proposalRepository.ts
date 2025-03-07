@@ -29,6 +29,7 @@ export class ProposalRepository extends RepositoryBase {
         phone: data.phone,
         purpose: data.purpose,
         term: 0,
+        notes: 'Direct proposal'
       }
 
       const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 10)
@@ -55,7 +56,7 @@ export class ProposalRepository extends RepositoryBase {
 
       var propItem = {
         lead_id: leadResult.result,
-        client_id: clientResult.result,
+        client_id: clientResult.result.clientId,
         handler_id: userId,
         status: 5,
         customer_name: `${data.firstName} ${data.lastName}`,
@@ -67,7 +68,7 @@ export class ProposalRepository extends RepositoryBase {
         branch_id: data.branch,
         city: data.city,
         state: data.state,
-        login_data: new Date(),
+        login_date: new Date(),
         updated_on: new Date(),
       }
 

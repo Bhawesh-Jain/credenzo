@@ -165,7 +165,7 @@ export default function CreateProposal() {
 
           if (result.success) {
             showSuccess('Proposal Submitted', 'The proposal has been successfully created.')
-            form.reset()
+            // form.reset()
           } else {
             showError('Error', result.error)
           }
