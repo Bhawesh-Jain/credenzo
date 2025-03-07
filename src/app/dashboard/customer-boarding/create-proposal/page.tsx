@@ -36,7 +36,7 @@ const proposalFormSchema = z.object({
   gender: z.enum(["Male", "Female", "Other"], {
     required_error: "Please select gender",
   }),
-  dob: z.string().min(3, "Please enter Date of Birth"),
+  dob: z.date(),
 
   // Address Details
   add_line_1: zodPatterns.addressDef.schema(),
@@ -52,14 +52,14 @@ const proposalFormSchema = z.object({
     required_error: "Please select employment type",
   }),
   entityName: z.string(),
-  incomeAmount: z.string(),
+  incomeAmount: zodPatterns.numberString.schema(),
   incomeAddress: zodPatterns.addressDef.schema(),
   incomeContact: zodPatterns.phone.schema(),
 
   // Loan Details
   productType: z.string(),
   purpose: z.string().min(2, "Enter at least 5 characters"),
-  loanAmount: z.string()
+  loanAmount: z.coerce.number().min(1000, "Enter a valid loan amount!")
 });
 
 export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
@@ -67,7 +67,20 @@ export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 const year18Ago = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
 
 const defaultValues: Partial<ProposalFormValues> = {
-  dob: (`${year18Ago.getFullYear()}-${year18Ago.getMonth()}-${year18Ago.getDay()}`)
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  panCard: '',
+  add_line_1: '',
+  landmark: '',
+  pincode: '',
+  state: '',
+  entityName: '',
+  incomeAddress: '',
+  incomeContact: '',
+  productType: '',
+  purpose: '',
 };
 
 export default function createProposal() {
@@ -80,7 +93,7 @@ export default function createProposal() {
     { title: "Personal Details", fields: ['firstName', 'lastName', 'email', 'phone', 'panCard', 'gender', 'dob'] },
     { title: "Address Details", fields: ['add_line_1', 'add_line_2', 'add_line_3', 'landmark', 'pincode', 'city', 'state'] },
     { title: "Income Details", fields: ['empType', 'entityName', 'incomeAmount', 'incomeAddress', 'incomeContact',] },
-    { title: "Loan Details", fields: ['productType', 'purpose', 'loanAmount' ] }
+    { title: "Loan Details", fields: ['productType', 'purpose', 'loanAmount'] }
   ];
 
   useEffect(() => {
@@ -118,6 +131,10 @@ export default function createProposal() {
 
 
   async function onSubmit(data: ProposalFormValues) {
+    console.log('data');
+    console.log(data);
+
+
     showConfirmation(
       'Create Proposal',
       'Are you sure you want to submit this proposal?',
@@ -246,16 +263,16 @@ export default function createProposal() {
                   </Button>
                 )}
 
-                {currentStep < steps.length - 1 ? (
+                {currentStep < steps.length - 1 && (
                   <Button
                     type="button"
                     onClick={handleNext}
                   >
                     Next
                   </Button>
-                ) : (
-                  <Button type="submit">Submit Proposal</Button>
                 )}
+
+                {currentStep == steps.length - 1 && <Button type="submit">Submit Proposal</Button>}
               </div>
             </form>
           </Form>

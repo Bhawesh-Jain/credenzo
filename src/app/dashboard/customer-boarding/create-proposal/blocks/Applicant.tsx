@@ -1,5 +1,5 @@
 
-import { DatePicker } from '@/components/datepicker';
+import DatePicker from '@/components/date-picker';
 import { DefaultFormTextField } from '@/components/ui/default-form-field';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SelectContent, SelectItem, SelectTrigger, SelectValue, Select } from '@/components/ui/select';
@@ -43,6 +43,7 @@ export default function PersonalDetails({
       <DefaultFormTextField
         form={form}
         label='PAN'
+        uppercase
         name='panCard'
         placeholder=''
       />
@@ -70,15 +71,23 @@ export default function PersonalDetails({
         )}
       />
 
-      <FormField control={form.control} name="dob" render={({ field }) => (
-        <FormItem className='flex flex-col gap-2'>
-          <FormLabel>Date of Birth</FormLabel>
-          <FormControl>
-            <DatePicker minYear={18} date={field.value} onChange={field.onChange} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )} />
+      <FormField
+        control={form.control}
+        name="dob"
+        render={({ field }) => (
+          <FormItem className="flex flex-col">
+            <FormLabel>Date of Birth</FormLabel>
+            <FormControl>
+              <DatePicker
+                date={field.value}
+                subYear={18}
+                onChange={(date) => field.onChange(date)}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

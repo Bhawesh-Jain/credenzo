@@ -43,7 +43,7 @@ export default function IncomeDetails({ form }: { form: any }) {
 
       <DefaultFormTextField
         form={form}
-        label={`Income ${type}`}
+        label={`Income`}
         name='incomeAmount'
         placeholder=''
       />

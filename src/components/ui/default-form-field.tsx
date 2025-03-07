@@ -7,11 +7,15 @@ export function DefaultFormTextField({
   label,
   name,
   placeholder,
+  uppercase = false,  
+  capitalize = true,  
   form
 }: {
   label: string,
   name: string,
   placeholder: string,
+  uppercase?: boolean,
+  capitalize?: boolean,
   form: any
 }) {
   return (
@@ -22,14 +26,28 @@ export function DefaultFormTextField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input placeholder={placeholder} {...field} />
+            <Input 
+              placeholder={placeholder}
+              {...field}
+              value={field.value || ''}
+              onChange={(e) => {
+                const value = uppercase 
+                  ? e.target.value.toUpperCase()
+                  : e.target.value;
+                field.onChange(value);
+              }}
+              autoCapitalize={capitalize ? "sentences" : "off"}
+              onInput={uppercase ? (e) => {
+                e.currentTarget.value = e.currentTarget.value.toUpperCase()
+              } : undefined}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
       )}
     />
   )
-};
+}
 
 
 export function DefaultFormTextArea({

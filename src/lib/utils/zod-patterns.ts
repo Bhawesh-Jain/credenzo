@@ -12,6 +12,11 @@ import { z } from "zod";
  * - addressDef: 5-Character Address String
  */
 export const zodPatterns = {
+  number: {
+    message: "Please enter a valid number",
+    schema: () => z.string()
+    
+  },
   phone: {
     regex: /^[6-9]\d{9}$/,
     message: "Please enter a valid Indian mobile number",
@@ -21,12 +26,16 @@ export const zodPatterns = {
       .regex(/^[6-9]\d{9}$/, "Please enter a valid Indian mobile number")
   },
   pan: {
-    regex: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+    regex: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i,
     message: "Invalid PAN Card format",
     schema: () => z.string()
-      .length(10, "PAN Card number must be 10 characters")
-      .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN Card format")
-      .transform(s => s.toUpperCase())
+      .trim()  // First remove whitespace
+      .length(10)
+      .regex(/^[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}$/, "Invalid PAN format") // Explicit mixed case
+      .transform(val => val.toUpperCase()) // Convert to uppercase AFTER validation
+      .pipe(  // Add final validation for uppercase format
+        z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/)
+      )
   },
   pincode: {
     regex: /^\d{6}$/,
@@ -55,5 +64,8 @@ export const zodPatterns = {
   },
   addressDef: {
     schema: () => z.string().min(5, "Address must be at least 5 characters")
-  }
+  },
+  numberString: {
+    schema: () => z.coerce.number()
+  },
 } as const;

@@ -123,3 +123,16 @@
 .sidebar-menu-sub-button[data-active="true"] {
   @apply bg-accent text-accent-foreground;
 }
+
+.react-calendar {
+  @apply rounded-md border bg-background text-foreground;
+}
+
+.react-calendar__tile--now {
+  @apply bg-accent text-accent-foreground;
+}
+
+.react-calendar__tile--active:enabled,
+.react-calendar__tile--active:enabled:hover {
+  @apply bg-primary text-primary-foreground;
+}
