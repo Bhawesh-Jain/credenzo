@@ -3,7 +3,8 @@ import { useFormContext } from 'react-hook-form';
 import { DefaultFormSelect, DefaultFormTextField } from '@/components/ui/default-form-field';
 
 
-export default function LoanProductDetails({ form, productTypeList }: { form: any, productTypeList: any[] }) {
+export default function LoanProductDetails({ form, productTypeList, branchList }: { form: any, productTypeList: any[], branchList: any[] }) {
+
 
   return (
     <div className='grid grid-cols-2 gap-5'>
@@ -30,6 +31,17 @@ export default function LoanProductDetails({ form, productTypeList }: { form: an
         name='loanAmount'
         placeholder=''
       />
+
+      <div className='col-span-2'>
+        <DefaultFormSelect
+          form={form}
+          label='Associated Branch'
+          name='branch'
+          options={branchList}
+          placeholder='Select Associated Branch'
+        />
+      </div>
+
 
     </div>
   );

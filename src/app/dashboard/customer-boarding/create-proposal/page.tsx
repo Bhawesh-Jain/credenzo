@@ -26,6 +26,8 @@ import { zodPatterns } from "@/lib/utils/zod-patterns";
 import { getLoanProductTypes } from "@/lib/actions/loan-product";
 import LoanProductDetails from "./blocks/LoanProduct";
 import { createProposal } from "@/lib/actions/customer-boarding";
+import { getBranchListById } from "@/lib/actions/branch";
+import Loading from "../../loading";
 
 const proposalFormSchema = z.object({
   // Personal Details
@@ -60,7 +62,8 @@ const proposalFormSchema = z.object({
   // Loan Details
   productType: z.string(),
   purpose: z.string().min(2, "Enter at least 5 characters"),
-  loanAmount: z.coerce.number().min(1000, "Enter a valid loan amount!")
+  loanAmount: z.coerce.number().min(1000, "Enter a valid loan amount!"),
+  branch: z.string().min(1, "You have to add the Branch!")
 });
 
 export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
@@ -87,6 +90,8 @@ const defaultValues: Partial<ProposalFormValues> = {
 export default function CreateProposal() {
   const [currentStep, setCurrentStep] = useState(0);
   const [productTypeList, setProductTypeList] = useState([]);
+  const [branchList, setBranchList] = useState([]);
+  const [listLoading, setListLoading] = useState(false);
   const { toast } = useToast()
   const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog()
 
@@ -99,7 +104,22 @@ export default function CreateProposal() {
 
   useEffect(() => {
     (async () => {
+      setListLoading(true);
+
       let list = await getLoanProductTypes()
+      let branchListData = await getBranchListById()
+
+      setListLoading(false);
+
+      if (branchListData.success) {
+        const formattedBranches = branchListData.result.map((branch: any) => ({
+          label: branch.name,
+          value: branch.id.toString(),
+        }));
+
+        setBranchList(formattedBranches)
+      }
+
 
       if (list.success) {
         const formattedData = list.result.map((item: any) => ({
@@ -242,7 +262,9 @@ export default function CreateProposal() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <LoanProductDetails productTypeList={productTypeList} form={form} />
+                    {listLoading 
+                    ? <Loading />
+                    : <LoanProductDetails branchList={branchList} productTypeList={productTypeList} form={form} />}
                   </CardContent>
                 </Card>
               </TabsContent>

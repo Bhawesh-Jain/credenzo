@@ -56,12 +56,6 @@ export class BranchRepository extends RepositoryBase {
       })
 
       if (insert) {
-        var branchId = 1000 + insert;
-
-        await this.queryBuilder
-          .where('id = ?', insert)
-          .update({ branch_id: branchId })
-
         return this.success(insert);
       } else {
         return this.failure('Failed to create branch');
@@ -103,6 +97,27 @@ export class BranchRepository extends RepositoryBase {
         .where('company_id = ?', this.companyId)
         .orderBy('branch_id', 'ASC')
         .select(['id', 'name', 'branch_code', 'location', 'pincode', 'status', 'created_on']);
+
+      if (result.length > 0) {
+        return this.success(result);
+      } else {
+        return this.failure('No branches found');
+      }
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async getBranchListById(userId: string) {
+    try {
+      var sql = `
+        SELECT b.id, b.name, b.branch_code
+        FROM user_branches ub
+        LEFT JOIN branches b
+          ON b.id = ub.branch_id
+        WHERE ub.user_id = ?
+      `
+      const result = await executeQuery(sql, [userId]) as any[];
 
       if (result.length > 0) {
         return this.success(result);
