@@ -30,7 +30,7 @@ export class UserAuthRepository extends RepositoryBase {
 
   constructor() {
     super()
-    this.builder = new QueryBuilder('info_user');
+    this.builder = new QueryBuilder('users');
   }
 
   private async validatePassword(
@@ -86,7 +86,7 @@ export class UserAuthRepository extends RepositoryBase {
       const users = await executeQuery<any[]>(`
         SELECT iu.*, 
         cm.company_id, cm.company_name, cm.abbr
-        FROM info_user iu
+        FROM users iu
         LEFT JOIN company_master cm
           ON cm.company_id = iu.company_id
           AND cm.is_active = 1
@@ -158,7 +158,7 @@ export class UserRepository extends RepositoryBase {
 
   constructor(companyId: string) {
     super()
-    this.queryBuilder = new QueryBuilder('info_user');
+    this.queryBuilder = new QueryBuilder('users');
     this.companyId = companyId;
   }
 
@@ -168,7 +168,7 @@ export class UserRepository extends RepositoryBase {
     try {
       var user = await executeQuery<any[]>(`
           SELECT *
-          FROM info_user
+          FROM users
           WHERE id = ?
             AND company_id = ?
             AND status > 0
@@ -275,14 +275,14 @@ export class UserRepository extends RepositoryBase {
 
     await executeQuery<any[]>(`
         UPDATE info_roles
-        SET user_count = (select count(*) from info_user where role = ? and company_id = ?)
+        SET user_count = (select count(*) from users where role = ? and company_id = ?)
         WHERE id = ?
           AND company_id = ?
       `, [role, this.companyId, role, this.companyId]);
 
       await executeQuery<any[]>(`
         UPDATE info_branch
-        SET user_count = (select count(*) from info_user where branch in (?) and company_id = ?)
+        SET user_count = (select count(*) from users where branch in (?) and company_id = ?)
         WHERE id = ?
           AND company_id = ?
       `, [branch, this.companyId, branch, this.companyId]);
