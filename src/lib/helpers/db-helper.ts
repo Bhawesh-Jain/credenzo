@@ -131,7 +131,29 @@ export class QueryBuilder {
       ${this.conditions.length ? `WHERE ${this.conditions.join(' AND ')}` : ''}
     `;
 
+    
+
     const result = await executeQuery<any>(query, [...values, ...this.parameters]);
+    console.log(query, [...values, ...this.parameters]);
     return result.affectedRows;
+  }
+
+  async count(column: string = '*'): Promise<number> {
+    if (column !== '*') {
+      column = `\`${column}\``;
+    }
+
+    let query = `SELECT COUNT(${column}) AS count FROM ${this.table}`;
+
+    if (this.conditions.length) {
+      query += ` WHERE ${this.conditions.join(' AND ')}`;
+    }
+
+    const result = await executeQuery<{ count: number }[]>(
+      query,
+      this.parameters
+    );
+    
+    return result[0]?.count || 0;
   }
 }

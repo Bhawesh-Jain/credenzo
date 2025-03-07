@@ -1,5 +1,6 @@
 'use server'
 
+import { UserFormValues } from "@/app/dashboard/settings/user-management/blocks/AddUser";
 import { AccessRepository } from "../repositories/accessRepository";
 import { BranchRepository } from "../repositories/branchRepository";
 import { UserRepository } from "../repositories/userRepository";
@@ -71,16 +72,9 @@ export async function disableUser(id: number, status: number) {
   return await userRepository.disableUser(id, status, session.user_id);
 }
 
-export async function createUser(
-  employee_code: string,
-  name: string,
-  email: string,
-  phone: string,
-  password: string,
-  role: string,
-  branch: string
-) {
+export async function createUser(data: UserFormValues) {
+
   const session = await getSession();
   const userRepository = new UserRepository(session.company_id);
-  return await userRepository.createUser(employee_code, name, email, phone, password, role, branch, session.user_id);
+  return await userRepository.createUser(data, session.user_id);
 }

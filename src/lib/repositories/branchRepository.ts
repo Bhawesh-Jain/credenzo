@@ -4,15 +4,17 @@ import { RepositoryBase } from "../helpers/repository-base";
 
 export class BranchRepository extends RepositoryBase {
   private queryBuilder: QueryBuilder;
+  private userBranchBuilder: QueryBuilder;
   private companyId: string;
 
   constructor(companyId: string) {
     super();
     this.queryBuilder = new QueryBuilder('branches');
+    this.userBranchBuilder = new QueryBuilder('user_branches');
     this.companyId = companyId;
   }
 
-  async generateUniqueBranchId() {
+  private async generateUniqueBranchId() {
     const query = await executeQuery<any[]>(`
       SELECT abbr
       FROM company_master
@@ -66,6 +68,32 @@ export class BranchRepository extends RepositoryBase {
       }
     } catch (error) {
       return this.handleError(error);
+    }
+  }
+
+  async addUserBranch(
+    userId: string,
+    branchId: string
+  ) {
+    try {
+      const result = await this.userBranchBuilder.insert({user_id: userId, branch_id: branchId})
+      let newCount = await new QueryBuilder('user_branches').where('branch_id = ?', branchId).count()
+
+      
+      const res = await this.queryBuilder
+      .where('id = ?', branchId)
+      .update({
+        user_count: newCount
+      })
+
+      if (result > 0) {        
+        return this.success(result)
+      }
+
+      return this.failure('Branch Assign Failed!')
+
+    } catch (error) {
+      return this.handleError(error)
     }
   }
 

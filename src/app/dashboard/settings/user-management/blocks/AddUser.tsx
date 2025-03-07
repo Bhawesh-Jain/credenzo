@@ -20,14 +20,14 @@ import { Card, CardContent, CardDescription, CardTitle, CardHeader } from "@/com
 const formScheme = z.object({
   employee_code: z.string().min(2, "Add an employee code").max(255, "Employee code must be less than 255 characters"),
   name: z.string().min(2, "Add a name").max(255, "Name must be less than 255 characters"),
-  email: z.string().email("Please enter a valid email address").max(255, "Email must be less than 255 characters").optional(),
-  phone: z.string().min(10, "Please enter a valid phone number").max(14, "Phone number must be less than 14 characters").optional(),
+  email: z.string().email().max(255, "Email must be less than 255 characters").optional(),
+  phone: z.string().max(14, "Phone number must be less than 14 characters").optional(),
   password: z.string().min(4, "Password must be at least 4 characters long"),
   role: z.string().min(1, "Please select a role"),
   branch: z.string().min(1, "Branch must be selected"),
 });
 
-export type FormValues = z.infer<typeof formScheme>;
+export type UserFormValues = z.infer<typeof formScheme>;
 
 export default function AddUser({
   setReload,
@@ -41,7 +41,6 @@ export default function AddUser({
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
   const [branches, setBranches] = useState<{ label: string; value: string }[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<string[]>([]);
 
   const { toast } = useToast();
   const { user } = useUser();
@@ -76,7 +75,7 @@ export default function AddUser({
       }
     })();
   }, [toast]);
-  const defaultValues: Partial<FormValues> = {
+  const defaultValues: Partial<UserFormValues> = {
     employee_code: `${user.company_abbr}-`,
     name: "",
     email: "",
@@ -86,16 +85,16 @@ export default function AddUser({
     branch: ""
   };
 
-  const form = useForm<FormValues>({
+  const form = useForm<UserFormValues>({
     resolver: zodResolver(formScheme),
     defaultValues,
   });
 
-  async function onSubmit(data: FormValues) {
-    console.log(data);
+  async function onSubmit(data: UserFormValues) {
+
     setLoading(true);
     try {
-      const result = await createUser(data.employee_code, data.name, data.email || "", data.phone || "", data.password, data.role, data.branch);
+      const result = await createUser(data);
       if (result.success) {
         toast({
           title: "Success",
@@ -188,9 +187,7 @@ export default function AddUser({
                         name={field.name}
                         options={branches}
                         onValueChange={(value) => {
-                          console.log(value);
                           field.onChange(value.toString());
-                          setSelectedBranch(value);
                         }}
                         modalPopover={true}
                         placeholder="Select branch"

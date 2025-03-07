@@ -2,6 +2,8 @@ import { UserData } from "../actions/auth";
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import bcrypt from 'bcryptjs';
 import { RepositoryBase } from "../helpers/repository-base";
+import { UserFormValues } from "@/app/dashboard/settings/user-management/blocks/AddUser";
+import { BranchRepository } from "./branchRepository";
 
 type LoginResponse = {
   success: boolean;
@@ -221,7 +223,7 @@ export class UserRepository extends RepositoryBase {
     }
   }
 
-  async checkExisting(
+  private async checkExisting(
     employee_code: string,
     email: string,
     phone: string
@@ -243,51 +245,47 @@ export class UserRepository extends RepositoryBase {
   }
 
   async createUser(
-    employee_code: string,
-    name: string,
-    email: string,
-    phone: string,
-    password: string,
-    role: string,
-    branch: string,
+    data: UserFormValues,
     updated_by: string
   ) {
     try {
-      const existing = await this.checkExisting(employee_code, email, phone);
+      const existing = await this.checkExisting(data.employee_code, data.email || '', data.phone || '');
       if (existing.success) {
         return this.failure(existing.error);
       }
 
+      var branches = data.branch.split(',')
+
       const result = await this.queryBuilder
         .insert({
-          employee_code: employee_code,
-          name: name,
-          email: email,
-          phone: phone,
-          password: password,
-          role: role,
-          branch: branch,
+          employee_code: data.employee_code,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          password: data.password,
+          role: data.role,
           company_id: this.companyId,
           created_by: updated_by,
           status: 1,
           updated_at: new Date()
         });
 
-    await executeQuery<any[]>(`
-        UPDATE roles
-        SET user_count = (select count(*) from users where role = ? and company_id = ?)
-        WHERE id = ?
-          AND company_id = ?
-      `, [role, this.companyId, role, this.companyId]);
-
-      await executeQuery<any[]>(`
-        UPDATE branches
-        SET user_count = (select count(*) from users where branch in (?) and company_id = ?)
-        WHERE id = ?
-          AND company_id = ?
-      `, [branch, this.companyId, branch, this.companyId]);
-
       if (result > 0) {
+
+        for (let i = 0; i < branches.length; i++) {
+          const element = branches[i];
+          
+          const branchRepository = new BranchRepository(this.companyId);
+          await branchRepository.addUserBranch(String(result), element);
+        }
+
+        await executeQuery<any[]>(`
+          UPDATE roles
+          SET user_count = (select count(*) from users where role = ? and company_id = ?)
+          WHERE id = ?
+            AND company_id = ?
+        `, [data.role, this.companyId, data.role, this.companyId]);
+
         return this.success('User created successfully');
       }
       return this.failure('User not created');
