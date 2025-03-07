@@ -17,7 +17,7 @@ export class AccessRepository extends RepositoryBase {
 
   constructor(companyId: string) {
     super()
-    this.roleBuilder = new QueryBuilder('info_roles');
+    this.roleBuilder = new QueryBuilder('roles');
     this.moduleBuilder = new QueryBuilder('info_modules');
     this.companyId = companyId;
   }

@@ -274,7 +274,7 @@ export class UserRepository extends RepositoryBase {
         });
 
     await executeQuery<any[]>(`
-        UPDATE info_roles
+        UPDATE roles
         SET user_count = (select count(*) from users where role = ? and company_id = ?)
         WHERE id = ?
           AND company_id = ?
