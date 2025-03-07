@@ -5,7 +5,7 @@ export interface Client {
   id: number
   client_id: string
   lead_id: string
-  loan_id: string
+  prop_id: string
   lan: string
   first_name: string
   middle_name: string

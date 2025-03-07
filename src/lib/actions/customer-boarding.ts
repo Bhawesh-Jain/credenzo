@@ -7,8 +7,9 @@ import { ProposalRepository } from "../repositories/proposalRepository";
 import { getSession } from "../session";
 
 export async function createLead(userId: string, data: LeadFormValues) {
+  const session = await getSession();
   
-  const leadRepository = new LeadRepository();
+  const leadRepository = new LeadRepository(session.company_id);
   const result = await leadRepository.createLead(userId, data);
 
   return result;

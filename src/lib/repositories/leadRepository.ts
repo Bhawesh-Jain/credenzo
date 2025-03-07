@@ -4,15 +4,18 @@ import { RepositoryBase } from "../helpers/repository-base";
 
 export class LeadRepository extends RepositoryBase {
   private builder: QueryBuilder;
+  private companyId: string;
 
-  constructor() {
+  constructor(companyId: string) {
     super()
     this.builder = new QueryBuilder('leads');
+    this.companyId = companyId;
   }
 
   async createLead(
     userId: string,
-    leadData: LeadFormValues
+    leadData: LeadFormValues,
+    status?: number
   ) {
     try {
       const lead = {
@@ -26,10 +29,10 @@ export class LeadRepository extends RepositoryBase {
         loan_purpose: leadData.purpose,
         term: leadData.term,
         remark: leadData.notes,
-        status: 1,
+        status: status || 1,
+        company_id: this.companyId,
         updated_on: new Date(),
       }
-
 
       const result = await this.builder.insert(lead);
 
