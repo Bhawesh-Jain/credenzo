@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container";
 import { cn } from "@/lib/utils"
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Role } from "@/lib/repositories/accessRepository";
+import { Button } from "@/components/ui/button";
 
 export default function PermissionTree({
   permissions,
@@ -17,8 +18,8 @@ export default function PermissionTree({
   selectedRole: Role,
   handleSaveChanges: (updatedPermissions: PermissionItem[], e: React.FormEvent<HTMLFormElement>) => void
 }) {
-
   const rolePermissions = selectedRole.permissions.split(',').map(id => parseInt(id));
+  const [updatedPermissions, setUpdatedPermissions] = useState<PermissionItem[]>([]);
 
   const initializePermissions = (perms: PermissionItem[]): PermissionItem[] => {
     return perms.map((perm) => ({
@@ -28,8 +29,6 @@ export default function PermissionTree({
     }));
   };
 
-  const [updatedPermissions, setUpdatedPermissions] = useState<PermissionItem[]>([]);
-
   useEffect(() => {
     setUpdatedPermissions(initializePermissions(permissions));
   }, [permissions, selectedRole]);
@@ -38,17 +37,43 @@ export default function PermissionTree({
     const updatePermission = (perms: PermissionItem[]): PermissionItem[] => {
       return perms.map((perm) => {
         if (perm.id === id) {
-          const updatedPerm = { ...perm, checked };
-          return updatedPerm;
+          return { ...perm, checked };
         }
-        if (perm.items) {
-          return { ...perm, items: updatePermission(perm.items) };
-        }
-        return perm;
+        return {
+          ...perm,
+          items: perm.items ? updatePermission(perm.items) : undefined
+        };
       });
     };
 
-    setUpdatedPermissions(updatePermission(updatedPermissions));
+    setUpdatedPermissions(prev => updatePermission(prev));
+  };
+
+  const handleSelectAllChildren = (parentId: number) => {
+    const updatePermissions = (perms: PermissionItem[]): PermissionItem[] => {
+      return perms.map(perm => {
+        if (perm.id === parentId) {
+          var newC = !perm.checked
+          const updateChildren = (items: PermissionItem[]): PermissionItem[] => 
+            items.map(item => ({
+              ...item,
+              checked: newC,
+              items: item.items ? updateChildren(item.items) : undefined
+            }));
+          return {
+            ...perm,
+            checked: newC,
+            items: perm.items ? updateChildren(perm.items) : undefined
+          };
+        }
+        return {
+          ...perm,
+          items: perm.items ? updatePermissions(perm.items) : undefined
+        };
+      });
+    };
+
+    setUpdatedPermissions(prev => updatePermissions(prev));
   };
 
   const renderPermissions = (perms: PermissionItem[], level = 0) => {
@@ -69,22 +94,35 @@ export default function PermissionTree({
             </div>
           )}
 
-          <div className={cn(
-            "relative flex items-center gap-2 rounded-lg border border-transparent p-2",
-            "hover:bg-accent/50 hover:border-accent",
-            "transition-colors duration-200"
-          )}>
-            <Checkbox
-              id={perm.id.toString()}
-              checked={perm.checked}
-              onCheckedChange={(checked) => handleCheckboxChange(perm.id, checked === true)}
-              className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-            />
-            <label
-              htmlFor={perm.id.toString()}
-              className="flex-1 cursor-pointer text-sm">
-              {perm.title}
-            </label>
+          <div className="flex justify-between">
+            <div className={cn(
+              "relative flex items-center gap-2 rounded-lg border border-transparent p-2",
+              "hover:bg-accent/50 hover:border-accent",
+              "transition-colors duration-200"
+            )}>
+              <Checkbox
+                id={perm.id.toString()}
+                checked={perm.checked}
+                onCheckedChange={(checked) => handleCheckboxChange(perm.id, checked === true)}
+                className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+              />
+              <label
+                htmlFor={perm.id.toString()}
+                className="flex-1 cursor-pointer text-sm">
+                {perm.title}
+              </label>
+            </div>
+
+            {hasChildren && (
+              <Button 
+                size='sm' 
+                variant='outline' 
+                type="button" 
+                onClick={() => handleSelectAllChildren(perm.id)}
+              >
+                All
+              </Button>
+            )}
           </div>
 
           {hasChildren && (
@@ -113,4 +151,3 @@ export default function PermissionTree({
     </Container>
   );
 }
-
