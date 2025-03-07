@@ -54,6 +54,6 @@ export const zodPatterns = {
     schema: () => z.string().length(11, "Must be 11 characters")
   },
   addressDef: {
-    schema: () => z.string().length(5, "Address must be at least 5 characters")
+    schema: () => z.string().min(5, "Address must be at least 5 characters")
   }
 } as const;

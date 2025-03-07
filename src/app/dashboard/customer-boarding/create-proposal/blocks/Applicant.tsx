@@ -2,7 +2,6 @@
 import { DatePicker } from '@/components/datepicker';
 import { DefaultFormTextField } from '@/components/ui/default-form-field';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { FormLabelWithIcon } from '@/components/ui/form-label-with-icon';
 import { SelectContent, SelectItem, SelectTrigger, SelectValue, Select } from '@/components/ui/select';
 
 export default function PersonalDetails({

@@ -36,7 +36,7 @@ const proposalFormSchema = z.object({
   gender: z.enum(["Male", "Female", "Other"], {
     required_error: "Please select gender",
   }),
-  dob: z.string().date("Please enter Date of Birth"),
+  dob: z.string().min(3, "Please enter Date of Birth"),
 
   // Address Details
   add_line_1: zodPatterns.addressDef.schema(),
@@ -52,14 +52,14 @@ const proposalFormSchema = z.object({
     required_error: "Please select employment type",
   }),
   entityName: z.string(),
-  incomeAmount: z.number(),
+  incomeAmount: z.string(),
   incomeAddress: zodPatterns.addressDef.schema(),
   incomeContact: zodPatterns.phone.schema(),
 
   // Loan Details
   productType: z.string(),
   purpose: z.string().min(2, "Enter at least 5 characters"),
-  loanAmount: z.number()
+  loanAmount: z.string()
 });
 
 export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
@@ -223,7 +223,7 @@ export default function createProposal() {
                 <Card>
                   <CardHeader>
                     <CardTitle>
-                      <SubHeading>Income Details</SubHeading>
+                      <SubHeading>Loan Details</SubHeading>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

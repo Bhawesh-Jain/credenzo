@@ -37,8 +37,8 @@ export default function IncomeDetails({ form }: { form: any }) {
       <DefaultFormTextField
         form={form}
         label={`Name ${type}`}
-        name='incomeName'
-        placeholder={`Enter Address ${type}`}
+        name='entityName'
+        placeholder={`Enter Name ${type}`}
       />
 
       <DefaultFormTextField
