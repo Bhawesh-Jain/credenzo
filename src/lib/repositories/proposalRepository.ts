@@ -8,7 +8,7 @@ export class ProposalRepository extends RepositoryBase {
 
   constructor(companyId: string) {
     super()
-    this.builder = new QueryBuilder('loan');
+    this.builder = new QueryBuilder('proposals');
     this.companyId = companyId;
   }
 
