@@ -1,7 +1,7 @@
 import { LeadFormValues } from "@/app/dashboard/customer-boarding/create-lead/page";
 import { QueryBuilder } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
-
+import mysql from "mysql2/promise"
 export class LeadRepository extends RepositoryBase {
   private builder: QueryBuilder;
   private companyId: string;
@@ -15,7 +15,8 @@ export class LeadRepository extends RepositoryBase {
   async createLead(
     userId: string,
     leadData: LeadFormValues,
-    status?: number
+    status?: number,
+    transactionConnection?: mysql.Connection
   ) {
     try {
       const lead = {
@@ -34,7 +35,9 @@ export class LeadRepository extends RepositoryBase {
         updated_on: new Date(),
       }
 
-      const result = await this.builder.insert(lead);
+      const result = await this.builder
+        .setConnection(transactionConnection)
+        .insert(lead);
 
       return this.success(result);
     } catch (error) {

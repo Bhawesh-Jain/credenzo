@@ -19,7 +19,7 @@ export async function createProposal(data:ProposalFormValues) {
   const session = await getSession();
 
   const proposalRepository = new ProposalRepository(session.company_id);
-  const result = proposalRepository.createProposal(data, session.user_id)
+  const result = proposalRepository.createProposalWithTransaction(data, session.user_id, session.company_id)
 
   return result;
 }

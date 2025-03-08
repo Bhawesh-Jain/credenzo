@@ -4,7 +4,9 @@ import { ProposalFormValues } from "@/app/dashboard/customer-boarding/create-pro
 import { LeadRepository } from "./leadRepository";
 import { LeadFormValues } from "@/app/dashboard/customer-boarding/create-lead/page";
 import { Client, ClientRepository } from "./clientRepository";
+import { withTransaction } from "../helpers/db-helper";
 import formatDate from "../utils/date";
+import mysql from 'mysql2/promise';
 
 export class ProposalRepository extends RepositoryBase {
   private builder: QueryBuilder;
@@ -16,7 +18,23 @@ export class ProposalRepository extends RepositoryBase {
     this.companyId = companyId;
   }
 
-  async createProposal(data: ProposalFormValues, userId: string) {
+  async createProposalWithTransaction (
+    data: ProposalFormValues,
+    userId: string,
+    companyId: string
+  ) {
+    return withTransaction(async (connection) => {
+      const proposalRepo = new ProposalRepository(companyId);
+      return proposalRepo.createProposal(data, userId, connection);
+    });
+  };
+  
+
+  async createProposal(
+    data: ProposalFormValues,
+    userId: string,
+    transactionConnection?: mysql.Connection
+  ) {
     try {
 
       const lead: LeadFormValues = {
@@ -32,8 +50,9 @@ export class ProposalRepository extends RepositoryBase {
         notes: 'Direct proposal'
       }
 
-      const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 10)
-
+      const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 10, transactionConnection)
+      console.log('leadResult', leadResult);
+      
       const client: Client = {
         id: 0,
         client_id: '',
@@ -51,12 +70,16 @@ export class ProposalRepository extends RepositoryBase {
         type: '',
         status: '1'
       }
-
-      const clientResult = await new ClientRepository(this.companyId).createClient(client);
+      console.log('client', client);
+      
+      const clientResult = await new ClientRepository(this.companyId).createClient(client, transactionConnection);
+      console.log('clientResult', clientResult);
 
       var propItem = {
         lead_id: leadResult.result,
         client_id: clientResult.result.clientId,
+        lan: null,
+        loan_id: null,
         handler_id: userId,
         status: 5,
         customer_name: `${data.firstName} ${data.lastName}`,
@@ -72,18 +95,18 @@ export class ProposalRepository extends RepositoryBase {
         updated_on: new Date(),
       }
 
-      const proposalResult = await this.builder.insert(propItem);
+      const proposalResult = await this.builder
+        .setConnection(transactionConnection)
+        .insert(propItem);
 
       const clientLoanUpdate = await new QueryBuilder('client')
-        .where("id = ?", clientResult.result)
+        .setConnection(transactionConnection)
+        .where("id = ?", clientResult.result.insertId)
         .update({
           prop_id: proposalResult
         })
 
       return this.success("Proposal Created!")
-
-      return this.failure('Failed!')
-
     } catch (error) {
       return this.handleError(error)
     }

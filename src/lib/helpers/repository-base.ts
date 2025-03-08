@@ -1,3 +1,4 @@
+import { DatabaseError } from "./db-helper";
 
 export class RepositoryBase {
   constructor() {
@@ -10,6 +11,10 @@ export class RepositoryBase {
 
   handleError(error: any) {
     console.log(this.getClassName(), error);
+
+    if (error instanceof DatabaseError) {
+      throw error;
+    }
 
     return {
       success: false,

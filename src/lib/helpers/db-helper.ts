@@ -54,9 +54,15 @@ export class QueryBuilder {
   private limitValue?: number;
   private offsetValue?: number;
   private orderByFields: string[] = [];
+  private connection?: mysql.Connection
   
   constructor(table: string) {
     this.table = table;
+  }
+
+  setConnection(connection?: mysql.Connection) {
+    this.connection = connection;
+    return this;
   }
   
   where(condition: string, ...params: any[]) {
@@ -92,17 +98,16 @@ export class QueryBuilder {
     }
     
     if (this.limitValue !== undefined) {
-      query += ` LIMIT ?`;
-      this.parameters.push(this.limitValue);
+      query += ` LIMIT ${this.limitValue}`;
     }
     
     if (this.offsetValue !== undefined) {
-      query += ` OFFSET ?`;
-      this.parameters.push(this.offsetValue);
+      query += ` OFFSET ${this.offsetValue}`;
     }
     
+    console.log(query, this.parameters);
     
-    return executeQuery<T[]>(query, this.parameters);
+    return executeQuery<T[]>(query, this.parameters, this.connection);
   }
   
   async insert<T>(data: Record<string, any>): Promise<number> {
@@ -117,7 +122,7 @@ export class QueryBuilder {
     `;
 
     
-    const result = await executeQuery<mysql.ResultSetHeader>(query, values);
+    const result = await executeQuery<mysql.ResultSetHeader>(query, values, this.connection);
     return result.insertId;
   }
   
@@ -133,7 +138,7 @@ export class QueryBuilder {
 
     
 
-    const result = await executeQuery<any>(query, [...values, ...this.parameters]);
+    const result = await executeQuery<any>(query, [...values, ...this.parameters], this.connection);
     return result.affectedRows;
   }
 
@@ -150,7 +155,8 @@ export class QueryBuilder {
 
     const result = await executeQuery<{ count: number }[]>(
       query,
-      this.parameters
+      this.parameters,
+      this.connection
     );
     
     return result[0]?.count || 0;
