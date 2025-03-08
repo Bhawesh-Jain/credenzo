@@ -134,7 +134,6 @@ export class QueryBuilder {
     
 
     const result = await executeQuery<any>(query, [...values, ...this.parameters]);
-    console.log(query, [...values, ...this.parameters]);
     return result.affectedRows;
   }
 

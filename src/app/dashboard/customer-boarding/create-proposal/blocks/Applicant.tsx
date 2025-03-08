@@ -6,7 +6,7 @@ import { SelectContent, SelectItem, SelectTrigger, SelectValue, Select } from '@
 
 export default function PersonalDetails({
   form
-}: {
+}: { 
   form: any
 }) {
 
