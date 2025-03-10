@@ -95,7 +95,6 @@ export class BranchRepository extends RepositoryBase {
     try {
       const result = await this.queryBuilder
         .where('company_id = ?', this.companyId)
-        .orderBy('branch_id', 'ASC')
         .select(['id', 'name', 'branch_code', 'location', 'pincode', 'status', 'created_on']);
 
       if (result.length > 0) {
