@@ -70,7 +70,13 @@ const defaultValues: Partial<LeadFormValues> = {
   notes: "",
 };
 
-export default function CreateLead() {
+export default function CreateLead({
+  setVis,
+  setReload,
+}: {
+  setVis: (vis: boolean) => void
+  setReload: (reload: boolean) => void
+}) {
   const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog()
   const [listLoading, setListLoading] = useState(false);
   const [productTypeList, setProductTypeList] = useState([]);
@@ -93,6 +99,8 @@ export default function CreateLead() {
           if (result.success) {
             showSuccess('Lead Created', 'The lead has been created.')
             form.reset()
+            setVis(false)
+            setReload(true)
           } else {
             showError('Error', result.error)
           }
@@ -125,7 +133,7 @@ export default function CreateLead() {
 
 
   return (
-    <div className="w-full mx-auto py-4 md:px-4">
+    <div>
       <div className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-gray-800">
@@ -295,7 +303,7 @@ export default function CreateLead() {
 
               {/* Additional Information Section */}
               <div className="space-y-4">
-                
+
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-semibold text-gray-700">Additional Information</h3>
                 </div>
@@ -325,7 +333,7 @@ export default function CreateLead() {
                     )}
                   />
                 </div>
-                
+
                 <FormField
                   control={form.control}
                   name="notes"
@@ -347,7 +355,7 @@ export default function CreateLead() {
 
               <div className="flex justify-end space-x-4">
                 <Button type="submit">
-                  Create Lead
+                  Submit
                 </Button>
               </div>
             </form>

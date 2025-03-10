@@ -35,6 +35,7 @@ interface DataTableProps<T> {
   columns: Column<T>[]
   pageSize?: number
   searchable?: boolean
+  serialShow?: boolean
   className?: string
   loading?: boolean
   setReload?: (reload: boolean) => void
@@ -45,12 +46,24 @@ export function DataTable<T extends Record<string, any>>({
   columns: defaultColumns,
   pageSize = 10,
   searchable = true,
+  serialShow = true,
   className,
   loading = false,
   setReload
 }: DataTableProps<T>) {
   // State management
-  const [columns, setColumns] = useState(defaultColumns)
+  const [columns, setColumns] = useState<Column<T>[]>(() => [
+    {
+      id: '__serial__',
+      header: '#',
+      accessorKey: '__serial__' as keyof T,
+      visible: serialShow,
+      sortable: false,
+      filterable: false,
+      align: 'left',
+    },
+    ...defaultColumns,
+  ])
   const [searchTerm, setSearchTerm] = useState("")
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null
@@ -195,13 +208,22 @@ export function DataTable<T extends Record<string, any>>({
                 <TableRow key={rowIndex}>
                   {columns
                     .filter(col => col.visible !== false)
-                    .map(column => (
-                      <TableCell key={column.id} align={column.align || 'left'}>
-                        {column.cell
-                          ? column.cell(row)
-                          : String(row[column.accessorKey] ?? "")}
-                      </TableCell>
-                    ))}
+                    .map(column => {
+                      if (column.id === '__serial__') {
+                        return (
+                          <TableCell key={column.id} align={column.align || 'right'}>
+                            {(currentPage - 1) * pageSize + rowIndex + 1}
+                          </TableCell>
+                        )
+                      }
+                      return (
+                        <TableCell key={column.id} align={column.align || 'left'}>
+                          {column.cell
+                            ? column.cell(row)
+                            : String(row[column.accessorKey] ?? "")}
+                        </TableCell>
+                      )
+                    })}
                 </TableRow>
               )) : (
                 <TableRow>
@@ -255,4 +277,4 @@ export function DataTable<T extends Record<string, any>>({
       )}
     </div>
   )
-} 
+}
