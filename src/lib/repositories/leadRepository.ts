@@ -1,15 +1,40 @@
 import { LeadFormValues } from "@/app/dashboard/customer-boarding/create-lead/page";
-import { QueryBuilder } from "../helpers/db-helper";
+import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import mysql from "mysql2/promise"
 export class LeadRepository extends RepositoryBase {
-  private builder: QueryBuilder;
   private companyId: string;
 
   constructor(companyId: string) {
     super()
-    this.builder = new QueryBuilder('leads');
     this.companyId = companyId;
+  }
+
+  async getLeadsById(userId: string) {
+    try {
+
+      var sql = `
+        SELECT l.*, lpt.name as loanType
+        FROM leads l
+        LEFT JOIN loan_product_type lpt
+          ON l.product_type = lpt.id
+        WHERE l.company_id = ?
+          AND l.updated_by = ?
+          AND l.status != 0
+        ORDER BY l.updated_on DESC
+      `
+
+      const result = await executeQuery(sql, [this.companyId, userId]) as any[]
+
+      if (result.length > 0) {
+        return this.success(result)
+      }
+
+      return this.failure("No Leads Found!")
+
+    } catch (error) {
+      return this.handleError(error);
+    }
   }
 
   async createLead(
@@ -32,12 +57,12 @@ export class LeadRepository extends RepositoryBase {
         remark: leadData.notes,
         status: status || 1,
         company_id: this.companyId,
-        meetting_date: leadData.date,
-        meetting_time: leadData.time,
+        meetting_date: leadData.date || null,
+        meetting_time: leadData.time || '',
         updated_on: new Date(),
       }
 
-      const result = await this.builder
+      const result = await new QueryBuilder('leads')
         .setConnection(transactionConnection)
         .insert(lead);
 

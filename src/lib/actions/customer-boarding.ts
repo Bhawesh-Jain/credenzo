@@ -6,6 +6,15 @@ import { ProposalFormValues } from "@/app/dashboard/customer-boarding/create-pro
 import { ProposalRepository } from "../repositories/proposalRepository";
 import { getSession } from "../session";
 
+export async function getLeads() {
+  const session = await getSession();
+  
+  const leadRepository = new LeadRepository(session.company_id);
+  const result = await leadRepository.getLeadsById(session.user_id);
+
+  return result;
+}
+
 export async function createLead(data: LeadFormValues) {
   const session = await getSession();
   

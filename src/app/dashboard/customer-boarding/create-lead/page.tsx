@@ -234,7 +234,7 @@ export default function CreateLead() {
                       : <DefaultFormSelect
                         form={form}
                         label='Loan Product Type'
-                        name='productType'
+                        name='loanType'
                         options={productTypeList}
                         placeholder='Select Product Type'
                       />}
