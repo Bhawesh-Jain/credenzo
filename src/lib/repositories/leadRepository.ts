@@ -21,7 +21,7 @@ export class LeadRepository extends RepositoryBase {
         WHERE l.company_id = ?
           AND l.updated_by = ?
           AND l.status != 0
-        ORDER BY l.updated_on DESC
+        ORDER BY l.meeting_date ASC
       `
 
       const result = await executeQuery(sql, [this.companyId, userId]) as any[]
@@ -57,8 +57,8 @@ export class LeadRepository extends RepositoryBase {
         remark: leadData.notes,
         status: status || 1,
         company_id: this.companyId,
-        meetting_date: leadData.date || null,
-        meetting_time: leadData.time || '',
+        meeting_date: leadData.date || null,
+        meeting_time: leadData.time || '',
         updated_on: new Date(),
       }
 

@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { getLeads } from "@/lib/actions/customer-boarding";
 import { Column, DataTable } from "@/components/data-table/data-table";
 import formatDate, { formatTime } from "@/lib/utils/date";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonTooltip } from "@/components/ui/button";
 import CreateLead from "../create-lead/page";
 import { Container } from "@/components/ui/container";
+import { Edit2 } from "lucide-react";
 
 type Lead = {
+  id: number;
   customer_name: string;
   email: string;
   phone: string;
@@ -17,8 +19,8 @@ type Lead = {
   amount: number;
   purpose: string;
   term: number;
-  meetting_date?: string | undefined;
-  meetting_time?: string | undefined;
+  meeting_date?: string | undefined;
+  meeting_time?: string | undefined;
   notes?: string | undefined;
   status: number;
 }
@@ -74,24 +76,25 @@ export default function Leads() {
     {
       id: "date",
       header: "Promised Date",
-      accessorKey: "meetting_date",
+      accessorKey: "meeting_date",
       sortable: true,
       visible: true,
       cell: (row) => (
         <span>
-          {row.meetting_date ? formatDate(row.meetting_date) : "N/A"}
+          {row.meeting_date ? formatDate(row.meeting_date) : "N/A"}
         </span>
       )
     },
     {
       id: "time",
       header: "Promised Time",
-      accessorKey: "meetting_time",
+      accessorKey: "meeting_time",
       sortable: true,
+      filterable: false,
       visible: true,
       cell: (row) => (
         <span>
-          {row.meetting_time ? formatTime(row.meetting_time) : "N/A"}
+          {row.meeting_time ? formatTime(row.meeting_time) : "N/A"}
         </span>
       )
     },
@@ -110,6 +113,21 @@ export default function Leads() {
         >
           {row.status == 1 ? "Active" : "Inactive"}
         </span>
+      ),
+    },
+    {
+      id: "id",
+      header: "Actions",
+      accessorKey: "id",
+      visible: true,
+      sortable: false,
+      align: 'right',
+      cell: (row) => (
+        <div>
+          <Button variant='ghost' size='icon'>
+            <Edit2 />
+          </Button>
+        </div>
       ),
     },
   ]
