@@ -35,18 +35,13 @@ export class ClientRepository extends RepositoryBase {
     transactionConnection?: mysql.Connection
   ) {
     try {
-      console.log('pan', pan);
-
       const result = await new QueryBuilder('client')
         .where('pan = ?', pan)
         .where('status = 1')
         .where('company_id = ?', this.companyId)
         .limit(1)
         .setConnection(transactionConnection)
-        .select(['client_id'])
-
-      console.log('result', result);
-      
+        .select(['client_id'])    
 
       if (result.length > 0) {
         var client = result[0] as any
@@ -69,7 +64,6 @@ export class ClientRepository extends RepositoryBase {
       let clientId = '';
       let type = 'EXISTING';
       let clientCheck = await this.checkExisting(client.pan, transactionConnection);
-      console.log('check', clientCheck);
       
       if (!clientCheck.success) {
         const sql = `

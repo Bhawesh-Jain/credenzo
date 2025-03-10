@@ -51,7 +51,6 @@ export class ProposalRepository extends RepositoryBase {
       }
 
       const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 10, transactionConnection)
-      console.log('leadResult', leadResult);
       
       const client: Client = {
         id: 0,
@@ -70,10 +69,8 @@ export class ProposalRepository extends RepositoryBase {
         type: '',
         status: '1'
       }
-      console.log('client', client);
       
       const clientResult = await new ClientRepository(this.companyId).createClient(client, transactionConnection);
-      console.log('clientResult', clientResult);
 
       var propItem = {
         lead_id: leadResult.result,
