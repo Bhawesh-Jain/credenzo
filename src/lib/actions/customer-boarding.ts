@@ -1,6 +1,6 @@
 "use server"
 
-import { LeadFormValues } from "@/app/dashboard/customer-boarding/create-lead/page";
+import { LeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/CreateLead";
 import { LeadRepository } from "../repositories/leadRepository";
 import { ProposalFormValues } from "@/app/dashboard/customer-boarding/create-proposal/page";
 import { ProposalRepository } from "../repositories/proposalRepository";

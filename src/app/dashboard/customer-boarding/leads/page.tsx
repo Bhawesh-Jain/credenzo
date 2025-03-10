@@ -5,7 +5,7 @@ import { getLeads } from "@/lib/actions/customer-boarding";
 import { Column, DataTable } from "@/components/data-table/data-table";
 import formatDate, { formatTime } from "@/lib/utils/date";
 import { Button, ButtonTooltip } from "@/components/ui/button";
-import CreateLead from "../create-lead/page";
+import CreateLead from "./blocks/CreateLead";
 import { Container } from "@/components/ui/container";
 import { Edit2 } from "lucide-react";
 

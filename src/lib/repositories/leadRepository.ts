@@ -1,4 +1,4 @@
-import { LeadFormValues } from "@/app/dashboard/customer-boarding/create-lead/page";
+import { LeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/CreateLead";
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import mysql from "mysql2/promise"

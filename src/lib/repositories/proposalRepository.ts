@@ -2,7 +2,7 @@ import { QueryBuilder } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import { ProposalFormValues } from "@/app/dashboard/customer-boarding/create-proposal/page";
 import { LeadRepository } from "./leadRepository";
-import { LeadFormValues } from "@/app/dashboard/customer-boarding/create-lead/page";
+import { LeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/CreateLead";
 import { Client, ClientAddress, ClientRepository } from "./clientRepository";
 import { withTransaction } from "../helpers/db-helper";
 import formatDate from "../utils/date";
