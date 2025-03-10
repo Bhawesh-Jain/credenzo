@@ -105,8 +105,6 @@ export class QueryBuilder {
       query += ` OFFSET ${this.offsetValue}`;
     }
     
-    console.log(query, this.parameters);
-    
     return executeQuery<T[]>(query, this.parameters, this.connection);
   }
   

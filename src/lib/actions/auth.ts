@@ -2,6 +2,7 @@
 import { getSession } from "../session";
 import { UserAuthRepository } from "../repositories/userRepository";
 import { cookies } from "next/headers";
+import { customLog } from "../utils";
 
 export type UserData = {
   user_id: string;
@@ -46,7 +47,7 @@ export async function handleLoginForm(formData: FormData) {
       }
     }
   } catch (error) {
-    console.log('auth.ts', error);
+    customLog('auth.ts', error);
 
     return {
       success: false,

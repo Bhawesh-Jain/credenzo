@@ -1,3 +1,4 @@
+import { customLog } from "../utils";
 import { DatabaseError } from "./db-helper";
 
 export class RepositoryBase {
@@ -10,7 +11,7 @@ export class RepositoryBase {
   }
 
   handleError(error: any) {
-    console.log(this.getClassName(), error);
+    customLog(this.getClassName(), error);
 
     if (error instanceof DatabaseError) {
       throw error;
