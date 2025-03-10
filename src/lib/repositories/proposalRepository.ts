@@ -49,7 +49,7 @@ export class ProposalRepository extends RepositoryBase {
         notes: 'Direct proposal'
       }
 
-      const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 10, transactionConnection)
+      const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 15, transactionConnection)
 
       const client: Client = {
         id: 0,
