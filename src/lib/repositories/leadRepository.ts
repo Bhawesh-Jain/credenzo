@@ -62,7 +62,7 @@ export class LeadRepository extends RepositoryBase {
           ON l.product_type = lpt.id
         WHERE l.company_id = ?
           AND l.updated_by = ?
-          AND l.status BETWEEN 1 AND 10
+          AND l.status BETWEEN 1 AND 9
         ORDER BY l.meeting_date ASC
       `
 
