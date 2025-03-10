@@ -32,6 +32,8 @@ export class LeadRepository extends RepositoryBase {
         remark: leadData.notes,
         status: status || 1,
         company_id: this.companyId,
+        meetting_date: leadData.date,
+        meetting_time: leadData.time,
         updated_on: new Date(),
       }
 

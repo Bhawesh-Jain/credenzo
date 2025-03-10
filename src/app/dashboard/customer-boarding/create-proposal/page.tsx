@@ -6,28 +6,30 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import PersonalDetails from "./blocks/Applicant"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
+import PersonalDetails from "./blocks/Applicant"
+import AddressDetails from "./blocks/Address";
+import IncomeDetails from "./blocks/Income";
+import LoanProductDetails from "./blocks/LoanProduct";
+
+import Loading from "../../loading";
+
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useGlobalDialog } from "@/providers/DialogProvider";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import AddressDetails from "./blocks/Address";
 import { SubHeading } from "@/components/text/heading";
 import { twMerge } from "tailwind-merge";
-import IncomeDetails from "./blocks/Income";
 import { zodPatterns } from "@/lib/utils/zod-patterns";
 import { getLoanProductTypes } from "@/lib/actions/loan-product";
-import LoanProductDetails from "./blocks/LoanProduct";
 import { createProposal } from "@/lib/actions/customer-boarding";
 import { getBranchListById } from "@/lib/actions/branch";
-import Loading from "../../loading";
 
 const proposalFormSchema = z.object({
   // Personal Details
@@ -73,30 +75,30 @@ const proposalFormSchema = z.object({
 export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 
 const defaultValues: Partial<ProposalFormValues> = {
-  firstName: 'T-FirstName',
-  lastName: 'T-LastName',
-  email: '',
-  phone: '7694930451',
-  panCard: 'CDZPJ1746D',
-  gender: 'Female',
-  add_line_1: 'D 108 Ras Town',
-  add_line_2: 'Vijay Nagar',
-  add_line_3: 'Indore, Main',
-  landmark: 'Intellect Heights',
-  pincode: '452001',
-  city: 'Indore',
-  state: 'Madhya Pradesh',
-  since: '5 Years',
-  ownership: 'Owned',
-  empType: 'salaried',
-  entityName: 'Bls',
-  incomeAmount: 20000,
-  incomeAddress: 'Vijay Nagar',
-  incomeContact: '7999882598',
-  productType: '1',
-  purpose: 'Test',
-  loanAmount: 50000,
-  branch: '1'
+  // firstName: 'T-FirstName',
+  // lastName: 'T-LastName',
+  // email: '',
+  // phone: '7694930451',
+  // panCard: 'CDZPJ1746D',
+  // gender: 'Female',
+  // add_line_1: 'D 108 Ras Town',
+  // add_line_2: 'Vijay Nagar',
+  // add_line_3: 'Indore, Main',
+  // landmark: 'Intellect Heights',
+  // pincode: '452001',
+  // city: 'Indore',
+  // state: 'Madhya Pradesh',
+  // since: '5 Years',
+  // ownership: 'Owned',
+  // empType: 'salaried',
+  // entityName: 'Bls',
+  // incomeAmount: 20000,
+  // incomeAddress: 'Vijay Nagar',
+  // incomeContact: '7999882598',
+  // productType: '1',
+  // purpose: 'Test',
+  // loanAmount: 50000,
+  // branch: '1'
 };
 
 export default function CreateProposal() {

@@ -23,6 +23,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Icons } from "@/components/icons";
@@ -31,9 +32,9 @@ import { createLead } from '@/lib/actions/customer-boarding';
 import { useGlobalDialog } from '@/providers/DialogProvider'
 import { useEffect, useState } from "react";
 import { getLoanProductTypes } from "@/lib/actions/loan-product";
-import { DefaultFormSelect } from "@/components/ui/default-form-field";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DefaultFormSelect, DefaultFormTimeField } from "@/components/ui/default-form-field";
 import FormItemSkeleton from "@/components/skeletons/form-item-skeleton";
+import DatePicker from "@/components/date-picker";
 
 const leadFormSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -52,6 +53,8 @@ const leadFormSchema = z.object({
     .min(1000, "Minimum loan amount is 1,000")
     .max(1000000000, "Maximum loan amount is 1,000,000,000"),
   purpose: z.string().min(3, "Please provide a detailed purpose"),
+  date: z.date().optional(),
+  time: z.string().optional(),
   term: z.number({
     required_error: "Please enter a loan term",
     invalid_type_error: "Please enter a valid number",
@@ -84,7 +87,7 @@ export default function CreateLead() {
       async () => {
         try {
           setLoading(true)
-          const result = await createLead('1', data)
+          const result = await createLead(data)
           setLoading(false)
 
           if (result.success) {
@@ -228,7 +231,7 @@ export default function CreateLead() {
                   <div className='col-span-2'>
                     {listLoading
                       ? <FormItemSkeleton />
-                      : <DefaultFormSelect 
+                      : <DefaultFormSelect
                         form={form}
                         label='Loan Product Type'
                         name='productType'
@@ -286,14 +289,43 @@ export default function CreateLead() {
                       </FormItem>
                     )}
                   />
+
                 </div>
               </div>
 
               {/* Additional Information Section */}
               <div className="space-y-4">
+                
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-semibold text-gray-700">Additional Information</h3>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <DefaultFormTimeField
+                    form={form}
+                    label="Next Meeting Time"
+                    name="time"
+                    placeholder=""
+                  />
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem className="">
+                        <FormLabel>Next Meeting Date</FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            date={field.value || null}
+                            maxToday={false}
+                            onChange={(date) => field.onChange(date)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
                 <FormField
                   control={form.control}
                   name="notes"
