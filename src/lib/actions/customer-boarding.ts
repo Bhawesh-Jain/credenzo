@@ -5,12 +5,31 @@ import { LeadRepository } from "../repositories/leadRepository";
 import { ProposalFormValues } from "@/app/dashboard/customer-boarding/create-proposal/page";
 import { ProposalRepository } from "../repositories/proposalRepository";
 import { getSession } from "../session";
+import { EditLeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/EditLead";
 
 export async function getLeads() {
   const session = await getSession();
   
   const leadRepository = new LeadRepository(session.company_id);
-  const result = await leadRepository.getLeadsById(session.user_id);
+  const result = await leadRepository.getLeadsByUser(session.user_id);
+
+  return result;
+}
+
+export async function getLeadById(leadId: number) {
+  const session = await getSession();
+  
+  const leadRepository = new LeadRepository(session.company_id);
+  const result = await leadRepository.getLeadsById(leadId);
+
+  return result;
+}
+
+export async function editLead(leadId: number, lead: EditLeadFormValues) {
+  const session = await getSession();
+  
+  const leadRepository = new LeadRepository(session.company_id);
+  const result = await leadRepository.editLead(leadId, lead);
 
   return result;
 }

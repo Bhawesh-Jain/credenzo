@@ -2,6 +2,7 @@ import { LeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/C
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import mysql from "mysql2/promise"
+import { EditLeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/EditLead";
 export class LeadRepository extends RepositoryBase {
   private companyId: string;
 
@@ -10,7 +11,48 @@ export class LeadRepository extends RepositoryBase {
     this.companyId = companyId;
   }
 
-  async getLeadsById(userId: string) {
+  async editLead(leadId: number, lead: EditLeadFormValues) {
+    try {
+      const result = await new QueryBuilder('leads')
+        .where("id = ?", leadId)
+        .where("company_id = ?", this.companyId)
+        .update(lead)
+
+      if (result > 0) {
+        return this.success("Lead Updated")
+      }
+
+      return this.failure("Lead Not Found!")
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async getLeadsById(leadId: number) {
+    try {
+
+      var sql = `
+        SELECT l.*, lpt.name as loanType
+        FROM leads l
+        LEFT JOIN loan_product_type lpt
+          ON l.product_type = lpt.id
+        WHERE l.id = ?
+        LIMIT 1
+      `
+
+      const result = await executeQuery(sql, [leadId]) as any[]
+
+      if (result.length > 0) {
+        return this.success(result[0])
+      }
+
+      return this.failure("No Leads Found!")
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async getLeadsByUser(userId: string) {
     try {
 
       var sql = `
@@ -20,7 +62,7 @@ export class LeadRepository extends RepositoryBase {
           ON l.product_type = lpt.id
         WHERE l.company_id = ?
           AND l.updated_by = ?
-          AND l.status != 0
+          AND l.status BETWEEN 1 AND 10
         ORDER BY l.meeting_date ASC
       `
 

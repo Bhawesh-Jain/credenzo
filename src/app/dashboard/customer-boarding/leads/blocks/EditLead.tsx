@@ -9,77 +9,131 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Form } from "@/components/ui/form";
-import { editBranch, getBranchById } from "@/lib/actions/settings";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import Loading from "@/app/dashboard/loading";
 import { useEffect, useState } from "react";
-import { DefaultFormTextField, DefaultFormTextArea } from "@/components/ui/default-form-field";
 import { Edit } from "lucide-react";
+import { editLead, getLeadById } from "@/lib/actions/customer-boarding";
+import { Icons } from "@/components/icons";
+import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getLoanProductTypes } from "@/lib/actions/loan-product";
+import { DefaultFormSelect, DefaultFormTimeField } from "@/components/ui/default-form-field";
+import DatePicker from "@/components/date-picker";
+import { Container } from "@/components/ui/container";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export interface Branch {
-  id: number;
-  name: string;
-  branch_code: string;
-  pincode: string;
-  location: string;
-}
 const formScheme = z.object({
-  name: z.string().min(2, "Add a role name").max(255, "Role name must be less than 255 characters"),
-  location: z.string().max(150, "Location must be less than 150 characters"),
-  pincode: z.string().max(10, "Pincode must be less than 10 characters"),
-  branch_code: z.string().max(50, "Branch code must be less than 50 characters").optional(),
+  customer_name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  product_type: z.string().min(1, "You have to Select Product Type!"),
+
+  gender: z.enum(["Male", "Female", "Other"], {
+    required_error: "Please select gender",
+  }),
+  loan_amount: z.coerce.number({
+    required_error: "Please enter a loan amount",
+    invalid_type_error: "Please enter a valid number",
+  })
+    .min(1000, "Minimum loan amount is 1,000")
+    .max(1000000000, "Maximum loan amount is 1,000,000,000"),
+  loan_purpose: z.string().min(3, "Please provide a detailed purpose"),
+  meeting_date: z.date().optional(),
+  meeting_time: z.string().optional(),
+  term: z.coerce.number({
+    required_error: "Please enter a loan term",
+    invalid_type_error: "Please enter a valid number",
+  })
+    .min(6, "Minimum term is 6 months")
+    .max(360, "Maximum term is 360 months"),
+  remark: z.string().optional(),
+  status: z.coerce.string().min(1, "Select Status")
 });
 
-export type FormValues = z.infer<typeof formScheme>;
+export type EditLeadFormValues = z.infer<typeof formScheme>;
 
 export default function EditLead({
+  setOpen,
   setReload,
-  branchId
+  leadId
 }: {
   setReload: (reload: boolean) => void,
-  branchId: number
+  setOpen: (open: boolean) => void,
+  leadId: number
 }) {
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [productTypeList, setProductTypeList] = useState([]);
   const { toast } = useToast();
+  const statusList = [
+    {
+      label: 'Hot',
+      value: '1'
+    },
+    {
+      label: 'Reschedule',
+      value: '5'
+    },
+    {
+      label: 'Proceed to Proposal',
+      value: '10'
+    },
+    {
+      label: 'Not Interested',
+      value: '0'
+    },
+  ]
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const branch = await getBranchById(branchId);
+
+      let list = await getLoanProductTypes()
+
+
+      if (list.success) {
+        const formattedData = list.result.map((item: any) => ({
+          label: item.name,
+          value: item.id.toString(),
+        }))
+        setProductTypeList(formattedData);
+      }
+
+      const branch = await getLeadById(leadId);
+
       if (branch.success) {
-        form.reset(branch.result);
+        var formItem = {
+          ...branch.result,
+          status: String(branch.result['status'])
+        }
+        form.reset(formItem);
       }
       setLoading(false);
     })();
-  }, [branchId]);
+  }, [leadId]);
 
-  const defaultValues: Partial<FormValues> = {
-    name: "",
-    branch_code: "",
-    location: "",
-    pincode: "",
-  };
+  const defaultValues: Partial<EditLeadFormValues> = {  };
 
-  const form = useForm<FormValues>({
+  const form = useForm<EditLeadFormValues>({
     resolver: zodResolver(formScheme),
     defaultValues,
   })
 
-  async function onSubmit(data: FormValues) {
+  async function onSubmit(data: EditLeadFormValues) {
     setLoading(true);
 
-    const result = await editBranch(branchId, data.name, data.branch_code || '', data.pincode || '', data.location || '')
+    const result = await editLead(leadId, data)
 
     setLoading(false);
     if (result.success) {
       toast({
-        title: "Branch created successfully",
-        description: "The branch has been created successfully",
+        title: "Request successful",
+        description: "The lead has been modified successfully",
       })
       form.reset();
       setOpen(false);
@@ -94,54 +148,231 @@ export default function EditLead({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon"><Edit /></Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Branch</DialogTitle>
-          <DialogDescription>
-            Edit the branch details
-          </DialogDescription>
-        </DialogHeader>
-        <div className="my-3">
-          {loading ? <Loading /> : <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <DefaultFormTextField
-                  label="Branch Name"
-                  form={form}
-                  placeholder="Enter branch name"
-                  name="name"
-                />
-                <DefaultFormTextField
-                  label="Branch Code"
-                  form={form}
-                  placeholder="Enter branch code"
-                  name="branch_code"
-                />
-                <DefaultFormTextField
-                  label="Pincode"
-                  form={form}
-                  placeholder="Enter branch pincode"
-                  name="pincode"
+    <div className="py-2">
+      <CardHeader>
+        <CardTitle>Edit Lead</CardTitle>
+        <CardDescription>
+          Edit the Lead details
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading
+          ? <Loading />
+          : <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Personal Information Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-semibold text-gray-700">Personal Information</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="customer_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.user}>First Name</FormLabelWithIcon>
+                        <FormControl>
+                          <Input placeholder="Enter name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.mail}>Email Address</FormLabelWithIcon>
+                        <FormControl>
+                          <Input type="email" placeholder="Enter email address" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.phone}>Phone Number</FormLabelWithIcon>
+                        <FormControl>
+                          <Input type="tel" placeholder="Enter phone number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.gender}>Gender</FormLabelWithIcon>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Male">Male</SelectItem>
+                            <SelectItem value="Female">Female</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Loan Information Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-semibold text-gray-700">Loan Information</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                  <div className='col-span-2'>
+                    <DefaultFormSelect
+                      form={form}
+                      label='Loan Product Type'
+                      name='product_type'
+                      options={productTypeList}
+                      placeholder='Select Product Type'
+                    />
+                  </div>
+
+                  <div className='col-span-2'>
+                    <DefaultFormSelect
+                      form={form}
+                      label='Lead Status'
+                      name='status'
+                      options={statusList}
+                      placeholder=''
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="loan_amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.receiptIndianRupee}>Loan Amount</FormLabelWithIcon>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter loan amount"
+                            {...field}
+                            onChange={e => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="loan_purpose"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.target}>Loan Purpose</FormLabelWithIcon>
+                        <FormControl>
+                          <Input placeholder="Enter loan purpose" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="term"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabelWithIcon icon={Icons.calendar}>Loan Term (months)</FormLabelWithIcon>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter loan term"
+                            {...field}
+                            onChange={e => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                </div>
+              </div>
+
+              {/* Additional Information Section */}
+              <div className="space-y-4">
+
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-semibold text-gray-700">Additional Information</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <DefaultFormTimeField
+                    form={form}
+                    label="Next Meeting Time"
+                    name="meeting_time"
+                    placeholder=""
+                  />
+                  <FormField
+                    control={form.control}
+                    name="meeting_date"
+                    render={({ field }) => (
+                      <FormItem className="">
+                        <FormLabel>Next Meeting Date</FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            date={field.value || null}
+                            maxToday={false}
+                            onChange={(date) => field.onChange(date)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="remark"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabelWithIcon icon={Icons.fileText}>Notes</FormLabelWithIcon>
+                      <FormControl>
+                        <textarea
+                          className="min-h-[100px] w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Enter any additional notes"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-              <DefaultFormTextArea
-                label="Location"
-                form={form}
-                placeholder="Enter branch location"
-                name="location"
-              />
 
-              <div className="flex justify-end">
-                <Button type="submit">Save</Button>
+              <div className="flex justify-end space-x-4">
+                <Button onClick={() => setOpen(false)} variant='outline' type="button">
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  Submit
+                </Button>
               </div>
             </form>
           </Form>}
-        </div>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </div>
   )
 }

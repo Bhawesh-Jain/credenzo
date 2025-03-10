@@ -7,7 +7,8 @@ import formatDate, { formatTime } from "@/lib/utils/date";
 import { Button, ButtonTooltip } from "@/components/ui/button";
 import CreateLead from "./blocks/CreateLead";
 import { Container } from "@/components/ui/container";
-import { Edit2 } from "lucide-react";
+import { Edit, Edit2 } from "lucide-react";
+import EditLead from "./blocks/EditLead";
 
 type Lead = {
   id: number;
@@ -27,9 +28,11 @@ type Lead = {
 
 export default function Leads() {
   const [leads, setLeads] = useState<Lead[]>([])
+  const [leadId, setLeadId] = useState<number>();
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
   const [vis, setVis] = useState(false);
+  const [open, setOpen] = useState(false);
 
 
   useEffect(() => {
@@ -111,7 +114,7 @@ export default function Leads() {
             : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
             }`}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {getLeadStatus(row.status)}
         </span>
       ),
     },
@@ -124,9 +127,10 @@ export default function Leads() {
       align: 'right',
       cell: (row) => (
         <div>
-          <Button variant='ghost' size='icon'>
-            <Edit2 />
-          </Button>
+          <Button onClick={() => {
+            setLeadId(row.id)
+            setOpen(!open)
+          }} variant="ghost" size="icon"><Edit /></Button>
         </div>
       ),
     },
@@ -134,15 +138,39 @@ export default function Leads() {
 
   return (
     <Container>
-      <div className="flex justify-between items-center py-3">
-        <h2 className="text-2xl font-bold tracking-tight">Leads</h2>
-        {vis 
-        ? <Button variant='outline' onClick={() => setVis(false)}>Cancel</Button>
-        : <Button onClick={() => setVis(true)}>Create Lead</Button>}
-      </div>
-      {vis
-        ? <CreateLead setVis={setVis} setReload={setReload}/>
-        : <DataTable data={leads} columns={columns} loading={loading} setReload={setReload} />}
+
+      {open && leadId
+        ? <EditLead leadId={leadId} setReload={setReload} setOpen={setOpen} />
+        : <>
+          <div className="flex justify-between items-center py-3">
+            <h2 className="text-2xl font-bold tracking-tight">Leads</h2>
+            {vis
+              ? <Button variant='outline' onClick={() => setVis(false)}>Cancel</Button>
+              : <Button onClick={() => setVis(true)}>Create Lead</Button>}
+          </div>
+          {vis
+            ? <CreateLead setVis={setVis} setReload={setReload} />
+            : <DataTable data={leads} columns={columns} loading={loading} setReload={setReload} />}
+        </>
+      }
     </Container>
   )
+}
+
+function getLeadStatus(status: number) {
+  var s = '';
+  switch (status) {
+    case 1:
+      s = 'Hot'
+      break;
+
+    case 5:
+      s = 'Rescheduled'
+      break;
+
+    default:
+      break;
+  }
+
+  return s;
 }

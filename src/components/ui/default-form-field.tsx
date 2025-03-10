@@ -131,7 +131,7 @@ export function DefaultFormSelect({
             <Select
               onValueChange={field.onChange}
               value={field.value}
-              defaultValue={field.value}
+              defaultValue={String(field.value)}
               form={form}
             > 
               <SelectTrigger>
