@@ -3,7 +3,7 @@ import { RepositoryBase } from "../helpers/repository-base";
 import { ProposalFormValues } from "@/app/dashboard/customer-boarding/create-proposal/page";
 import { LeadRepository } from "./leadRepository";
 import { LeadFormValues } from "@/app/dashboard/customer-boarding/create-lead/page";
-import { Client, ClientRepository } from "./clientRepository";
+import { Client, ClientAddress, ClientRepository } from "./clientRepository";
 import { withTransaction } from "../helpers/db-helper";
 import formatDate from "../utils/date";
 import mysql from 'mysql2/promise';
@@ -18,7 +18,7 @@ export class ProposalRepository extends RepositoryBase {
     this.companyId = companyId;
   }
 
-  async createProposalWithTransaction (
+  async createProposalWithTransaction(
     data: ProposalFormValues,
     userId: string,
     companyId: string
@@ -28,7 +28,7 @@ export class ProposalRepository extends RepositoryBase {
       return proposalRepo.createProposal(data, userId, connection);
     });
   };
-  
+
 
   async createProposal(
     data: ProposalFormValues,
@@ -36,14 +36,13 @@ export class ProposalRepository extends RepositoryBase {
     transactionConnection?: mysql.Connection
   ) {
     try {
-
       const lead: LeadFormValues = {
         firstName: data.firstName,
         lastName: data.lastName,
         amount: data.loanAmount,
-        email: data.email,
+        email: String(data.email),
         gender: data.gender,
-        loanType: 'auto',
+        loanType: data.productType,
         phone: data.phone,
         purpose: data.purpose,
         term: 0,
@@ -51,7 +50,7 @@ export class ProposalRepository extends RepositoryBase {
       }
 
       const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 10, transactionConnection)
-      
+
       const client: Client = {
         id: 0,
         client_id: '',
@@ -64,12 +63,12 @@ export class ProposalRepository extends RepositoryBase {
         product_type: data.productType,
         phone: data.phone,
         pan: data.panCard,
-        email: data.email,
+        email: String(data.email),
         dob: formatDate(data.dob.toString()),
         type: '',
         status: '1'
       }
-      
+
       const clientResult = await new ClientRepository(this.companyId).createClient(client, transactionConnection);
 
       var propItem = {
@@ -102,6 +101,31 @@ export class ProposalRepository extends RepositoryBase {
         .update({
           prop_id: proposalResult
         })
+
+      const address: ClientAddress = {
+        id: 0,
+        client_id: clientResult.result.clientId,
+        prop_id: String(proposalResult),
+        lan: '',
+        line_1: data.add_line_1,
+        line_2: data.add_line_2,
+        line_3: data.add_line_3,
+        landmark: data.landmark,
+        pincode: data.pincode,
+        city: data.city,
+        state: data.state,
+        country: String(process.env.DEFAULT_COUNTRY),
+        type: 'PERMANENT',
+        ownership: data.ownership,
+        since: data.since,
+        status: 1,
+        updated_by: userId,
+      }
+
+      const addressResult = await new ClientRepository(this.companyId).addClientAddress(
+        address,
+        transactionConnection
+      )
 
       return this.success("Proposal Created!")
     } catch (error) {

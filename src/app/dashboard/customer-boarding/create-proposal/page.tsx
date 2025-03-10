@@ -33,7 +33,7 @@ const proposalFormSchema = z.object({
   // Personal Details
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: zodPatterns.email.schema(),
+  email: zodPatterns.email.schema().optional().or(z.literal('')),
   phone: zodPatterns.phone.schema(),
   panCard: zodPatterns.pan.schema(),
   gender: z.enum(["Male", "Female", "Other"], {
@@ -49,6 +49,10 @@ const proposalFormSchema = z.object({
   pincode: zodPatterns.pincode.schema(),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
+  since: z.string().max(10, "Max 10 characters allowed").optional(),
+  ownership: z.enum(["Owned", "Rented"], {
+    required_error: "Please select ownership",
+  }),
 
   // Income Details
   empType: z.enum(["salaried", "business"], {
@@ -60,7 +64,7 @@ const proposalFormSchema = z.object({
   incomeContact: zodPatterns.phone.schema(),
 
   // Loan Details
-  productType: z.string(),
+  productType: z.string().min(1, "You have to Select Product Type!"),
   purpose: z.string().min(2, "Enter at least 5 characters"),
   loanAmount: z.coerce.number().min(1000, "Enter a valid loan amount!"),
   branch: z.string().min(1, "You have to add the Branch!")
@@ -68,23 +72,31 @@ const proposalFormSchema = z.object({
 
 export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 
-const year18Ago = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
-
 const defaultValues: Partial<ProposalFormValues> = {
-  firstName: '',
-  lastName: '',
+  firstName: 'T-FirstName',
+  lastName: 'T-LastName',
   email: '',
-  phone: '',
-  panCard: '',
-  add_line_1: '',
-  landmark: '',
-  pincode: '',
-  state: '',
-  entityName: '',
-  incomeAddress: '',
-  incomeContact: '',
-  productType: '',
-  purpose: '',
+  phone: '7694930451',
+  panCard: 'CDZPJ1746D',
+  gender: 'Female',
+  add_line_1: 'D 108 Ras Town',
+  add_line_2: 'Vijay Nagar',
+  add_line_3: 'Indore, Main',
+  landmark: 'Intellect Heights',
+  pincode: '452001',
+  city: 'Indore',
+  state: 'Madhya Pradesh',
+  since: '5 Years',
+  ownership: 'Owned',
+  empType: 'salaried',
+  entityName: 'Bls',
+  incomeAmount: 20000,
+  incomeAddress: 'Vijay Nagar',
+  incomeContact: '7999882598',
+  productType: '1',
+  purpose: 'Test',
+  loanAmount: 50000,
+  branch: '1'
 };
 
 export default function CreateProposal() {
@@ -97,7 +109,7 @@ export default function CreateProposal() {
 
   const steps = [
     { title: "Personal Details", fields: ['firstName', 'lastName', 'email', 'phone', 'panCard', 'gender', 'dob'] },
-    { title: "Address Details", fields: ['add_line_1', 'add_line_2', 'add_line_3', 'landmark', 'pincode', 'city', 'state'] },
+    { title: "Address Details", fields: ['add_line_1', 'add_line_2', 'add_line_3', 'landmark', 'pincode', 'city', 'state', 'ownership'] },
     { title: "Income Details", fields: ['empType', 'entityName', 'incomeAmount', 'incomeAddress', 'incomeContact',] },
     { title: "Loan Details", fields: ['productType', 'purpose', 'loanAmount'] }
   ];
@@ -262,9 +274,9 @@ export default function CreateProposal() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {listLoading 
-                    ? <Loading />
-                    : <LoanProductDetails branchList={branchList} productTypeList={productTypeList} form={form} />}
+                    {listLoading
+                      ? <Loading />
+                      : <LoanProductDetails branchList={branchList} productTypeList={productTypeList} form={form} />}
                   </CardContent>
                 </Card>
               </TabsContent>

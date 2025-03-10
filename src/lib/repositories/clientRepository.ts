@@ -20,6 +20,26 @@ export interface Client {
   status: string
 }
 
+export interface ClientAddress {
+  id: number
+  client_id: string
+  prop_id: string
+  lan: string
+  line_1: string
+  line_2?: string
+  line_3?: string
+  landmark: string
+  pincode: string
+  city: string
+  state: string
+  country: string
+  type: string
+  ownership: string
+  since?: string
+  status: number
+  updated_by: string
+}
+
 export class ClientRepository extends RepositoryBase {
   private builder: QueryBuilder;
   private companyId: string;
@@ -41,7 +61,7 @@ export class ClientRepository extends RepositoryBase {
         .where('company_id = ?', this.companyId)
         .limit(1)
         .setConnection(transactionConnection)
-        .select(['client_id'])    
+        .select(['client_id'])
 
       if (result.length > 0) {
         var client = result[0] as any
@@ -56,6 +76,46 @@ export class ClientRepository extends RepositoryBase {
     }
   }
 
+  async addClientAddress(
+    address: ClientAddress,
+    transactionConnection?: mysql.Connection
+  ) {
+    try {
+      const item = {
+        client_id: address.client_id,
+        prop_id: address.prop_id,
+        lan: address.lan,
+        line_1: address.line_1,
+        line_2: address.line_2,
+        line_3: address.line_3,
+        landmark: address.landmark,
+        pincode: address.pincode,
+        city: address.city,
+        state: address.state,
+        country: address.country,
+        type: address.type,
+        ownership: address.ownership,
+        since: address.since,
+        status: address.status,
+        updated_by: address.updated_by,
+        updated_on: new Date()
+      }
+
+      const result = await new QueryBuilder('client_address')
+        .setConnection(transactionConnection)
+        .insert(item)
+
+      if (result > 0) {
+        return this.success("Address Added Successfully!")
+      }
+
+      return this.failure("Request Failed!")
+
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
   async createClient(
     client: Client,
     transactionConnection?: mysql.Connection
@@ -64,7 +124,7 @@ export class ClientRepository extends RepositoryBase {
       let clientId = '';
       let type = 'EXISTING';
       let clientCheck = await this.checkExisting(client.pan, transactionConnection);
-      
+
       if (!clientCheck.success) {
         const sql = `
           SELECT max(client_id) as mcid

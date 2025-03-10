@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,19 +26,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Icons } from "@/components/icons";
-import { useToast } from "@/hooks/use-toast"
 import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
 import { createLead } from '@/lib/actions/customer-boarding';
 import { useGlobalDialog } from '@/providers/DialogProvider'
+import { useEffect, useState } from "react";
+import { getLoanProductTypes } from "@/lib/actions/loan-product";
+import { DefaultFormSelect } from "@/components/ui/default-form-field";
+import { Skeleton } from "@/components/ui/skeleton";
+import FormItemSkeleton from "@/components/skeletons/form-item-skeleton";
 
 const leadFormSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"), 
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().min(10, "Please enter a valid phone number"),
-  loanType: z.enum(["personal", "business", "mortgage", "auto"], {
-    required_error: "Please select a loan type",
-  }),
+  loanType: z.string().min(1, "You have to Select Product Type!"),
+
   gender: z.enum(["Male", "Female", "Other"], {
     required_error: "Please select gender",
   }),
@@ -66,8 +68,9 @@ const defaultValues: Partial<LeadFormValues> = {
 };
 
 export default function CreateLead() {
-  const { toast } = useToast()
   const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog()
+  const [listLoading, setListLoading] = useState(false);
+  const [productTypeList, setProductTypeList] = useState([]);
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
@@ -97,6 +100,26 @@ export default function CreateLead() {
       }
     )
   }
+
+
+  useEffect(() => {
+    (async () => {
+      setListLoading(true);
+
+      let list = await getLoanProductTypes()
+
+      setListLoading(false);
+
+      if (list.success) {
+        const formattedData = list.result.map((item: any) => ({
+          label: item.name,
+          value: item.id.toString(),
+        }));
+        setProductTypeList(formattedData);
+      }
+    })();
+  }, []);
+
 
   return (
     <div className="w-full mx-auto py-4 md:px-4">
@@ -201,29 +224,19 @@ export default function CreateLead() {
                   <h3 className="text-lg font-semibold text-gray-700">Loan Information</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="loanType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabelWithIcon icon={Icons.creditCard}>Loan Type</FormLabelWithIcon>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select loan type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="personal">Personal Loan</SelectItem>
-                            <SelectItem value="business">Business Loan</SelectItem>
-                            <SelectItem value="mortgage">Mortgage Loan</SelectItem>
-                            <SelectItem value="auto">Auto Loan</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
+                  <div className='col-span-2'>
+                    {listLoading
+                      ? <FormItemSkeleton />
+                      : <DefaultFormSelect 
+                        form={form}
+                        label='Loan Product Type'
+                        name='productType'
+                        options={productTypeList}
+                        placeholder='Select Product Type'
+                      />}
+                  </div>
+
                   <FormField
                     control={form.control}
                     name="amount"
