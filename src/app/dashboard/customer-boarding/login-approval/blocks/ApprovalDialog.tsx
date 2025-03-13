@@ -125,19 +125,21 @@ export default function ApprovalDialog({
             <Separator />
 
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-start gap-3">
+              {approval.userAddress && <div className="flex items-start gap-3">
                 <UserIcon className="w-5 h-5 mt-1 text-muted-foreground" />
                 <div>
                   <h4 className="font-semibold mb-2">Applicant Address</h4>
                   <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
-                    <DetailItem label=" Name" value={approval.customer_name} />
-                    <DetailItem label="Contact" value={approval.phone} />
-                    <DetailItem label="PAN Number" value={approval.pan} />
-                    <DetailItem label="Email" value={approval.email} />
-                    <DetailItem label="Date of Birth" value={formatDate(approval.dob)} />
+                    <DetailItem label=" Address Line 1" value={approval.userAddress.line_1} />
+                    {approval.userAddress.line_2 && <DetailItem label=" Address Line 2" value={approval.userAddress.line_2} />}
+                    {approval.userAddress.line_3 && <DetailItem label=" Address Line 3" value={approval.userAddress.line_3} />}
+                    <DetailItem label="Landmark" value={approval.userAddress.landmark} />
+                    <DetailItem label="Pincode" value={approval.userAddress.pincode} />
+                    <DetailItem label="City" value={approval.userAddress.city} />
+                    <DetailItem label="State" value={approval.userAddress.state} />
                   </dl>
                 </div>
-              </div>
+              </div>}
 
               <div className="flex items-start gap-3">
                 <LandmarkIcon className="w-5 h-5 mt-1 text-muted-foreground" />

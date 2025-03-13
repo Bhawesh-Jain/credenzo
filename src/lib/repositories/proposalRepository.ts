@@ -219,13 +219,15 @@ export class ProposalRepository extends RepositoryBase {
             c.phone, c.email, c.type as customer_type,
             lpt.name AS product_name,  
             ms.label AS status_label,  
-            u.name AS handler_name
+            u.name AS handler_name,
+            l.loan_purpose
         FROM proposals p  
         LEFT JOIN branches br ON p.branch_id = br.id  
         LEFT JOIN loan_product_type lpt ON lpt.id = p.product_id  
         LEFT JOIN master_status ms ON ms.status = p.status  
         LEFT JOIN users u ON u.id = p.handler_id  
         LEFT JOIN client c ON c.client_id = p.client_id
+        LEFT JOIN leads l ON l.id = p.lead_id
           AND c.prop_id = p.id
         WHERE p.id = ?
       `
@@ -242,7 +244,7 @@ export class ProposalRepository extends RepositoryBase {
 
         return this.success({
           ...prop,
-          userAddress: address
+          userAddress: address.result
         })
       }
 
