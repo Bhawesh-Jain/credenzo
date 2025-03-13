@@ -196,7 +196,7 @@ export class ProposalRepository extends RepositoryBase {
     `
 
       const result = await executeQuery<any[]>(sql, [this.companyId]);
-      
+
       if (result.length > 0) {
         return this.success(result)
       }
@@ -233,7 +233,7 @@ export class ProposalRepository extends RepositoryBase {
       `
 
       const result = await executeQuery<any[]>(sql, [approvalId]);
-      
+
       if (result.length > 0) {
         const prop = result[0];
 
@@ -249,6 +249,31 @@ export class ProposalRepository extends RepositoryBase {
       }
 
       return this.failure('No Proposals Found!')
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async processApproval(
+    approvalId: number,
+    decision: string
+  ) {
+    try {
+      let status = 0;
+
+      if (decision == 'approve') status = 10;
+      if (decision == 'reject') status = -5;
+
+      const result = await new QueryBuilder('proposals')
+        .where('id = ?', approvalId)
+        .update({ status })
+      
+      if (result > 0) {
+        return this.success(result)
+      }
+
+      return this.failure('Update Failed')
+
     } catch (error) {
       return this.handleError(error)
     }
