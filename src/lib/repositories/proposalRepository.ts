@@ -1,4 +1,4 @@
-import { QueryBuilder } from "../helpers/db-helper";
+import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import { ProposalFormValues } from "@/app/dashboard/customer-boarding/create-proposal/page";
 import { LeadRepository } from "./leadRepository";
@@ -7,6 +7,8 @@ import { Client, ClientAddress, ClientRepository } from "./clientRepository";
 import { withTransaction } from "../helpers/db-helper";
 import formatDate from "../utils/date";
 import mysql from 'mysql2/promise';
+import { UserRepository } from "./userRepository";
+import { getSession } from "../session";
 
 export class ProposalRepository extends RepositoryBase {
   private builder: QueryBuilder;
@@ -28,6 +30,18 @@ export class ProposalRepository extends RepositoryBase {
       return proposalRepo.createProposal(data, userId, connection);
     });
   };
+
+  private async generatePropNo(leadId: string) {
+    const session = await getSession();
+    const abbr = session.company_abbr;
+    const totalLength = 16;
+
+    const paddingLength = totalLength - abbr.length - leadId.length;
+    const zeros = paddingLength > 0 ? '0'.repeat(paddingLength) : '';
+
+    const propNo = abbr + zeros + leadId;
+    return propNo;
+  }
 
 
   async createProposal(
@@ -71,12 +85,16 @@ export class ProposalRepository extends RepositoryBase {
 
       const clientResult = await new ClientRepository(this.companyId).createClient(client, transactionConnection);
 
+      let propNo = await this.generatePropNo(String(leadResult.result));
+
       var propItem = {
         lead_id: leadResult.result,
         client_id: clientResult.result.clientId,
         lan: null,
         loan_id: null,
+        prop_no: propNo,
         handler_id: userId,
+        company_id: this.companyId,
         status: 5,
         customer_name: `${data.firstName} ${data.lastName}`,
         email_id: data.email,
@@ -128,6 +146,56 @@ export class ProposalRepository extends RepositoryBase {
       )
 
       return this.success("Proposal Created!")
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async getPendingApprovals(
+    userId: string,
+  ) {
+    try {
+
+      const userResult = await new UserRepository(this.companyId).getUserById(userId);
+
+      if (!userResult.success) {
+        return this.failure(userResult.error)
+      }
+
+      const userBranches = await new UserRepository(this.companyId).getUserBranchesById(userId);
+
+      let branchList = userBranches.result as any[];
+
+      branchList = branchList.map(item => item.branch_id)
+
+      let branches = branchList.join(',').toString();
+
+      const user = userResult.result;
+
+      let sql = `
+        SELECT 
+            p.*,  
+            br.name AS branch_name, br.status AS branch_status,  
+            lpt.name AS product_name,  
+            ms.label AS status_label,  
+            u.name AS handler_name  
+        FROM proposals p  
+        LEFT JOIN branches br ON p.branch_id = br.id  
+        LEFT JOIN loan_product_type lpt ON lpt.id = p.product_id  
+        LEFT JOIN master_status ms ON ms.status = p.status  
+        LEFT JOIN users u ON u.id = p.handler_id  
+        WHERE p.branch_id IN (${branches})  
+          AND p.status > 0  
+          AND p.company_id = ?  
+    `
+
+      const result = await executeQuery<any[]>(sql, [this.companyId]);
+      
+      if (result.length > 0) {
+        return this.success(result)
+      }
+
+      return this.failure('No Proposals Found!')
     } catch (error) {
       return this.handleError(error)
     }

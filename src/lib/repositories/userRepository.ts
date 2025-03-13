@@ -186,6 +186,25 @@ export class UserRepository extends RepositoryBase {
     }
   }
 
+  async getUserBranchesById(
+    userId: string
+  ) {
+    try {
+      var user = await executeQuery<any[]>(`
+          SELECT branch_id
+          FROM user_branches
+          WHERE user_id = ?
+        `, [userId]);
+
+      if (user && user.length > 0) {
+        return this.success(user)
+      }
+      return this.failure('No Branches Found!')
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
   async getUsersByRoleId(
     roleId: string
   ) {

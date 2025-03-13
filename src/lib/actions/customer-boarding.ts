@@ -51,3 +51,12 @@ export async function createProposal(data:ProposalFormValues) {
 
   return result;
 }
+
+export async function getPendingApprovals() {
+  const session = await getSession();
+
+  const proposalRepository = new ProposalRepository(session.company_id);
+  const result = proposalRepository.getPendingApprovals(session.user_id)
+
+  return result;
+}
