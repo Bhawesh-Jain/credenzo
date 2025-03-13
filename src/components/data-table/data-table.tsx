@@ -38,6 +38,7 @@ interface DataTableProps<T> {
   serialShow?: boolean
   className?: string
   loading?: boolean
+  toolbar?: boolean
   setReload?: (reload: boolean) => void
 }
 
@@ -49,6 +50,7 @@ export function DataTable<T extends Record<string, any>>({
   serialShow = true,
   className,
   loading = false,
+  toolbar = true,
   setReload
 }: DataTableProps<T>) {
   // State management
@@ -150,7 +152,7 @@ export function DataTable<T extends Record<string, any>>({
             className="max-w-xs "
           />
         )}
-        <DropdownMenu>
+        {toolbar && <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               <Settings2 className="mr-2 h-4 w-4" />
@@ -168,7 +170,7 @@ export function DataTable<T extends Record<string, any>>({
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu>}
       </div>
 
       <div className={cn("rounded-md border", className)}>

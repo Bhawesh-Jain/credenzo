@@ -12,8 +12,8 @@ import {
   FileTextIcon,
   LineChartIcon
 } from "lucide-react";
-import { RecentApprovals } from "./components/recent-approvals";
-import { LoanChart } from "@/components/loan-chart";
+import { ApprovalRateChart, LoanChart } from "@/components/loan-chart";
+import { RecentApprovals } from "@/components/recent-approvals";
 
 export default function Dashboard() {
   const metrics = [
@@ -46,9 +46,9 @@ export default function Dashboard() {
             <CardContent>
               <div className="text-2xl font-bold">{metric.value}</div>
               <div className="flex items-center text-xs mt-2">
-                <Badge 
-                  variant={metric.status === 'positive' ? 'success' : 
-                          metric.status === 'negative' ? 'destructive' : 'outline'}
+                <Badge
+                  variant={metric.status === 'positive' ? 'success' :
+                    metric.status === 'negative' ? 'destructive' : 'outline'}
                   className="mr-2"
                 >
                   {metric.trend}
@@ -78,13 +78,8 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle>Loan Distribution</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center items-center h-full">
-            <div className="w-64 h-64">
-              {/* Add Pie Chart component here */}
-              <div className="flex items-center justify-center bg-muted/50 rounded-full w-full h-full">
-                <span className="text-muted-foreground">Chart Preview</span>
-              </div>
-            </div>
+          <CardContent>
+            <ApprovalRateChart />
           </CardContent>
         </Card>
       </div>
