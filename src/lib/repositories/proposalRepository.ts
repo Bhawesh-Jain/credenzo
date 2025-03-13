@@ -233,7 +233,17 @@ export class ProposalRepository extends RepositoryBase {
       const result = await executeQuery<any[]>(sql, [approvalId]);
       
       if (result.length > 0) {
-        return this.success(result[0])
+        const prop = result[0];
+
+        const address = await new ClientRepository(this.companyId).getClientAddress({
+          clientId: prop.client_id,
+          propId: prop.id
+        })
+
+        return this.success({
+          ...prop,
+          userAddress: address
+        })
       }
 
       return this.failure('No Proposals Found!')

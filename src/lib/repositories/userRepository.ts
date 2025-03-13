@@ -313,49 +313,4 @@ export class UserRepository extends RepositoryBase {
     }
   }
 
-  async getClientAddress({
-    type = 'PERMANENT',
-    clientId,
-    propId,
-    lan,
-  } : {
-    type: string,
-    clientId: string,
-    propId?: string
-    lan?: string
-  }) {
-    try {
-      const query = new QueryBuilder('client_address')
-            .where("client_id = ?", clientId)
-            .where('type = ?', type)
-            .where('status = 1')
-
-      if (propId) query.where('prop_id = ?', propId)
-      if (lan) query.where('lan = ?', lan)
-
-      query.orderBy('id', 'DESC')
-      query.limit(1)
-      
-      const result = await query.select([
-        'line_1', 
-        'line_2', 
-        'line_3', 
-        'landmark', 
-        'pincode', 
-        'city', 
-        'state', 
-        'country', 
-        'ownership', 
-        'since', 
-      ])
-
-      if (result.length > 0) {
-        return this.success(result[0])
-      }
-
-      return this.failure('Address Not Found!')
-    } catch (error) {
-      return this.handleError(error)
-    }
-  }
 }
