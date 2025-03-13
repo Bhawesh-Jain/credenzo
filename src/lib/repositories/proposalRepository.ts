@@ -80,7 +80,13 @@ export class ProposalRepository extends RepositoryBase {
         email: String(data.email),
         dob: formatDate(data.dob.toString()),
         type: '',
-        status: '1'
+        status: '1',
+        income_emp_type: data.empType,
+        income_entity_name: data.entityName,
+        income_amount: data.incomeAmount,
+        income_freq: 'Monthly',
+        income_address: data.incomeAddress,
+        income_contact: data.incomeContact,
       }
 
       const clientResult = await new ClientRepository(this.companyId).createClient(client, transactionConnection);
@@ -193,6 +199,41 @@ export class ProposalRepository extends RepositoryBase {
       
       if (result.length > 0) {
         return this.success(result)
+      }
+
+      return this.failure('No Proposals Found!')
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async getApprovalDetails(
+    approvalId: number,
+  ) {
+    try {
+
+      let sql = `
+        SELECT 
+            p.*,  
+            br.name AS branch_name, br.status AS branch_status,  
+            c.phone, c.email, c.type as customer_type,
+            lpt.name AS product_name,  
+            ms.label AS status_label,  
+            u.name AS handler_name
+        FROM proposals p  
+        LEFT JOIN branches br ON p.branch_id = br.id  
+        LEFT JOIN loan_product_type lpt ON lpt.id = p.product_id  
+        LEFT JOIN master_status ms ON ms.status = p.status  
+        LEFT JOIN users u ON u.id = p.handler_id  
+        LEFT JOIN client c ON c.client_id = p.client_id
+          AND c.prop_id = p.id
+        WHERE p.id = ?
+      `
+
+      const result = await executeQuery<any[]>(sql, [approvalId]);
+      
+      if (result.length > 0) {
+        return this.success(result[0])
       }
 
       return this.failure('No Proposals Found!')

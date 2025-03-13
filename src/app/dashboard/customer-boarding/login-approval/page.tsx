@@ -7,6 +7,7 @@ import formatDate from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
+import ApprovalDialog from "./blocks/ApprovalDialog";
 
 type LoanApproval = {
   id: number;
@@ -150,13 +151,13 @@ export default function Approvals() {
         setReload={setReload}
       />
 
-      {/* {dialogOpen && selectedId && (
+      {dialogOpen && selectedId && (
         <ApprovalDialog 
           approvalId={selectedId}
           onClose={() => setDialogOpen(false)}
           onDecision={() => setReload(true)}
         />
-      )} */}
+      )}
     </Container>
   )
 }

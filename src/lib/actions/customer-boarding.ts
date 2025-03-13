@@ -60,3 +60,21 @@ export async function getPendingApprovals() {
 
   return result;
 }
+
+export async function getApprovalDetails(approvalId: number) {
+  const session = await getSession();
+
+  const proposalRepository = new ProposalRepository(session.company_id);
+  const result = proposalRepository.getApprovalDetails(approvalId)
+
+  return result;
+}
+
+export async function processApproval(approvalId: number, decision: string) {
+  const session = await getSession();
+
+  const proposalRepository = new ProposalRepository(session.company_id);
+  const result = proposalRepository.getPendingApprovals(session.user_id)
+
+  return result;
+}

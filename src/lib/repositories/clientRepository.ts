@@ -18,6 +18,12 @@ export interface Client {
   dob: string
   type: string
   status: string
+  income_emp_type: string
+  income_entity_name: string
+  income_amount: number
+  income_freq: string
+  income_address: string
+  income_contact: string
 }
 
 export interface ClientAddress {
