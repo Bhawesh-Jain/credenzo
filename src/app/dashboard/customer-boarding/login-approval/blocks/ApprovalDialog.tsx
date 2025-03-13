@@ -78,7 +78,7 @@ export default function ApprovalDialog({
 
   return (
     <Dialog open={!!approvalId} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-6xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span>Review Proposal</span>
@@ -98,7 +98,7 @@ export default function ApprovalDialog({
                 <UserIcon className="w-5 h-5 mt-1 text-muted-foreground" />
                 <div>
                   <h4 className="font-semibold mb-2">Applicant Details</h4>
-                  <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
+                  <dl className="grid grid-cols-2 gap-y-3 gap-x-4">
                     <DetailItem label=" Name" value={approval.customer_name} />
                     <DetailItem label="Contact" value={approval.phone} />
                     <DetailItem label="PAN Number" value={approval.pan} />
@@ -112,7 +112,7 @@ export default function ApprovalDialog({
                 <PcCase className="w-5 h-5 mt-1 text-muted-foreground" />
                 <div>
                   <h4 className="font-semibold mb-2">Income Details</h4>
-                  <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
+                  <dl className="grid grid-cols-2 gap-y-3 gap-x-4">
                     <DetailItem label="Employment Type" value={approval.income_emp_type} />
                     <DetailItem label="Income Amount" value={`₹${approval.income_amount?.toLocaleString()}`} />
                     <DetailItem label="Address" value={approval.income_address} />
@@ -129,7 +129,7 @@ export default function ApprovalDialog({
                 <UserIcon className="w-5 h-5 mt-1 text-muted-foreground" />
                 <div>
                   <h4 className="font-semibold mb-2">Applicant Address</h4>
-                  <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
+                  <dl className="grid grid-cols-2 gap-y-3 gap-x-4">
                     <DetailItem label=" Address Line 1" value={approval.userAddress.line_1} />
                     {approval.userAddress.line_2 && <DetailItem label=" Address Line 2" value={approval.userAddress.line_2} />}
                     {approval.userAddress.line_3 && <DetailItem label=" Address Line 3" value={approval.userAddress.line_3} />}
@@ -145,7 +145,7 @@ export default function ApprovalDialog({
                 <LandmarkIcon className="w-5 h-5 mt-1 text-muted-foreground" />
                 <div>
                   <h4 className="font-semibold mb-2">Loan Details</h4>
-                  <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
+                  <dl className="grid grid-cols-2 gap-y-3 gap-x-4">
                     <DetailItem label="Customer Type" value={approval.customer_type} />
                     <DetailItem label="Amount" value={`₹${approval.loan_amount?.toLocaleString()}`} />
                     <DetailItem label="Product" value={approval.product_name} />
@@ -222,13 +222,13 @@ export default function ApprovalDialog({
 function DetailItem({ label, value, variant = 'vertical' }: { variant?: 'vertical' | 'horizontal'; label: string; value: string | React.ReactNode }) {
   return (
     <div className={cn(
-      "text-sm gap-1",
+      "text-sm ",
       variant === 'vertical'
         ? 'flex flex-col'
         : 'flex'
     )}>
       <dt className="text-muted-foreground">{label}{variant === 'horizontal' && ':'}</dt>
-      <dd className="font-medium">{value}</dd>
+      <dd className="font-medium">{value ? value : 'N/A'}</dd>
     </div>
   );
 }
