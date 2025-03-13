@@ -191,7 +191,7 @@ export class ProposalRepository extends RepositoryBase {
         LEFT JOIN master_status ms ON ms.status = p.status  
         LEFT JOIN users u ON u.id = p.handler_id  
         WHERE p.branch_id IN (${branches})  
-          AND p.status > 0  
+          AND p.status = 5  
           AND p.company_id = ?  
     `
 
