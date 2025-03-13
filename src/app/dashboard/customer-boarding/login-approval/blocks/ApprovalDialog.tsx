@@ -12,7 +12,8 @@ import {
   LandmarkIcon,
   FileTextIcon,
   CalendarIcon,
-  BadgeDollarSignIcon
+  BadgeDollarSignIcon,
+  PcCase
 } from "lucide-react";
 import formatDate from "@/lib/utils/date";
 import { cn } from "@/lib/utils";
@@ -102,6 +103,38 @@ export default function ApprovalDialog({
                     <DetailItem label="Contact" value={approval.phone} />
                     <DetailItem label="PAN Number" value={approval.pan} />
                     <DetailItem label="Email" value={approval.email} />
+                    <DetailItem label="Date of Birth" value={formatDate(approval.dob)} />
+                  </dl>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <PcCase className="w-5 h-5 mt-1 text-muted-foreground" />
+                <div>
+                  <h4 className="font-semibold mb-2">Income Details</h4>
+                  <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
+                    <DetailItem label="Employment Type" value={approval.income_emp_type} />
+                    <DetailItem label="Income Amount" value={`₹${approval.income_amount?.toLocaleString()}`} />
+                    <DetailItem label="Address" value={approval.income_address} />
+                    <DetailItem label="Contact" value={approval.income_contact} />
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3">
+                <UserIcon className="w-5 h-5 mt-1 text-muted-foreground" />
+                <div>
+                  <h4 className="font-semibold mb-2">Applicant Address</h4>
+                  <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
+                    <DetailItem label=" Name" value={approval.customer_name} />
+                    <DetailItem label="Contact" value={approval.phone} />
+                    <DetailItem label="PAN Number" value={approval.pan} />
+                    <DetailItem label="Email" value={approval.email} />
+                    <DetailItem label="Date of Birth" value={formatDate(approval.dob)} />
                   </dl>
                 </div>
               </div>
@@ -111,6 +144,7 @@ export default function ApprovalDialog({
                 <div>
                   <h4 className="font-semibold mb-2">Loan Details</h4>
                   <dl className="grid grid-cols-2 gap-y-2 gap-x-4">
+                    <DetailItem label="Customer Type" value={approval.customer_type} />
                     <DetailItem label="Amount" value={`₹${approval.loan_amount?.toLocaleString()}`} />
                     <DetailItem label="Product" value={approval.product_name} />
                     <DetailItem label="Purpose" value={approval.loan_purpose} />
