@@ -161,13 +161,6 @@ export class ProposalRepository extends RepositoryBase {
     userId: string,
   ) {
     try {
-
-      const userResult = await new UserRepository(this.companyId).getUserById(userId);
-
-      if (!userResult.success) {
-        return this.failure(userResult.error)
-      }
-
       const userBranches = await new UserRepository(this.companyId).getUserBranchesById(userId);
 
       let branchList = userBranches.result as any[];
@@ -175,8 +168,6 @@ export class ProposalRepository extends RepositoryBase {
       branchList = branchList.map(item => item.branch_id)
 
       let branches = branchList.join(',').toString();
-
-      const user = userResult.result;
 
       let sql = `
         SELECT 
@@ -193,8 +184,8 @@ export class ProposalRepository extends RepositoryBase {
         WHERE p.branch_id IN (${branches})  
           AND p.status = 5  
           AND p.company_id = ?  
-    `
-
+      `
+      
       const result = await executeQuery<any[]>(sql, [this.companyId]);
 
       if (result.length > 0) {
