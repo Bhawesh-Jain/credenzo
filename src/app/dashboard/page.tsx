@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { ApprovalRateChart, LoanChart } from "@/components/loan-chart";
 import { RecentApprovals } from "@/components/recent-approvals";
+import { useUser } from "@/contexts/user-context";
 
 export default function Dashboard() {
   const metrics = [
@@ -23,12 +24,14 @@ export default function Dashboard() {
     { id: 4, title: "Avg Processing Time", value: "2.4 Days", icon: ClockIcon, trend: "-0.8d", status: "negative" },
   ];
 
+  const {user} = useUser()
+
   return (
     <Container>
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
-          <p className="text-muted-foreground">Welcome back, Loan Manager</p>
+          <p className="text-muted-foreground">Welcome back, {user.user_name}</p>
         </div>
         <Button>Generate Report</Button>
       </div>
