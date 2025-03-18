@@ -9,6 +9,7 @@ import formatDate from "../utils/date";
 import mysql from 'mysql2/promise';
 import { UserRepository } from "./userRepository";
 import { getSession } from "../session";
+import { ProcessRepository } from "./processRepository";
 
 export class ProposalRepository extends RepositoryBase {
   private builder: QueryBuilder;
@@ -119,6 +120,14 @@ export class ProposalRepository extends RepositoryBase {
         .setConnection(transactionConnection)
         .insert(propItem);
 
+      await new ProcessRepository().updateProcess({
+        processName: 'proposal_process',
+        processValue: 1,
+        leadId: leadResult.result,
+        propId: String(proposalResult),
+        transactionConnection
+      })
+
       const clientLoanUpdate = await new QueryBuilder('client')
         .setConnection(transactionConnection)
         .where("id = ?", clientResult.result.insertId)
@@ -185,7 +194,7 @@ export class ProposalRepository extends RepositoryBase {
           AND p.status = 5  
           AND p.company_id = ?  
       `
-      
+
       const result = await executeQuery<any[]>(sql, [this.companyId]);
 
       if (result.length > 0) {
@@ -258,7 +267,7 @@ export class ProposalRepository extends RepositoryBase {
       const result = await new QueryBuilder('proposals')
         .where('id = ?', approvalId)
         .update({ status })
-      
+
       if (result > 0) {
         return this.success(result)
       }

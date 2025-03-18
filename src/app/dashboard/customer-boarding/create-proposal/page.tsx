@@ -81,6 +81,7 @@ const defaultValues: Partial<ProposalFormValues> = {
   phone: '7694930451',
   panCard: 'CDZPJ1746D',
   gender: 'Female',
+  dob: new Date(),
   add_line_1: 'D 108 Ras Town',
   add_line_2: 'Vijay Nagar',
   add_line_3: 'Indore, Main',

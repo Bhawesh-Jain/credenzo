@@ -51,10 +51,12 @@ export class QueryBuilder {
   private table: string;
   private conditions: string[] = [];
   private parameters: any[] = [];
+  private orConditions: string[] = [];
+  private orParameters: any[] = [];
   private limitValue?: number;
   private offsetValue?: number;
   private orderByFields: string[] = [];
-  private connection?: mysql.Connection
+  private connection?: mysql.Connection;
   
   constructor(table: string) {
     this.table = table;
@@ -68,6 +70,12 @@ export class QueryBuilder {
   where(condition: string, ...params: any[]) {
     this.conditions.push(condition);
     this.parameters.push(...params);
+    return this;
+  }
+  
+  orWhere(condition: string, ...params: any[]) {
+    this.orConditions.push(condition);
+    this.orParameters.push(...params);
     return this;
   }
   
@@ -86,12 +94,29 @@ export class QueryBuilder {
     return this;
   }
   
+  private buildWhereClause(): { clause: string, parameters: any[] } {
+    const clauses: string[] = [];
+    const params: any[] = [];
+    
+    if (this.conditions.length > 0) {
+      clauses.push(this.conditions.join(' AND '));
+      params.push(...this.parameters);
+    }
+    
+    if (this.orConditions.length > 0) {
+      clauses.push(`(${this.orConditions.join(' OR ')})`);
+      params.push(...this.orParameters);
+    }
+    
+    const clause = clauses.length > 0 ? ` WHERE ${clauses.join(' AND ')}` : '';
+    return { clause, parameters: params };
+  }
+  
   async select<T>(fields: string[] = ['*']): Promise<T[]> {
     let query = `SELECT ${fields.join(', ')} FROM ${this.table}`;
     
-    if (this.conditions.length) {
-      query += ` WHERE ${this.conditions.join(' AND ')}`;
-    }
+    const { clause, parameters } = this.buildWhereClause();
+    query += clause;
     
     if (this.orderByFields.length) {
       query += ` ORDER BY ${this.orderByFields.join(', ')}`;
@@ -105,7 +130,7 @@ export class QueryBuilder {
       query += ` OFFSET ${this.offsetValue}`;
     }
     
-    return executeQuery<T[]>(query, this.parameters, this.connection);
+    return executeQuery<T[]>(query, parameters, this.connection);
   }
   
   async insert<T>(data: Record<string, any>): Promise<number> {
@@ -118,7 +143,6 @@ export class QueryBuilder {
       (${fields.join(', ')}) 
       VALUES (${placeholders})
     `;
-
     
     const result = await executeQuery<mysql.ResultSetHeader>(query, values, this.connection);
     return result.insertId;
@@ -128,16 +152,17 @@ export class QueryBuilder {
     const fields = Object.keys(data);
     const values = Object.values(data);
     
+    const { clause, parameters } = this.buildWhereClause();
+    
     const query = `
       UPDATE ${this.table}
       SET ${fields.map(field => `${field} = ?`).join(', ')}
-      ${this.conditions.length ? `WHERE ${this.conditions.join(' AND ')}` : ''}
+      ${clause}
     `;
-
-    console.log(query, [...values, ...this.parameters], this.connection);
     
-
-    const result = await executeQuery<any>(query, [...values, ...this.parameters], this.connection);
+    console.log(query, [...values, ...parameters]);
+    
+    const result = await executeQuery<any>(query, [...values, ...parameters], this.connection);
     return result.affectedRows;
   }
 
@@ -147,16 +172,10 @@ export class QueryBuilder {
     }
 
     let query = `SELECT COUNT(${column}) AS count FROM ${this.table}`;
-
-    if (this.conditions.length) {
-      query += ` WHERE ${this.conditions.join(' AND ')}`;
-    }
-
-    const result = await executeQuery<{ count: number }[]>(
-      query,
-      this.parameters,
-      this.connection
-    );
+    const { clause, parameters } = this.buildWhereClause();
+    query += clause;
+    
+    const result = await executeQuery<{ count: number }[]>(query, parameters, this.connection);
     
     return result[0]?.count || 0;
   }
