@@ -160,8 +160,6 @@ export class QueryBuilder {
       ${clause}
     `;
     
-    console.log(query, [...values, ...parameters]);
-    
     const result = await executeQuery<any>(query, [...values, ...parameters], this.connection);
     return result.affectedRows;
   }
