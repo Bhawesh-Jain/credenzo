@@ -3,6 +3,7 @@ import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import mysql from "mysql2/promise"
 import { EditLeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/EditLead";
+import { ProcessRepository } from "./processRepository";
 export class LeadRepository extends RepositoryBase {
   private companyId: string;
 
@@ -107,6 +108,8 @@ export class LeadRepository extends RepositoryBase {
       const result = await new QueryBuilder('leads')
         .setConnection(transactionConnection)
         .insert(lead);
+
+      new ProcessRepository().initializeProcess({ leadId: String(result), transactionConnection })
 
       return this.success(result);
     } catch (error) {

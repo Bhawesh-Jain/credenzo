@@ -231,7 +231,7 @@ export class UserRepository extends RepositoryBase {
     try {
       const result = await this.queryBuilder
         .where('id = ?', userId)
-        .update({ status: status });
+        .update({ status: status, updated_by: updatedBy });
 
       if (result > 0) {
         return this.success('User disabled successfully');

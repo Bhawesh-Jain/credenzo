@@ -134,6 +134,7 @@ export class QueryBuilder {
       ${this.conditions.length ? `WHERE ${this.conditions.join(' AND ')}` : ''}
     `;
 
+    console.log(query, [...values, ...this.parameters], this.connection);
     
 
     const result = await executeQuery<any>(query, [...values, ...this.parameters], this.connection);

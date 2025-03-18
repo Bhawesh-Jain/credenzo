@@ -1,6 +1,7 @@
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import mysql from 'mysql2/promise';
+import { ProcessRepository } from "./processRepository";
 
 export interface Client {
   id: number
@@ -127,7 +128,7 @@ export class ClientRepository extends RepositoryBase {
     propId,
     lan,
     type = 'PERMANENT',
-  } : {
+  }: {
     clientId: string,
     propId?: string
     lan?: string
@@ -135,8 +136,8 @@ export class ClientRepository extends RepositoryBase {
   }) {
     try {
       const query = new QueryBuilder('client_address')
-            .where("client_id = ?", clientId)
-            .where('status = 1')
+        .where("client_id = ?", clientId)
+        .where('status = 1')
 
       if (type) query.where('type = ?', type)
       if (propId) query.where('prop_id = ?', propId)
@@ -144,18 +145,18 @@ export class ClientRepository extends RepositoryBase {
 
       query.orderBy('id', 'DESC')
       query.limit(1)
-      
+
       const result = await query.select([
-        'line_1', 
-        'line_2', 
-        'line_3', 
-        'landmark', 
-        'pincode', 
-        'city', 
-        'state', 
-        'country', 
-        'ownership', 
-        'since', 
+        'line_1',
+        'line_2',
+        'line_3',
+        'landmark',
+        'pincode',
+        'city',
+        'state',
+        'country',
+        'ownership',
+        'since',
       ])
 
       if (result.length > 0) {
@@ -203,6 +204,7 @@ export class ClientRepository extends RepositoryBase {
         .insert(item)
 
       if (result && result > 0) {
+        await new ProcessRepository().updateProcess({ processName: 'kyc_process', processValue: 1, leadId: client.lead_id, lan: client.lan, propId: client.prop_id, transactionConnection })
         return this.success({
           insertId: result,
           clientId,

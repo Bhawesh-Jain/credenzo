@@ -75,30 +75,30 @@ const proposalFormSchema = z.object({
 export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 
 const defaultValues: Partial<ProposalFormValues> = {
-  // firstName: 'T-FirstName',
-  // lastName: 'T-LastName',
-  // email: '',
-  // phone: '7694930451',
-  // panCard: 'CDZPJ1746D',
-  // gender: 'Female',
-  // add_line_1: 'D 108 Ras Town',
-  // add_line_2: 'Vijay Nagar',
-  // add_line_3: 'Indore, Main',
-  // landmark: 'Intellect Heights',
-  // pincode: '452001',
-  // city: 'Indore',
-  // state: 'Madhya Pradesh',
-  // since: '5 Years',
-  // ownership: 'Owned',
-  // empType: 'salaried',
-  // entityName: 'Bls',
-  // incomeAmount: 20000,
-  // incomeAddress: 'Vijay Nagar',
-  // incomeContact: '7999882598',
-  // productType: '1',
-  // purpose: 'Test',
-  // loanAmount: 50000,
-  // branch: '1'
+  firstName: 'T-FirstName',
+  lastName: 'T-LastName',
+  email: '',
+  phone: '7694930451',
+  panCard: 'CDZPJ1746D',
+  gender: 'Female',
+  add_line_1: 'D 108 Ras Town',
+  add_line_2: 'Vijay Nagar',
+  add_line_3: 'Indore, Main',
+  landmark: 'Intellect Heights',
+  pincode: '452001',
+  city: 'Indore',
+  state: 'Madhya Pradesh',
+  since: '5 Years',
+  ownership: 'Owned',
+  empType: 'salaried',
+  entityName: 'Bls',
+  incomeAmount: 20000,
+  incomeAddress: 'Vijay Nagar',
+  incomeContact: '7999882598',
+  productType: '1',
+  purpose: 'Test',
+  loanAmount: 50000,
+  branch: '1'
 };
 
 export default function CreateProposal() {
@@ -179,7 +179,7 @@ export default function CreateProposal() {
 
           if (result.success) {
             showSuccess('Proposal Submitted', 'The proposal has been successfully created.')
-            // form.reset()
+            form.reset()
           } else {
             showError('Error', result.error)
           }
