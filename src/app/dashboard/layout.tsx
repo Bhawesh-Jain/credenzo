@@ -32,7 +32,7 @@ export default async function DashboardLayout({
       role: session.role,
     }
 
-    return (
+    return ( 
       <UserProvider user={user}>
         <SidebarProvider>
           <AppSidebar />
