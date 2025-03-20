@@ -88,6 +88,12 @@ export default function EditLead({
       value: '0'
     },
   ]
+  const defaultValues: Partial<EditLeadFormValues> = {  };
+
+  const form = useForm<EditLeadFormValues>({
+    resolver: zodResolver(formScheme),
+    defaultValues,
+  })
 
   useEffect(() => {
     (async () => {
@@ -115,14 +121,8 @@ export default function EditLead({
       }
       setLoading(false);
     })();
-  }, [leadId]);
+  }, [leadId, form]);
 
-  const defaultValues: Partial<EditLeadFormValues> = {  };
-
-  const form = useForm<EditLeadFormValues>({
-    resolver: zodResolver(formScheme),
-    defaultValues,
-  })
 
   async function onSubmit(data: EditLeadFormValues) {
     setLoading(true);
