@@ -255,11 +255,73 @@ export class ProcessRepository extends RepositoryBase {
             WHERE s.lead_id = ?
               OR s.prop_id = ?
               OR s.lan = ?
+            LIMIT 1
       `
       const result = await executeQuery<any[]>(sql, [leadId, propId, lan])
 
       if (result.length > 0) {
         return this.success('Logs Found!')
+      }
+
+      return this.failure('Request Failed!')
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async getProcessLogByCols({
+    cols,
+    leadId = '',
+    propId = '',
+    lan = ''
+  }: {
+    cols: string[],
+    leadId?: string,
+    propId?: string,
+    lan?: string,
+  }) {
+    try {
+      var all = '';
+      cols.forEach(element => {
+        var n = element.replaceAll('_process', '')
+
+        all += `s.${element} AS status_${n},`
+        all += `l.${element} AS log_${n},`
+        all += `w.${element} AS worker_${n},`
+      });
+
+      all = all.substring(0, all.length - 1)
+
+      var sql = `
+          SELECT
+          s.id AS status_id,
+          s.lead_id,
+          s.prop_id,
+          s.loan_id,
+          s.lan,
+
+          ${all}
+
+          FROM process_status s
+            LEFT JOIN process_log l 
+              ON s.lead_id = l.lead_id 
+              AND s.prop_id = l.prop_id 
+              AND s.loan_id = l.loan_id 
+              AND s.lan = l.lan
+            LEFT JOIN process_worker w 
+              ON s.lead_id = w.lead_id 
+              AND s.prop_id = w.prop_id 
+              AND s.loan_id = w.loan_id 
+              AND s.lan = w.lan
+          WHERE s.lead_id = ?
+            OR s.prop_id = ?
+            OR s.lan = ?
+            LIMIT 1
+      `;
+      const result = await executeQuery<any[]>(sql, [leadId, propId, lan])
+
+      if (result.length > 0) {
+        return this.success(result[0])
       }
 
       return this.failure('Request Failed!')

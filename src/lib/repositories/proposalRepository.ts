@@ -242,9 +242,17 @@ export class ProposalRepository extends RepositoryBase {
           propId: prop.id
         })
 
+        const process = await new ProcessRepository().getProcessLogByCols({
+          cols: ['lead_process', 'kyc_process', 'proposal_process'],
+          leadId: prop.lead_id,
+          propId: prop.id,
+          lan: prop.lan
+        })
+        
         return this.success({
           ...prop,
-          userAddress: address.result
+          userAddress: address.result,
+          process: process.result,
         })
       }
 

@@ -13,9 +13,10 @@ import {
   FileTextIcon,
   CalendarIcon,
   BadgeDollarSignIcon,
-  PcCase
+  PcCase,
+  CheckIcon
 } from "lucide-react";
-import formatDate from "@/lib/utils/date";
+import formatDate, { formatDateTime } from "@/lib/utils/date";
 import { cn } from "@/lib/utils";
 import capitalizeWord from "@/lib/helpers/string-helper";
 
@@ -160,21 +161,91 @@ export default function ApprovalDialog({
 
             <Separator />
 
-            <div className="flex items-start gap-3">
-              <CalendarIcon className="w-5 h-5 mt-1 text-muted-foreground" />
-              <div className="space-y-2">
-                <h4 className="font-semibold">Timeline</h4>
-                <dl className="space-y-1">
-                  <DetailItem variant='horizontal' label="Applied On" value={formatDate(approval.login_date)} />
-                  <DetailItem variant='horizontal' label="Last Updated" value={formatDate(approval.updated_on)} />
-                  <DetailItem variant='horizontal' label="Status" value={
-                    <Badge variant={approval.status === 'approved' ? 'success' : approval.status === 'rejected' ? 'destructive' : 'secondary'}>
-                      {approval.status_label}
-                    </Badge>
-                  } />
-                </dl>
+            <div className="space-y-4">
+              <h4 className="font-semibold">Application Timeline</h4>
+              <div className="relative">
+                {/* Timeline line */}
+                <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2" />
+
+                <div className="relative flex justify-between gap-4 overflow-x-auto py-4">
+                  {[
+                    {
+                      label: "Applied",
+                      date: approval.login_date,
+                      status: "completed",
+                    },
+                    {
+                      label: "Lead Process",
+                      date: approval.process.log_lead,
+                      status: approval.process.log_lead ? "completed" : "current",
+                    },
+                    {
+                      label: "KYC Process",
+                      date: approval.process.log_kyc,
+                      status: approval.process.log_kyc ? "completed" : "pending",
+                    },
+                    {
+                      label: "Proposal",
+                      date: approval.process.log_proposal,
+                      status: approval.process.log_proposal ? "completed" : "pending",
+                    },
+                    {
+                      label: "Status",
+                      status: approval.status,
+                      date: approval.updated_on,
+                      current: true,
+                    },
+                  ].map((step, index, arr) => (
+                    <div
+                      key={index}
+                      className="flex flex-col items-center gap-2 min-w-[120px] text-center"
+                    >
+
+                      <div className="relative flex items-center justify-center w-full">
+                        {index > 0 && (
+                          <div className="absolute right-full w-[calc(100%+8px)] h-px bg-border" />
+                        )}
+                        <div className={cn(
+                          "w-8 h-8 rounded-full border-2 relative z-10 flex justify-center items-center",
+                          step.status === "completed"
+                            ? "bg-success border-success"
+                            : step.status === "current"
+                              ? "bg-primary border-primary animate-pulse"
+                              : "bg-background border-border"
+                        )}>
+                          {step.status === "completed" && (
+                            <CheckIcon className="w-5 h-5 text-white z-10" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="space-y-2 mt-3">
+                        <p className="text-xs text-muted-foreground">
+                          {step.date ? formatDateTime(step.date) : "N/A"}
+                        </p>
+                        <h4 className="text-sm font-medium">
+                          {step.label}
+                        </h4>
+                        {step.label === "Status" && (
+                          <Badge
+                            variant={
+                              approval.status === "approved" ? "success" :
+                                approval.status === "rejected" ? "destructive" : "secondary"
+                            }
+                            className="mt-1 text-xs"
+                          >
+                            {approval.status_label}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+            
+            <Separator />
 
             {/* Documents & Status Section */}
             <div className="grid md:grid-cols-2 gap-6">
@@ -228,7 +299,7 @@ function DetailItem({ label, value, variant = 'vertical' }: { variant?: 'vertica
       "text-sm ",
       variant === 'vertical'
         ? 'flex flex-col'
-        : 'flex'
+        : 'flex gap-2'
     )}>
       <dt className="text-muted-foreground">{label}{variant === 'horizontal' && ':'}</dt>
       <dd className="font-medium">{value ? value : 'N/A'}</dd>
