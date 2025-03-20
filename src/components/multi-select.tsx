@@ -95,7 +95,7 @@ interface MultiSelectProps
 
   /**
    * Maximum number of items to display. Extra selected items will be summarized.
-   * Optional, defaults to 3.
+   * Optional, defaults to 10.
    */
   maxCount?: number;
 
@@ -131,7 +131,7 @@ export const MultiSelect = React.forwardRef<
       defaultValue = [],
       placeholder = "Select options",
       animation = 0,
-      maxCount = 3,
+      maxCount = 10,
       modalPopover = false,
       asChild = false,
       className,

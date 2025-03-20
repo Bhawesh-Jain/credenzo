@@ -169,11 +169,15 @@ export class UserRepository extends RepositoryBase {
   ) {
     try {
       var user = await executeQuery<any[]>(`
-          SELECT *
-          FROM users
-          WHERE id = ?
-            AND company_id = ?
-            AND status > 0
+          SELECT u.*,
+            GROUP_CONCAT(ub.branch_id) as branch
+          FROM users u
+          LEFT JOIN user_branches ub
+            ON ub.user_id = u.id
+          WHERE u.id = ?
+            AND u.company_id = ?
+            AND u.status > 0
+          GROUP BY u.id
           LIMIT 1
         `, [userId, this.companyId]);
 
@@ -308,6 +312,64 @@ export class UserRepository extends RepositoryBase {
         return this.success('User created successfully');
       }
       return this.failure('User not created');
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async editUser(
+    id: number,
+    data: UserFormValues,
+    updated_by: string
+  ) {
+    try {
+      var branches = data.branch.split(',')
+
+      const existingBranches = await new BranchRepository(this.companyId).getBranchListById(String(id));
+      let addableBranches = [] as string[];
+      let removableBranches = [] as string[];
+
+      if (existingBranches.success) {        
+        const currentBranchList = existingBranches.result.map((role: any) => (role.id.toString())) as string[];
+        
+        addableBranches = branches.filter(x => !currentBranchList.includes(x));
+        removableBranches = currentBranchList.filter(x => !branches.includes(x));
+      }      
+
+      for (let i = 0; i < addableBranches.length; i++) {
+        const element = addableBranches[i];
+        
+        const branchRepository = new BranchRepository(this.companyId);
+        await branchRepository.addUserBranch(String(id), element);
+      }
+
+      for (let i = 0; i < removableBranches.length; i++) {
+        const element = removableBranches[i];
+        
+        const branchRepository = new BranchRepository(this.companyId);
+        await branchRepository.removeUserBranch(String(id), element);
+      }
+
+      const result = await this.queryBuilder
+        .where('id = ?', id)
+        .update({
+          employee_code: data.employee_code,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          password: data.password,
+          role: data.role,
+          company_id: this.companyId,
+          updated_by: updated_by,
+          updated_at: new Date()
+        });
+
+
+      if (result > 0) {
+        return this.success('User updated successfully');
+      }
+
+      return this.failure('User not updated');
     } catch (error) {
       return this.handleError(error);
     }

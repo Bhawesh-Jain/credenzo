@@ -163,6 +163,18 @@ export class QueryBuilder {
     const result = await executeQuery<any>(query, [...values, ...parameters], this.connection);
     return result.affectedRows;
   }
+  
+  async delete(): Promise<number> {    
+    const { clause, parameters } = this.buildWhereClause();
+    
+    const query = `
+      DELETE FROM ${this.table}
+      ${clause}
+    `;
+    
+    const result = await executeQuery<any>(query, [...parameters], this.connection);
+    return result.affectedRows;
+  }
 
   async count(column: string = '*'): Promise<number> {
     if (column !== '*') {

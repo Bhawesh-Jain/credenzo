@@ -70,22 +70,49 @@ export class BranchRepository extends RepositoryBase {
     branchId: string
   ) {
     try {
-      const result = await this.userBranchBuilder.insert({user_id: userId, branch_id: branchId})
+      const result = await this.userBranchBuilder.insert({ user_id: userId, branch_id: branchId })
       let newCount = await new QueryBuilder('user_branches').where('branch_id = ?', branchId).count()
 
-      
-      const res = await this.queryBuilder
-      .where('id = ?', branchId)
-      .update({
-        user_count: newCount
-      })
 
-      if (result > 0) {        
+      const res = await this.queryBuilder
+        .where('id = ?', branchId)
+        .update({
+          user_count: newCount
+        })
+
+      if (result > 0) {
         return this.success(result)
       }
 
       return this.failure('Branch Assign Failed!')
 
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async removeUserBranch(
+    userId: string,
+    branchId: string
+  ) {
+    try {
+      const result = await new QueryBuilder('user_branches')
+        .where('user_id = ?', userId)
+        .where('branch_id = ?', branchId)
+        .delete()
+
+      if (result > 0) {
+
+        await executeQuery(`
+          UPDATE branches
+          SET user_count = (SELECT COUNT(*) FROM user_branches WHERE branch_id = ?)
+          WHERE id = ?
+        `, [branchId, branchId])
+      
+        return this.success('Branch Delete Successful!')
+      }
+
+      return this.failure('Branch Delete Failed!')
     } catch (error) {
       return this.handleError(error)
     }
