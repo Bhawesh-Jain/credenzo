@@ -55,7 +55,7 @@ export function Attendance() {
           <Card className="bg-gradient-to-br from-background to-muted/50">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Today's Status</CardTitle>
+                <CardTitle className="text-lg">Today&apos;s Status</CardTitle>
                 <Badge variant={attendanceStatus === 'present' ? 'success' : attendanceStatus === 'away' ? 'secondary' : 'destructive'}>
                   {attendanceStatus.charAt(0).toUpperCase() + attendanceStatus.slice(1)}
                 </Badge>
