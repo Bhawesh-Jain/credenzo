@@ -1,8 +1,8 @@
 'use client'
 import * as React from "react"
-import { Bell, HelpCircle, Search } from "lucide-react"
+import { Bell, HelpCircle, LucideClock, Search } from "lucide-react"
 import { UserData } from "@/lib/actions/auth"
-import { Button } from "@/components/ui/button"
+import { Button, ButtonTooltip } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useSearchParams, usePathname } from "next/navigation"
 import { getHeadingFromPath } from "@/lib/utils/getHeading"
+import { Attendance } from "./attendance"
 
 interface TopBarProps {
   user: UserData;
@@ -29,6 +30,9 @@ const TopBar: React.FC<TopBarProps> = ({ user }) => {
       </div>
       
       <div className="flex items-center gap-4">
+        {/* Attendance */}
+        <Attendance />
+
         {/* Help Button */}
         <Button variant="outline" size="icon" className="text-muted-foreground hover:text-foreground">
           <HelpCircle className="h-5 w-5" />
