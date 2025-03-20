@@ -211,7 +211,6 @@ export class ProcessRepository extends RepositoryBase {
               s.last_updated AS status_last_updated,
               l.last_updated AS log_last_updated,
               w.last_updated AS worker_last_updated,
-              -- Process steps with aliases to differentiate sources
               s.lead_process AS status_lead,
               l.lead_process AS log_lead,
               w.lead_process AS worker_lead,
