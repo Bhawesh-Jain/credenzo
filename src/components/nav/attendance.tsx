@@ -48,14 +48,14 @@ export function Attendance() {
           )}
         </ButtonTooltip>
       </DialogTrigger>
-      <DialogContent className="max-w-md rounded-lg">
+      <DialogContent className="max-w-md rounded-lg px-0">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <LucideClock className="h-4 w-4 text-primary" />
             Attendance Tracker
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="h-[60vh]">
+        <ScrollArea className="max-h-[75vh] px-4">
           <Container className="space-y-6">
             {/* Status Indicator */}
             <Card className="bg-gradient-to-br from-background to-muted/50">
@@ -101,8 +101,17 @@ export function Attendance() {
                         : "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30",
                     )}
                   >
-                    <LucideCoffee className="h-8 w-8 text-amber-500 mb-2" />
-                    <span className="font-medium text-amber-500">{attendanceStatus === 'present' ? 'Take' : 'End'} Break</span>
+                    <LucideCoffee className={cn(
+                      "h-8 w-8 mb-2",
+                      attendanceStatus === 'present'
+                        ? "text-amber-500 "
+                        : "text-emerald-500 "
+                    )} />
+                    <div className={cn(
+                      "font-medium",
+                      attendanceStatus === 'present'
+                        ? "text-amber-500 "
+                        : "text-emerald-500 ")}>{attendanceStatus === 'present' ? 'Take' : 'End'} Break</div>
                     <span className="text-xs text-muted-foreground">{attendanceStatus === 'present' ? 'Get back to' : 'Away from'} desk</span>
                   </button>
 
