@@ -216,7 +216,7 @@ export class ProposalRepository extends RepositoryBase {
         SELECT 
             p.*,  
             br.name AS branch_name, br.status AS branch_status,  
-            c.phone, c.email, c.type as customer_type,
+            c.phone, c.email, c.type as customer_type, c.income_emp_type, c.income_entity_name, c.income_amount, c.income_freq, c.income_address, c.income_contact, 
             lpt.name AS product_name,  
             ms.label AS status_label,  
             u.name AS handler_name,

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import formatDate from "@/lib/utils/date";
 import { cn } from "@/lib/utils";
+import capitalizeWord from "@/lib/helpers/string-helper";
 
 export default function ApprovalDialog({
   approvalId,
@@ -113,8 +114,10 @@ export default function ApprovalDialog({
                 <div>
                   <h4 className="font-semibold mb-2">Income Details</h4>
                   <dl className="grid grid-cols-2 gap-y-3 gap-x-4">
-                    <DetailItem label="Employment Type" value={approval.income_emp_type} />
+                    <DetailItem label="Employment Type" value={capitalizeWord(approval.income_emp_type)} />
+                    <DetailItem label="Entity Name" value={approval.income_entity_name} />
                     <DetailItem label="Income Amount" value={`₹${approval.income_amount?.toLocaleString()}`} />
+                    <DetailItem label="Income Frequence" value={approval.income_freq} />
                     <DetailItem label="Address" value={approval.income_address} />
                     <DetailItem label="Contact" value={approval.income_contact} />
                   </dl>
