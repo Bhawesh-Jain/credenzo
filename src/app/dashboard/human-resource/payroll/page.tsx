@@ -7,6 +7,7 @@ import formatDate, { formatTime } from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Edit } from "lucide-react";
+import AddPayroll from "./blocks/AddPayroll";
 
 type Lead = {
   id: number;
@@ -141,8 +142,9 @@ export default function Leads() {
           <h2 className="text-2xl font-bold tracking-tight">Payroll Management</h2>
           {vis
             ? <Button variant='outline' onClick={() => setVis(false)}>Cancel</Button>
-            : <Button onClick={() => setVis(true)}>Create Lead</Button>}
+            : <Button onClick={() => setVis(true)}>Add Payroll</Button>}
         </div>
+        {vis && <AddPayroll setAddPayroll={setVis} setReload={setReload} />}
         <DataTable data={leads} columns={columns} loading={loading} setReload={setReload} />
       </>
     </Container>
