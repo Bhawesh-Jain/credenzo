@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import Loading from "@/app/dashboard/loading";
 import { useState } from "react";
 import { DefaultFormTextField, DefaultFormTextArea } from "@/components/ui/default-form-field";
+import { useUser } from "@/contexts/user-context";
 
 export interface Branch {
   id: number;
@@ -35,12 +36,6 @@ const formScheme = z.object({
 
 export type FormValues = z.infer<typeof formScheme>;
 
-const defaultValues: Partial<FormValues> = {
-  name: "",
-  branch_code: "",
-  location: "",
-  pincode: "",
-};
 
 export default function AddBranch({
   setReload,
@@ -52,6 +47,14 @@ export default function AddBranch({
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const { user } = useUser();
+
+  const defaultValues: Partial<FormValues> = {
+    name: "",
+    branch_code: `${user.company_abbr}-`,
+    location: "",
+    pincode: "",
+  };
 
   async function onSubmit(data: FormValues) {
     setLoading(true);
