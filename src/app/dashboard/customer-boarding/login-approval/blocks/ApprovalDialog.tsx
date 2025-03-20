@@ -190,7 +190,7 @@ export default function ApprovalDialog({
                       status: approval.process.log_proposal ? "completed" : "pending",
                     },
                     {
-                      label: "Status",
+                      label: "Current Stage",
                       status: approval.status,
                       date: approval.updated_on,
                       current: true,
@@ -227,7 +227,7 @@ export default function ApprovalDialog({
                         <h4 className="text-sm font-medium">
                           {step.label}
                         </h4>
-                        {step.label === "Status" && (
+                        {step.label === "Current Stage" && (
                           <Badge
                             variant={
                               approval.status === "approved" ? "success" :
