@@ -45,7 +45,7 @@ export function Attendance() {
       <DialogContent className="max-w-md rounded-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <LucideClock className="h-6 w-6 text-primary" />
+            <LucideClock className="h-4 w-4 text-primary" />
             Attendance Tracker
           </DialogTitle>
         </DialogHeader>
