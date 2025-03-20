@@ -9,7 +9,7 @@ import { UserProvider } from "@/contexts/user-context"
 import { UserData } from "@/lib/actions/auth"
 import { validateSession } from "@/lib/session"
 import { redirect } from "next/navigation"
-import TopBar from "@/components/ui/top-bar"
+import TopBar from "@/components/nav/top-bar"
 import { App } from "@/components/app"
 
 export default async function DashboardLayout({
@@ -32,7 +32,7 @@ export default async function DashboardLayout({
       role: session.role,
     }
 
-    return (
+    return ( 
       <UserProvider user={user}>
         <SidebarProvider>
           <AppSidebar />
