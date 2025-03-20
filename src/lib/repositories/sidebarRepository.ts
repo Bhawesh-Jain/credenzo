@@ -33,6 +33,7 @@ export class SidebarRepository extends RepositoryBase {
         FROM modules im
         JOIN roles ir ON FIND_IN_SET(im.id, ir.permissions) > 0
         WHERE ir.id = ?
+          AND im.status = 1
         ORDER BY 
           CASE WHEN im.parent_id = 0 THEN 0 ELSE 1 END,
           im.parent_id ASC,
