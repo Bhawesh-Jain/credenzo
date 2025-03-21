@@ -2,18 +2,25 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Container } from "../ui/container";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ButtonTooltip } from "../ui/button";
 import { LucideClock, LucideSun, LucideCoffee, LucideMoon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
+import { addAttendanceActivity } from "@/lib/actions/attendance";
 
 export function Attendance() {
   const [open, setOpen] = useState(false);
   const [attendanceStatus, setAttendanceStatus] = useState<'present' | 'away' | 'offline'>('offline');
   const [activities, setActivities] = useState<Array<{ type: string; time: string }>>([]);
+
+  useEffect(() => {
+    (async () => {
+      const branches = await addAttendanceActivity('test');
+    })();
+  }, []);
 
   const handleClockIn = () => {
     setAttendanceStatus('present');
