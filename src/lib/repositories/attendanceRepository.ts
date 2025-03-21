@@ -30,7 +30,7 @@ export class AttendanceRepository extends RepositoryBase {
           event_type: type,
           event_time: new Date(),
           ip_address: ipAddress,
-          location
+          location: `${location.latitude},${location.longitude}`
         })
     } catch (error) {
       return this.handleError(error)
