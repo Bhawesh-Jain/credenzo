@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useSearchParams, usePathname } from "next/navigation"
 import { getHeadingFromPath } from "@/lib/utils/getHeading"
-import { Attendance } from "./attendance"
+import { AttendanceDialog } from "./attendance-dialog"
 
 interface TopBarProps {
   user: UserData;
@@ -31,7 +31,7 @@ const TopBar: React.FC<TopBarProps> = ({ user }) => {
       
       <div className="flex items-center gap-4">
         {/* Attendance */}
-        <Attendance />
+        <AttendanceDialog />
 
         {/* Help Button */}
         <Button variant="outline" size="icon" className="text-muted-foreground hover:text-foreground">

@@ -11,20 +11,42 @@ import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
 import { addAttendanceActivity } from "@/lib/actions/attendance";
 
-export function Attendance() {
+export function AttendanceDialog() {
   const [open, setOpen] = useState(false);
   const [attendanceStatus, setAttendanceStatus] = useState<'present' | 'away' | 'offline'>('offline');
   const [activities, setActivities] = useState<Array<{ type: string; time: string }>>([]);
+  const [error, setError] = useState<string>();
+  const [location, setLocation] = useState<{ latitude: number; longitude: number; }>();
+
 
   useEffect(() => {
     (async () => {
-      const branches = await addAttendanceActivity('test');
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            });
+          },
+          (err) => {
+            setError(err.message);
+          }
+        );
+      } else {
+        setError('Geolocation is not supported by your browser');
+      }
     })();
-  }, []);
+  }, [open]);
 
-  const handleClockIn = () => {
+  const handleClockIn = async () => {
+
     setAttendanceStatus('present');
     setActivities(prev => [...prev, { type: 'Clocked In', time: new Date().toLocaleTimeString() }]);
+
+    if (location) {
+      const add = await addAttendanceActivity('clock_in', location);
+    }
   };
 
   const handleBreak = () => {
