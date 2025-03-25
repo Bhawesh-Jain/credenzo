@@ -48,7 +48,6 @@ export function NavUser({
 
   const signOut = async () => {
     await logout();
-
     router.push("/login");
   }
 
@@ -91,7 +90,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
@@ -112,9 +111,9 @@ export function NavUser({
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
             <DropdownMenuItem>
-              <form onSubmit={signOut}>
+              <form action={signOut} className="w-full">
                 <button type="submit" className="w-full flex items-center gap-2">
                   <LogOut size={16} />
                   Log out
