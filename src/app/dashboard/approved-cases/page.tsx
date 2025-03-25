@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { getApprovedCases } from "@/lib/actions/approved-cases";
+import { usePathname, useRouter } from "next/navigation";
 
 type LoanApproval = {
   id: number;
@@ -22,10 +23,11 @@ type LoanApproval = {
 
 export default function Approvals() {
   const [approvals, setApprovals] = useState<LoanApproval[]>([])
-  const [selectedId, setSelectedId] = useState<number>();
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     (async () => {
@@ -123,8 +125,8 @@ export default function Approvals() {
             variant="outline" 
             size="sm"
             onClick={() => {
-              setSelectedId(row.id);
-              setDialogOpen(true);
+              var link = `${pathname}/loan-review/${btoa(row.prop_no)}?h=${`Review Proposal`}`
+              router.push(link)
             }}
           >
             Review
