@@ -12,6 +12,7 @@ import CashFlowTab from "./blocks/CashFlowTab";
 import EnquiryTab from "./blocks/EnquiryTab";
 import FinalReviewTab from "./blocks/FinalReviewTab";
 import { Heading } from "@/components/text/heading";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoanReviewPage() {
 
@@ -60,7 +61,15 @@ export default function LoanReviewPage() {
 
   return (
     <Container>
-      <div className="py-6">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-gray-800">
+          Review Loan Application
+        </CardTitle>
+        <CardDescription>
+          Review the loan application of {loanDetails.customer_name ? loanDetails.customer_name : 'N/A'}|{loanDetails.prop_no ? loanDetails.prop_no : "N/A"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         <Tabs defaultValue="televerification">
           <TabsList className="mb-4">
             <TabsTrigger value="televerification">Televerification</TabsTrigger>
@@ -85,7 +94,7 @@ export default function LoanReviewPage() {
             <FinalReviewTab loanDetails={loanDetails} />
           </TabsContent>
         </Tabs>
-      </div>
+      </CardContent>
     </Container>
   );
 }
