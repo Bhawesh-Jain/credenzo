@@ -254,7 +254,13 @@ function AddBankForm({
 
 // --- Bank Accounts Manager Component ---
 
-export default function BankAccountsManager() {
+export default function BankAccountsManager({
+  loanDetails,
+  setForm
+}: {
+  loanDetails: any,
+  setForm: (vis: boolean) => void,
+}) {
   const [accounts, setAccounts] = useState<BankAccount[]>(initialAccounts);
   const [showAddForm, setShowAddForm] = useState(false);
 
