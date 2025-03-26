@@ -8,6 +8,8 @@ import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { getApprovedCases } from "@/lib/actions/approved-cases";
 import { usePathname, useRouter } from "next/navigation";
+import { Heading } from "@/components/text/heading";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type LoanApproval = {
   id: number;
@@ -21,7 +23,7 @@ type LoanApproval = {
   handler_name: string;
 }
 
-export default function Approvals() {
+export default function TeleverificationPage() {
   const [approvals, setApprovals] = useState<LoanApproval[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ export default function Approvals() {
       setLoading(true);
 
       const result = await getApprovedCases();
-      
+
       setApprovals(result.result);
 
       setLoading(false);
@@ -90,7 +92,7 @@ export default function Approvals() {
     },
     {
       id: "login_date",
-      header: "Submitted Date",
+      header: "Date",
       accessorKey: "login_date",
       sortable: true,
       visible: true,
@@ -102,14 +104,10 @@ export default function Approvals() {
       accessorKey: "status_label",
       sortable: true,
       visible: true,
+      align: 'center',
       cell: (row) => (
-        <Badge 
-          variant={
-            row.status_label.toLocaleLowerCase() === 'approved' ? 'success' :
-            row.status_label.toLocaleLowerCase() === 'rejected' ? 'destructive' : 'secondary'
-          }
-        >
-          {row.status_label.toUpperCase()}
+        <Badge variant={'secondary'}  >
+          Televerification
         </Badge>
       )
     },
@@ -121,8 +119,8 @@ export default function Approvals() {
       visible: true,
       cell: (row) => (
         <div className="flex gap-2 justify-end">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={() => {
               var link = `${pathname}/loan-review/${btoa(row.prop_no)}?h=${`Review Proposal`}`
@@ -138,19 +136,19 @@ export default function Approvals() {
 
   return (
     <Container>
-      <div className="flex justify-between items-center py-3">
-        <h2 className="text-2xl font-bold tracking-tight">Approved Loans</h2>
-        <div className="flex gap-2">
-          <Button variant="outline">Export Report</Button>
-        </div>
-      </div>
+      <CardHeader>
+        <CardTitle>Televerification</CardTitle>
+        <CardDescription>Cases Awaiting Televerification</CardDescription>
+      </CardHeader>
 
-      <DataTable 
-        data={approvals} 
-        columns={columns} 
-        loading={loading} 
-        setReload={setReload}
-      />
+      <CardContent>
+        <DataTable
+          data={approvals}
+          columns={columns}
+          loading={loading}
+          setReload={setReload}
+        />
+      </CardContent>
     </Container>
   )
 }

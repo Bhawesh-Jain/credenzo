@@ -92,41 +92,41 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   // Filter and sort data
-  const processedData = useMemo(() => {   
+  const processedData = useMemo(() => {
     if (!data || data.length === 0) return [];
     try {
       let filtered = [...data]
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(item =>
-        Object.values(item).some(value =>
-          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      // Search filter
+      if (searchTerm) {
+        filtered = filtered.filter(item =>
+          Object.values(item).some(value =>
+            String(value).toLowerCase().includes(searchTerm.toLowerCase())
+          )
         )
-      )
-    }
+      }
 
-    // Sort
-    if (sortConfig.key && sortConfig.direction) {
-      filtered.sort((a, b) => {
-        const aValue = a[sortConfig.key!]
-        const bValue = b[sortConfig.key!]
+      // Sort
+      if (sortConfig.key && sortConfig.direction) {
+        filtered.sort((a, b) => {
+          const aValue = a[sortConfig.key!]
+          const bValue = b[sortConfig.key!]
 
-        if (typeof aValue === "string" && typeof bValue === "string") {
+          if (typeof aValue === "string" && typeof bValue === "string") {
+            return sortConfig.direction === "asc"
+              ? aValue.localeCompare(bValue)
+              : bValue.localeCompare(aValue)
+          }
+
           return sortConfig.direction === "asc"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue)
-        }
-
-        return sortConfig.direction === "asc"
-          ? aValue > bValue
-            ? 1
-            : -1
-          : bValue > aValue
-            ? 1
-            : -1
-      })
-    }
+            ? aValue > bValue
+              ? 1
+              : -1
+            : bValue > aValue
+              ? 1
+              : -1
+        })
+      }
 
       return filtered
     } catch (error) {
@@ -189,7 +189,12 @@ export function DataTable<T extends Record<string, any>>({
                         column.sortable && handleSort(column.accessorKey)
                       }
                     >
-                      <div className={cn("flex gap-2 select-none text-nowrap items-center", column.align == 'right' ? 'justify-end mr-2' : 'justify-start')}>
+                      <div className={cn("flex gap-2 select-none text-nowrap items-center",
+                        column.align == 'right'
+                          ? 'justify-end mr-2'
+                          : column.align == 'center'
+                            ? 'justify-center mr-2'
+                            : 'justify-start')}>
                         {column.header}
                         {column.sortable && (sortConfig.key === column.accessorKey ? (
                           {
