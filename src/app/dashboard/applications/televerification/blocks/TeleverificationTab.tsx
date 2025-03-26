@@ -29,9 +29,11 @@ const televerificationSchema = z.object({
 type TeleverificationFormValues = z.infer<typeof televerificationSchema>;
 
 export default function TeleverificationScreen({
-  loanDetails
+  loanDetails,
+  setForm
 }: {
-  loanDetails: any
+  loanDetails: any,
+  setForm: (vis: boolean) => void,
 }) {
   const form = useForm<TeleverificationFormValues>({
     resolver: zodResolver(televerificationSchema),
@@ -50,6 +52,10 @@ export default function TeleverificationScreen({
     console.log("Televerification Data:", data);
 
   };
+
+  const closeForm = () => {
+    setForm(false)
+  }
 
   return (
     <Container>
@@ -163,8 +169,9 @@ export default function TeleverificationScreen({
               placeholder="Upload document URL or file reference"
             />
           </div>
-          <div className="mt-6 flex gap-4">
+          <div className="mt-6 flex gap-4 justify-end">
             <SubmitButton>Submit</SubmitButton>
+            <Button variant='outline' type="button" onClick={closeForm}>Cancel</Button>
           </div>
         </form>
       </Form>

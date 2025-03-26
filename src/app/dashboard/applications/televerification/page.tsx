@@ -10,6 +10,7 @@ import { getApprovedCases } from "@/lib/actions/approved-cases";
 import { usePathname, useRouter } from "next/navigation";
 import { Heading } from "@/components/text/heading";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import TeleverificationScreen from "./blocks/TeleverificationTab";
 
 type LoanApproval = {
   id: number;
@@ -27,6 +28,9 @@ export default function TeleverificationPage() {
   const [approvals, setApprovals] = useState<LoanApproval[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>();
+
 
   const router = useRouter();
   const pathname = usePathname();
@@ -123,8 +127,8 @@ export default function TeleverificationPage() {
             variant="outline"
             size="sm"
             onClick={() => {
-              var link = `${pathname}/loan-review/${btoa(row.prop_no)}?h=${`Review Proposal`}`
-              router.push(link)
+              setSelectedId(row.id)
+              setForm(true)
             }}
           >
             Review
@@ -135,20 +139,35 @@ export default function TeleverificationPage() {
   ]
 
   return (
-    <Container>
-      <CardHeader>
-        <CardTitle>Televerification</CardTitle>
-        <CardDescription>Cases Awaiting Televerification</CardDescription>
-      </CardHeader>
+    <>
+      {form
+        ? <Container>
+          <CardHeader>
+            <CardTitle>Televerification</CardTitle>
+            <CardDescription>Complete The Televerification Form</CardDescription>
+          </CardHeader>
 
-      <CardContent>
-        <DataTable
-          data={approvals}
-          columns={columns}
-          loading={loading}
-          setReload={setReload}
-        />
-      </CardContent>
-    </Container>
+          <CardContent>
+            <TeleverificationScreen loanDetails={selectedId} setForm={setForm} />
+          </CardContent>
+        </Container>
+
+        : <Container>
+          <CardHeader>
+            <CardTitle>Televerification</CardTitle>
+            <CardDescription>Cases Awaiting Televerification</CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <DataTable
+              data={approvals}
+              columns={columns}
+              loading={loading}
+              setReload={setReload}
+            />
+          </CardContent>
+        </Container>
+      }
+    </>
   )
 }
