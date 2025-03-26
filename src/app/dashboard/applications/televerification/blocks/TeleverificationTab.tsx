@@ -150,7 +150,7 @@ export default function TeleverificationScreen({
               name="verifierComments"
               render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Verifier's Comments</FormLabel>
+                  <FormLabel>Verifier Comment</FormLabel>
                   <textarea
                     {...field}
                     className="p-2 border border-gray-300 rounded-md w-full"
