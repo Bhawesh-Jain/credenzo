@@ -8,12 +8,13 @@ import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { usePathname, useRouter } from "next/navigation";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import ReceiptForm from "./blocks/create-receipt";
 
 export default function Receipting ()  {
   const [approvals, setApprovals] = useState<any[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState(false);
+  const [form, setForm] = useState(true);
   const [selectedId, setSelectedId] = useState<number | null>();
 
   useEffect(() => {
@@ -124,19 +125,19 @@ export default function Receipting ()  {
       {form
         ? <Container>
           <CardHeader>
-            <CardTitle>Televerification</CardTitle>
-            <CardDescription>Complete The Televerification Form</CardDescription>
+            <CardTitle>Receipting</CardTitle>
+            <CardDescription>Create a receipt for EMI</CardDescription>
           </CardHeader>
 
           <CardContent>
-            {/* <TeleverificationScreen loanDetails={selectedId} setForm={setForm} /> */}
+            <ReceiptForm collectors={[]} onSubmit={() => {}}/>
           </CardContent>
         </Container>
 
         : <Container>
           <CardHeader>
-            <CardTitle>Televerification</CardTitle>
-            <CardDescription>Cases Awaiting Televerification</CardDescription>
+            <CardTitle>Receipting</CardTitle>
+            <CardDescription>Create a receipt for EMI</CardDescription>
           </CardHeader>
 
           <CardContent>
