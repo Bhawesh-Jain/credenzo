@@ -49,12 +49,10 @@ const directCollectionSchema = z.object({
   }),
   interest_rate: z.string().min(1, "Interest rate is required"),
   lendor_name: z.string().min(1, "Lendor name is required"),
-  lendor_id: z.number({
-    required_error: "Lendor ID is required",
-    invalid_type_error: "Please enter a valid number"
-  }),
-  // Optionally you may allow status to be set or default on the server-side.
-  // status: z.number().default(0)
+  // lendor_id: z.number({
+  //   required_error: "Lendor ID is required",
+  //   invalid_type_error: "Please enter a valid number"
+  // }),
 });
 
 export type DirectCollectionAccountValues = z.infer<typeof directCollectionSchema>;
@@ -290,7 +288,7 @@ export default function CreateDirectCollectionAccount({
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="lendor_id"
                     render={({ field }) => (
@@ -307,7 +305,7 @@ export default function CreateDirectCollectionAccount({
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                 </div>
               </div>
 

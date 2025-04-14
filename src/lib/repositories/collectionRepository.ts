@@ -43,6 +43,7 @@ export class CollectionRepository extends RepositoryBase {
     try {
       const lead = {
         ...data,
+        status: 1,
         updated_by: userId,
         company_id: this.companyId
       }
