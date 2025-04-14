@@ -12,14 +12,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default function DatePicker({ onChange, date, subYear = 0, maxToday = true }: { 
+export default function DatePicker({ onChange, date, subYear = 0, maxToday = true, minToday = false }: { 
   onChange: (date: Date | null) => void; 
   date: Date | null;
   subYear?: number;
   maxToday?: boolean;
+  minToday?: boolean;
 }) {
   const minYear = new Date()
-  minYear.setFullYear(1900);
+  if (!minToday) {
+    minYear.setFullYear(1900); 
+  }
   
   const currentYear = new Date().getFullYear()
   const yearAgo = currentYear - subYear

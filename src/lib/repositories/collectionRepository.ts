@@ -5,6 +5,7 @@ import mysql from "mysql2/promise"
 import { EditLeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/EditLead";
 import { ProcessRepository } from "./processRepository";
 import { DirectCollectionAccountValues } from "@/app/dashboard/collection/collection-accounts/blocks/CreateAccount";
+import { CollectionFormValues } from "@/app/dashboard/collection/collection-accounts/blocks/AddCollection";
 
 
 export type CollectionAccount = {
@@ -33,6 +34,33 @@ export class CollectionRepository extends RepositoryBase {
   constructor(companyId: string) {
     super()
     this.companyId = companyId;
+  }
+
+  async createCollection(
+    userId: string,
+    data: CollectionFormValues,
+    transactionConnection?: mysql.Connection
+  ) {
+    try {
+      const lead = {
+        ...data,
+        status: 1,
+        ref_type: 'Direct',
+        updated_by: userId,
+        company_id: this.companyId
+      }
+
+      const result = await new QueryBuilder('collections')
+        .setConnection(transactionConnection)
+        .insert(lead);
+
+      if (result > 0) {
+        return this.success('Collection Added!');
+      }
+      return this.failure('Failed to add collection');
+    } catch (error) {
+      return this.handleError(error);
+    }
   }
 
   async createAccount(
@@ -70,7 +98,7 @@ export class CollectionRepository extends RepositoryBase {
       }
 
       return this.failure('No Account Found!')
-      
+
     } catch (error) {
       return this.handleError(error);
     }

@@ -3,17 +3,16 @@
 import { useEffect, useState } from "react";
 import { Column, DataTable } from "@/components/data-table/data-table";
 import formatDate from "@/lib/utils/date";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonTooltip } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Edit, PlusCircle } from "lucide-react";
 import CreateAccount from "./blocks/CreateAccount";
 import EditAccount from "./blocks/EditAccount";
-import AddCollection from "./blocks/AddCollection"; 
 import { Heading } from "@/components/text/heading";
 import { CollectionAccount } from "@/lib/repositories/collectionRepository";
 import { getAccountList } from "@/lib/actions/collection";
+import AddCollection from "./blocks/AddCollection";
 
-// Define the possible form types
 type FormType = "create" | "edit" | "addCollection";
 
 interface OpenFormProps {
@@ -24,10 +23,8 @@ interface OpenFormProps {
 export default function CollectionAccounts() {
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [vis, setVis] = useState(false); // Use this if you still want to show/hide the create form as default
+  const [vis, setVis] = useState(false);
   const [collectionAccounts, setCollectionAccounts] = useState<CollectionAccount[]>([]);
-  
-  // New state to keep track of which form is open (create, edit, or addCollection)
   const [openForm, setOpenForm] = useState<OpenFormProps | null>(null);
 
   useEffect(() => {
@@ -86,11 +83,10 @@ export default function CollectionAccounts() {
       sortable: true,
       cell: (row) => (
         <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-            row.status === 1
-              ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
-              : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
-          }`}
+          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${row.status === 1
+            ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
+            : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
+            }`}
         >
           {getStatus(row.status)}
         </span>
@@ -112,8 +108,9 @@ export default function CollectionAccounts() {
       sortable: false,
       align: "right",
       cell: (row) => (
-        <div className="flex space-x-2">
-          <Button
+        <div className="flex justify-end items-end space-x-2">
+          <ButtonTooltip
+            title={"Edit Collection Account"}
             onClick={() =>
               setOpenForm({ type: "edit", data: row })
             }
@@ -121,17 +118,16 @@ export default function CollectionAccounts() {
             size="icon"
           >
             <Edit />
-          </Button>
-          <Button
+          </ButtonTooltip>
+          <ButtonTooltip
+            title={"Add New Collection"}
             onClick={() =>
-              // Open the addCollection form, for example passing the row if needed
               setOpenForm({ type: "addCollection", data: row })
             }
             variant="ghost"
-            size="icon"
-          >
+            size="icon">
             <PlusCircle />
-          </Button>
+          </ButtonTooltip>
         </div>
       ),
     },
@@ -167,7 +163,7 @@ export default function CollectionAccounts() {
           )}
           {openForm.type === "addCollection" && openForm.data && (
             <AddCollection
-              accountData={openForm.data}
+              initialData={openForm.data}
               onClose={() => setOpenForm(null)}
               onReload={() => {
                 setOpenForm(null);
