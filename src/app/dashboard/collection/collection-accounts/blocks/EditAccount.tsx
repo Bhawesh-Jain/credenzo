@@ -23,79 +23,74 @@ import { Icons } from "@/components/icons";
 import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
 import { useGlobalDialog } from '@/providers/DialogProvider';
 import DatePicker from "@/components/date-picker";
-import { createDirectCollectionAccount } from "@/lib/actions/collection";
+import { updateDirectCollectionAccount } from "@/lib/actions/collection";
 
-// Define the schema for direct collection account creation
-const directCollectionSchema = z.object({
+// Extend your existing schema with an id field for editing
+const editDirectCollectionSchema = z.object({
+  id: z.number(),
   customer_name: z.string().min(2, "Customer name must be at least 2 characters"),
   customer_phone: z.string().min(10, "Please enter a valid phone number"),
   customer_address: z.string().min(5, "Address is required"),
   loan_ref: z.string().min(1, "Loan reference is required"),
   loan_amount: z.number({
     required_error: "Loan amount is required",
-    invalid_type_error: "Please enter a valid number"
+    invalid_type_error: "Please enter a valid number",
   }).min(1, "Loan amount must be positive"),
   loan_emi_amount: z.number({
     required_error: "EMI amount is required",
-    invalid_type_error: "Please enter a valid number"
+    invalid_type_error: "Please enter a valid number",
   }).min(1, "EMI amount must be positive"),
   loan_type: z.string().min(1, "Loan type is required"),
   loan_tenure: z.number({
     required_error: "Loan tenure is required",
-    invalid_type_error: "Please enter a valid number"
+    invalid_type_error: "Please enter a valid number",
   }).min(1, "Loan tenure should be at least 1 month"),
   loan_start_date: z.date({
-    required_error: "Loan start date is required"
+    required_error: "Loan start date is required",
   }),
   interest_rate: z.string().min(1, "Interest rate is required"),
   lendor_name: z.string().min(1, "Lendor name is required"),
-  // lendor_id: z.number({
-  //   required_error: "Lendor ID is required",
-  //   invalid_type_error: "Please enter a valid number"
-  // }),
 });
 
-export type DirectCollectionAccountValues = z.infer<typeof directCollectionSchema>;
+export type EditDirectCollectionAccountValues = z.infer<typeof editDirectCollectionSchema>;
 
-const defaultValues: Partial<DirectCollectionAccountValues> = {
-  // You can set default values if required, e.g., lendor_id: 0
-};
+interface EditDirectCollectionAccountProps {
+  initialData: EditDirectCollectionAccountValues;
+  onClose: () => void;
+  onReload: () => void;
+}
 
-export default function CreateDirectCollectionAccount({
-  setVis,
-  setReload,
-}: {
-  setVis: (vis: boolean) => void;
-  setReload: (reload: boolean) => void;
-}) {
+export default function EditDirectCollectionAccount({
+  initialData,
+  onClose,
+  onReload,
+}: EditDirectCollectionAccountProps) {
   const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog();
-  const form = useForm<DirectCollectionAccountValues>({
-    resolver: zodResolver(directCollectionSchema),
-    defaultValues,
+  const form = useForm<EditDirectCollectionAccountValues>({
+    resolver: zodResolver(editDirectCollectionSchema),
+    defaultValues: initialData,
   });
 
-  async function onSubmit(data: DirectCollectionAccountValues) {
+  async function onSubmit(data: EditDirectCollectionAccountValues) {
     showConfirmation(
-      'Create Direct Collection Account',
-      'Are you sure you want to create this direct collection account?',
+      'Update Account',
+      'Are you sure you want to update this account?',
       async () => {
         try {
           setLoading(true);
-          
-          const result = await createDirectCollectionAccount(data);
-
+          const result = await updateDirectCollectionAccount(data);
           setLoading(false);
           if (result.success) {
-            showSuccess('Account Created', 'The direct collection account has been created.');
+            showSuccess('Account Updated', 'The direct collection account has been updated.');
             form.reset();
-            setVis(false);
-            setReload(true);
+            onClose();
+            onReload();
           } else {
             showError('Error', result.error);
           }
         } catch (error) {
           setLoading(false);
-          showError('Error', 'There was a problem creating the direct collection account.');
+          showError('Error', 'There was a problem updating the direct collection account.');
         }
       }
     );
@@ -106,10 +101,10 @@ export default function CreateDirectCollectionAccount({
       <div className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-gray-800">
-            Create Direct Collection Account
+            Edit Direct Collection Account
           </CardTitle>
           <CardDescription>
-            Enter the minimal information required to create a direct collection account
+            Update the information for this direct collection account.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -126,7 +121,7 @@ export default function CreateDirectCollectionAccount({
                       <FormItem>
                         <FormLabelWithIcon icon={Icons.user}>Customer Name</FormLabelWithIcon>
                         <FormControl>
-                          <Input placeholder="Enter Customer name" {...field} />
+                          <Input placeholder="Enter customer name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -165,6 +160,7 @@ export default function CreateDirectCollectionAccount({
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-700">Loan Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Loan reference is often not editable */}
                   <FormField
                     control={form.control}
                     name="loan_ref"
@@ -172,7 +168,7 @@ export default function CreateDirectCollectionAccount({
                       <FormItem>
                         <FormLabelWithIcon icon={Icons.fileText}>Loan Reference</FormLabelWithIcon>
                         <FormControl>
-                          <Input placeholder="Unique loan reference" {...field} />
+                          <Input placeholder="Unique loan reference" {...field} disabled />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -288,30 +284,12 @@ export default function CreateDirectCollectionAccount({
                       </FormItem>
                     )}
                   />
-                  {/* <FormField
-                    control={form.control}
-                    name="lendor_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabelWithIcon icon={Icons.idCard}>Lendor ID</FormLabelWithIcon>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Enter lender ID"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
                 </div>
               </div>
 
               {/* Submission */}
               <div className="flex justify-end space-x-4">
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Update Account</Button>
               </div>
             </form>
           </Form>

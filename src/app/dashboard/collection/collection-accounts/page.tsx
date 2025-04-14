@@ -1,36 +1,43 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
-import { getLeads } from "@/lib/actions/customer-boarding";
 import { Column, DataTable } from "@/components/data-table/data-table";
-import formatDate, { formatTime } from "@/lib/utils/date";
-import { Button, ButtonTooltip } from "@/components/ui/button";
+import formatDate from "@/lib/utils/date";
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Edit, Edit2 } from "lucide-react";
+import { Edit, PlusCircle } from "lucide-react";
 import CreateAccount from "./blocks/CreateAccount";
+import EditAccount from "./blocks/EditAccount";
+import AddCollection from "./blocks/AddCollection"; 
 import { Heading } from "@/components/text/heading";
 import { CollectionAccount } from "@/lib/repositories/collectionRepository";
 import { getAccountList } from "@/lib/actions/collection";
 
+// Define the possible form types
+type FormType = "create" | "edit" | "addCollection";
+
+interface OpenFormProps {
+  type: FormType;
+  data?: any;
+}
+
 export default function CollectionAccounts() {
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [vis, setVis] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [vis, setVis] = useState(false); // Use this if you still want to show/hide the create form as default
   const [collectionAccounts, setCollectionAccounts] = useState<CollectionAccount[]>([]);
-  const [id, setId] = useState<string>();
+  
+  // New state to keep track of which form is open (create, edit, or addCollection)
+  const [openForm, setOpenForm] = useState<OpenFormProps | null>(null);
 
   useEffect(() => {
     (async () => {
       setReload(false);
       setLoading(true);
-
       const accounts = await getAccountList();
-
       if (accounts.success) {
-        setCollectionAccounts(accounts.result)
+        setCollectionAccounts(accounts.result);
       }
-
       setLoading(false);
     })();
   }, [reload]);
@@ -79,10 +86,11 @@ export default function CollectionAccounts() {
       sortable: true,
       cell: (row) => (
         <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${row.status == 1
-            ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
-            : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
-            }`}
+          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+            row.status === 1
+              ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
+              : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
+          }`}
         >
           {getStatus(row.status)}
         </span>
@@ -94,11 +102,7 @@ export default function CollectionAccounts() {
       accessorKey: "created_on",
       sortable: true,
       visible: true,
-      cell: (row) => (
-        <span>
-          {row.created_on ? formatDate(row.created_on) : "N/A"}
-        </span>
-      )
+      cell: (row) => <span>{row.created_on ? formatDate(row.created_on) : "N/A"}</span>,
     },
     {
       id: "id",
@@ -106,49 +110,86 @@ export default function CollectionAccounts() {
       accessorKey: "id",
       visible: true,
       sortable: false,
-      align: 'right',
+      align: "right",
       cell: (row) => (
-        <div>
-          <Button onClick={() => {
-            setId(row.loan_ref)
-            setOpen(!open)
-          }} variant="ghost" size="icon"><Edit /></Button>
+        <div className="flex space-x-2">
+          <Button
+            onClick={() =>
+              setOpenForm({ type: "edit", data: row })
+            }
+            variant="ghost"
+            size="icon"
+          >
+            <Edit />
+          </Button>
+          <Button
+            onClick={() =>
+              // Open the addCollection form, for example passing the row if needed
+              setOpenForm({ type: "addCollection", data: row })
+            }
+            variant="ghost"
+            size="icon"
+          >
+            <PlusCircle />
+          </Button>
         </div>
       ),
     },
-  ]
+  ];
 
   return (
     <Container>
       <div className="flex justify-between items-center py-3">
         <Heading>Collection Accounts</Heading>
-        {vis
-          ? <Button variant='outline' onClick={() => setVis(false)}>Cancel</Button>
-          : <Button onClick={() => setVis(true)}>Create New Account</Button>}
+        <div className="space-x-2">
+          <Button onClick={() => setOpenForm({ type: "create" })}>Create New Account</Button>
+        </div>
       </div>
-      {vis
-        ? <CreateAccount setVis={setVis} setReload={setReload} />
-        : <DataTable data={collectionAccounts} columns={columns} loading={loading} setReload={setReload} />}
 
 
+      {openForm ? (
+        <>
+          {openForm.type === "create" && (
+            <CreateAccount
+              setVis={() => setOpenForm(null)}
+              setReload={setReload}
+            />
+          )}
+          {openForm.type === "edit" && openForm.data && (
+            <EditAccount
+              initialData={openForm.data}
+              onClose={() => setOpenForm(null)}
+              onReload={() => {
+                setOpenForm(null);
+                setReload(true);
+              }}
+            />
+          )}
+          {openForm.type === "addCollection" && openForm.data && (
+            <AddCollection
+              accountData={openForm.data}
+              onClose={() => setOpenForm(null)}
+              onReload={() => {
+                setOpenForm(null);
+                setReload(true);
+              }}
+            />
+          )}
+        </>
+      ) : (
+        <DataTable data={collectionAccounts} columns={columns} loading={loading} setReload={setReload} />
+      )}
     </Container>
-  )
+  );
 }
 
 function getStatus(status: number) {
-  var s = '';
   switch (status) {
     case 1:
-      s = 'Active'
-      break;
-
+      return "Active";
     case 0:
-      s = 'Inactive'
-      break;
-
+      return "Inactive";
     default:
-      break;
+      return "";
   }
-
-  return s;
 }

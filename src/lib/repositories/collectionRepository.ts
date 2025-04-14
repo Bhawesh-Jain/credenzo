@@ -75,4 +75,27 @@ export class CollectionRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+
+  async updateAccount(
+    accountId: number,
+    userId: string,
+    data: Partial<DirectCollectionAccountValues>,
+    transactionConnection?: mysql.Connection
+  ) {
+    try {
+      const updateData = {
+        ...data,
+        updated_by: userId,
+      };
+
+      const result = await new QueryBuilder("direct_collection_accounts")
+        .setConnection(transactionConnection)
+        .where("id = ?", accountId)
+        .update(updateData);
+
+      return this.success(result);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 } 
