@@ -12,7 +12,13 @@ import {
   Calendar,
   Users,
   Briefcase,
-  UserCheck
+  UserCheck,
+  MapPin,
+  Currency,
+  Tag,
+  Percent,
+  Building,
+  IdCard
 } from "lucide-react"
 
 export const Icons = {
@@ -29,5 +35,11 @@ export const Icons = {
   userCheck: UserCheck,
   briefcase: Briefcase,
   target: Target,
+  mapPin: MapPin,
+  currency: Currency,
+  tag: Tag,
+  percent: Percent,
+  building: Building,
+  idCard: IdCard,
   calendar: Calendar
 } 
