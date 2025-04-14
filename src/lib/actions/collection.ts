@@ -44,3 +44,12 @@ export async function createCollection(data: CollectionFormValues) {
 
   return result;
 }
+
+export async function getCollectionList() {
+  const session = await getSession();
+
+  const collectionRepository = new CollectionRepository(session.company_id);
+  const result = collectionRepository.getCollectionList(session.user_id)
+
+  return result;
+}

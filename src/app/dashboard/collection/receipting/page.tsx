@@ -6,15 +6,16 @@ import formatDate from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
-import { usePathname, useRouter } from "next/navigation";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ReceiptForm from "./blocks/create-receipt";
+import { getCollectionList } from "@/lib/actions/collection";
+import { Collection } from "@/lib/repositories/collectionRepository";
 
 export default function Receipting ()  {
-  const [approvals, setApprovals] = useState<any[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState(true);
+  const [form, setForm] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>();
 
   useEffect(() => {
@@ -22,19 +23,19 @@ export default function Receipting ()  {
       setReload(false);
       setLoading(true);
 
-      // const result = await getApprovedCases();
+      const result = await getCollectionList();
 
-      // setApprovals(result.result);
+      setCollections(result.result);
 
       setLoading(false);
     })();
   }, [reload]);
 
-  const columns: Column<any>[] = [
+  const columns: Column<Collection>[] = [
     {
-      id: "prop_no",
-      header: "Proposal #",
-      accessorKey: "prop_no",
+      id: "id",
+      header: "Receipt #",
+      accessorKey: "id",
       sortable: true,
       visible: true,
     },
@@ -46,9 +47,16 @@ export default function Receipting ()  {
       visible: true,
     },
     {
-      id: "loan_amount",
-      header: "Loan Amount",
-      accessorKey: "loan_amount",
+      id: "customer_phone",
+      header: "Phone",
+      accessorKey: "customer_phone",
+      sortable: true,
+      visible: true,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      accessorKey: "amount",
       sortable: true,
       visible: true,
       cell: (row) => (
@@ -56,46 +64,33 @@ export default function Receipting ()  {
       )
     },
     {
-      id: "product_name",
-      header: "Product",
-      accessorKey: "product_name",
+      id: "customer_address",
+      header: "Address",
+      accessorKey: "customer_address",
       sortable: true,
       visible: true,
     },
     {
-      id: "branch_name",
-      header: "Branch",
-      accessorKey: "branch_name",
+      id: "loan_ref",
+      header: "Loan Ref",
+      accessorKey: "loan_ref",
       sortable: true,
       visible: true,
     },
     {
-      id: "handler_name",
-      header: "Added By",
-      accessorKey: "handler_name",
+      id: "due_date",
+      header: "Due Date",
+      accessorKey: "due_date",
       sortable: true,
       visible: true,
+      cell: (row) => formatDate(row.due_date)
     },
     {
-      id: "login_date",
-      header: "Date",
-      accessorKey: "login_date",
+      id: "loan_type",
+      header: "Loan Type",
+      accessorKey: "loan_type",
       sortable: true,
       visible: true,
-      cell: (row) => formatDate(row.login_date)
-    },
-    {
-      id: "status_label",
-      header: "Status",
-      accessorKey: "status_label",
-      sortable: true,
-      visible: true,
-      align: 'center',
-      cell: (row) => (
-        <Badge variant={'secondary'}  >
-          Televerification
-        </Badge>
-      )
     },
     {
       id: "actions",
@@ -113,7 +108,7 @@ export default function Receipting ()  {
               setForm(true)
             }}
           >
-            Review
+            Create Receipt
           </Button>
         </div>
       ),
@@ -126,7 +121,7 @@ export default function Receipting ()  {
         ? <Container>
           <CardHeader>
             <CardTitle>Receipting</CardTitle>
-            <CardDescription>Create a receipt for EMI</CardDescription>
+            <CardDescription>Create a receipt for Pending Collection</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -142,7 +137,7 @@ export default function Receipting ()  {
 
           <CardContent>
             <DataTable
-              data={approvals}
+              data={collections}
               columns={columns}
               loading={loading}
               setReload={setReload}

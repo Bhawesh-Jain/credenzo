@@ -27,6 +27,24 @@ export type CollectionAccount = {
   created_on: string
 }
 
+export type Collection = {
+  id: number,
+  amount: string,
+  due_date: string,
+  customer_name: string,
+  customer_phone: string,
+  customer_address: string,
+  loan_ref: string,
+  loan_amount: string,
+  loan_emi_amount: string,
+  loan_type: string,
+  loan_tenure: string,
+  loan_start_date: string,
+  interest_rate: string,
+  lendor_name: string,
+  status: string,
+}
+
 
 export class CollectionRepository extends RepositoryBase {
   private companyId: string;
@@ -126,4 +144,48 @@ export class CollectionRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+
+  async getCollectionList(
+    userId: string,
+  ) {
+    try {
+      let sql = `
+        SELECT 
+          cl.amount,
+          cl.due_date,
+          cl.id,
+          dca.customer_name,
+          dca.customer_phone,
+          dca.customer_address,
+          dca.loan_ref,
+          dca.loan_amount,
+          dca.loan_emi_amount,
+          dca.loan_type,
+          dca.loan_tenure,
+          dca.loan_start_date,
+          dca.interest_rate,
+          dca.lendor_name,
+          dca.status
+        FROM collections cl
+        LEFT JOIN direct_collection_accounts dca
+          ON dca.loan_ref = cl.ref
+        WHERE cl.status > 0
+          AND cl.company_id = ?
+          AND (cl.handler_id = '' OR cl.handler_id = ?)
+        ORDER BY cl.id DESC
+      `;
+
+      const data = await executeQuery(sql, [this.companyId, userId]) as any
+
+      if (data.length > 0) {
+        return this.success(data)
+      }
+
+      return this.failure('No Collection Found!')
+
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
 } 
