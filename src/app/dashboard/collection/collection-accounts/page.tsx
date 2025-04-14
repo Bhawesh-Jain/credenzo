@@ -138,7 +138,7 @@ function getStatus(status: number) {
       s = 'Active'
       break;
 
-    case -1:
+    case 0:
       s = 'Inactive'
       break;
 
