@@ -10,6 +10,7 @@ import { Edit, Edit2 } from "lucide-react";
 import CreateAccount from "./blocks/CreateAccount";
 import { Heading } from "@/components/text/heading";
 import { CollectionAccount } from "@/lib/repositories/collectionRepository";
+import { getAccountList } from "@/lib/actions/collection";
 
 export default function CollectionAccounts() {
   const [reload, setReload] = useState(true);
@@ -24,8 +25,11 @@ export default function CollectionAccounts() {
       setReload(false);
       setLoading(true);
 
-      const branches = await getLeads();
+      const accounts = await getAccountList();
 
+      if (accounts.success) {
+        setCollectionAccounts(accounts.result)
+      }
 
       setLoading(false);
     })();

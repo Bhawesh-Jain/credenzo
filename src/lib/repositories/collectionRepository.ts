@@ -57,4 +57,22 @@ export class CollectionRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+
+  async getAccountList() {
+    try {
+      const accounts = await new QueryBuilder('direct_collection_accounts')
+        .where('company_id = ?', this.companyId)
+        .where('status >= 0')
+        .select(['*']) as any[]
+
+      if (accounts.length > 0) {
+        return this.success(accounts)
+      }
+
+      return this.failure('No Account Found!')
+      
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 } 

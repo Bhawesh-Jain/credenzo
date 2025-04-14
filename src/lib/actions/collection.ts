@@ -13,3 +13,12 @@ export async function createDirectCollectionAccount(data: DirectCollectionAccoun
 
   return result;
 }
+
+export async function getAccountList() {
+  const session = await getSession();
+
+  const collectionRepository = new CollectionRepository(session.company_id);
+  const result = collectionRepository.getAccountList()
+
+  return result;
+}
