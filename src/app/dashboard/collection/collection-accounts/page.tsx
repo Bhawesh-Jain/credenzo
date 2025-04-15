@@ -138,7 +138,9 @@ export default function CollectionAccounts() {
       <div className="flex justify-between items-center py-3">
         <Heading>Collection Accounts</Heading>
         <div className="space-x-2">
-          <Button onClick={() => setOpenForm({ type: "create" })}>Create New Account</Button>
+          {openForm
+            ? <Button onClick={() => setOpenForm(null)} variant='outline'>Cancel</Button>
+            : <Button onClick={() => setOpenForm({ type: "create" })}>Create New Account</Button>}
         </div>
       </div>
 
