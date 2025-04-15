@@ -62,6 +62,13 @@ export default function CollectionAccounts() {
       visible: true,
     },
     {
+      id: "handler_name",
+      header: "Handler",
+      accessorKey: "handler_name",
+      sortable: true,
+      visible: true,
+    },
+    {
       id: "lendor_name",
       header: "Lendor",
       accessorKey: "lendor_name",

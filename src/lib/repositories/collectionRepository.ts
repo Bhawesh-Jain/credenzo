@@ -13,6 +13,7 @@ export type CollectionAccount = {
   customer_name: string,
   customer_phone: string,
   customer_address: string,
+  handler_name: string,
   loan_ref: string,
   loan_amount: number,
   loan_emi_amount: number,
@@ -106,10 +107,19 @@ export class CollectionRepository extends RepositoryBase {
 
   async getAccountList() {
     try {
-      const accounts = await new QueryBuilder('direct_collection_accounts')
-        .where('company_id = ?', this.companyId)
-        .where('status >= 0')
-        .select(['*']) as any[]
+      let sql = `
+        SELECT dca.*,
+          u.name as handler_name
+        FROM direct_collection_accounts dca
+        LEFT JOIN users u 
+          ON dca.handler_id = u.id
+          AND u.status = 1
+        WHERE dca.company_id = ?
+          AND dca.status >= 0
+      `
+
+      const accounts = await executeQuery(sql, [this.companyId]) as any[]
+
 
       if (accounts.length > 0) {
         return this.success(accounts)
