@@ -104,6 +104,7 @@ export default function AddCollection({
                   <DefaultFormTextField
                     form={form}
                     name="ref"
+                    disabled={true}
                     label="Loan Reference"
                     placeholder=""
                   />

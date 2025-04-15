@@ -7,14 +7,16 @@ export function DefaultFormTextField({
   label,
   name,
   placeholder,
-  uppercase = false,  
-  capitalize = true,  
+  uppercase = false,
+  disabled = false,
+  capitalize = true,
   form
 }: {
   label: string,
   name: string,
   placeholder: string,
   uppercase?: boolean,
+  disabled?: boolean,
   capitalize?: boolean,
   form: any
 }) {
@@ -26,12 +28,13 @@ export function DefaultFormTextField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input 
+            <Input
+              disabled={disabled}
               placeholder={placeholder}
               {...field}
               value={field.value || ''}
               onChange={(e) => {
-                const value = uppercase 
+                const value = uppercase
                   ? e.target.value.toUpperCase()
                   : e.target.value;
                 field.onChange(value);
@@ -69,7 +72,7 @@ export function DefaultFormTimeField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input type="time"  placeholder={placeholder} {...field} />
+            <Input type="time" placeholder={placeholder} {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -97,7 +100,7 @@ export function DefaultFormTextArea({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Textarea  placeholder={placeholder} {...field} />
+            <Textarea placeholder={placeholder} {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -120,7 +123,7 @@ export function DefaultFormSelect({
   placeholder: string,
   form: any,
 }) {
-  return (  
+  return (
     <FormField
       control={form.control}
       name={name}
@@ -133,7 +136,7 @@ export function DefaultFormSelect({
               value={field.value}
               defaultValue={String(field.value)}
               form={form}
-            > 
+            >
               <SelectTrigger>
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
