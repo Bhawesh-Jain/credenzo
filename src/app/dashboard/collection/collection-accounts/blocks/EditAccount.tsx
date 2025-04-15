@@ -223,7 +223,7 @@ export default function EditDirectCollectionAccount({
                     )}
                   />
 
-                  <div className='col-span-2'>
+                  <div className='md:col-span-2'>
                     {formLoading
                       ? <FormItemSkeleton />
                       : <DefaultFormSelect
@@ -234,7 +234,7 @@ export default function EditDirectCollectionAccount({
                         placeholder='Select Associated Branch'
                       />}
                   </div>
-                  <div className='col-span-2'>
+                  <div className='md:col-span-2'>
                     {formLoading
                       ? <FormItemSkeleton />
                       : <DefaultFormSelect

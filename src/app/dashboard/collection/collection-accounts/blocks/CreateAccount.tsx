@@ -23,12 +23,18 @@ import { Icons } from "@/components/icons";
 import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
 import { useGlobalDialog } from '@/providers/DialogProvider';
 import DatePicker from "@/components/date-picker";
-import { createDirectCollectionAccount } from "@/lib/actions/collection";
+import { createDirectCollectionAccount, getCollectionUserList } from "@/lib/actions/collection";
+import { useEffect, useState } from "react";
+import { getBranchListById } from "@/lib/actions/branch";
+import { DefaultFormSelect } from "@/components/ui/default-form-field";
+import FormItemSkeleton from "@/components/skeletons/form-item-skeleton";
 
 // Define the schema for direct collection account creation
 const directCollectionSchema = z.object({
   customer_name: z.string().min(2, "Customer name must be at least 2 characters"),
   customer_phone: z.string().min(10, "Please enter a valid phone number"),
+  handler_id: z.string().min(1, "Select Associated Handler"),
+  branch_id: z.string().min(1, "Select Associated Branch"),
   customer_address: z.string().min(5, "Address is required"),
   loan_ref: z.string().min(1, "Loan reference is required"),
   loan_amount: z.number({
@@ -74,6 +80,54 @@ export default function CreateDirectCollectionAccount({
     defaultValues,
   });
 
+  const [collectionUsers, setCollectionUsers] = useState<any[]>([]);
+  const [branchList, setBranchList] = useState([]);
+
+  const [formLoading, setFormLoading] = useState<boolean>(false);
+  const { watch } = form;
+  const branchItem = watch("branch_id");
+
+  useEffect(() => {
+    (async () => {
+      if (!branchItem || branchItem.toString().length == 0) {
+        return;
+      }
+
+      const accounts = await getCollectionUserList(branchItem);
+
+      if (accounts.success) {
+        const formattedUsers = accounts.result.map((branch: any) => ({
+          label: branch.name,
+          value: branch.id.toString(),
+        }));
+
+        setCollectionUsers(formattedUsers)
+      } else {
+        showError('Users Not Found!', accounts.error)
+      }
+    })();
+  }, [branchItem]);
+
+
+  useEffect(() => {
+    (async () => {
+      setFormLoading(true);
+
+      let branchListData = await getBranchListById()
+
+      if (branchListData.success) {
+        const formattedBranches = branchListData.result.map((branch: any) => ({
+          label: branch.name,
+          value: branch.id.toString(),
+        }));
+
+        setBranchList(formattedBranches)
+      }
+
+      setFormLoading(false);
+    })();
+  }, []);
+
   async function onSubmit(data: DirectCollectionAccountValues) {
     showConfirmation(
       'Create Direct Collection Account',
@@ -81,7 +135,7 @@ export default function CreateDirectCollectionAccount({
       async () => {
         try {
           setLoading(true);
-          
+
           const result = await createDirectCollectionAccount(data);
 
           setLoading(false);
@@ -93,9 +147,14 @@ export default function CreateDirectCollectionAccount({
           } else {
             showError('Error', result.error);
           }
-        } catch (error) {
+        } catch (error: any) {
           setLoading(false);
-          showError('Error', 'There was a problem creating the direct collection account.');
+          console.log(error);
+          if (error.message && error.message.includes("Duplicate entry")) {
+            showError('Error', 'Loan Refernece Already Exists');
+          } else {
+            showError('Error', 'There was a problem creating the direct collection account.');
+          }
         }
       }
     );
@@ -158,6 +217,28 @@ export default function CreateDirectCollectionAccount({
                       </FormItem>
                     )}
                   />
+                </div>
+                <div className='col-span-2'>
+                  {formLoading
+                    ? <FormItemSkeleton />
+                    : <DefaultFormSelect
+                      form={form}
+                      label='Associated Branch'
+                      name='branch_id'
+                      options={branchList}
+                      placeholder='Select Associated Branch'
+                    />}
+                </div>
+                <div className='col-span-2'>
+                  {formLoading
+                    ? <FormItemSkeleton />
+                    : <DefaultFormSelect
+                      form={form}
+                      label='Associated Handler'
+                      name='handler_id'
+                      options={collectionUsers}
+                      placeholder='Select Associated Handler'
+                    />}
                 </div>
               </div>
 
