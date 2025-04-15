@@ -6,6 +6,7 @@ import { EditLeadFormValues } from "@/app/dashboard/customer-boarding/leads/bloc
 import { ProcessRepository } from "./processRepository";
 import { DirectCollectionAccountValues } from "@/app/dashboard/collection/collection-accounts/blocks/CreateAccount";
 import { CollectionFormValues } from "@/app/dashboard/collection/collection-accounts/blocks/AddCollection";
+import { MoneyHelper } from "../helpers/money-helper";
 
 
 export type CollectionAccount = {
@@ -64,6 +65,7 @@ export class CollectionRepository extends RepositoryBase {
     try {
       const lead = {
         ...data,
+        amount: MoneyHelper.rupeesToPaise(Number(data.amount)),
         status: 1,
         ref_type: 'Direct',
         updated_by: userId,
@@ -91,6 +93,8 @@ export class CollectionRepository extends RepositoryBase {
     try {
       const lead = {
         ...data,
+        loan_amount: MoneyHelper.rupeesToPaise(Number(data.loan_amount)),
+        loan_emi_amount: MoneyHelper.rupeesToPaise(Number(data.loan_emi_amount)),
         status: 1,
         updated_by: userId,
         company_id: this.companyId

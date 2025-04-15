@@ -10,6 +10,7 @@ import { CardContent, CardDescription, CardHeader, CardTitle } from "@/component
 import ReceiptForm from "./blocks/create-receipt";
 import { getCollectionList } from "@/lib/actions/collection";
 import { Collection } from "@/lib/repositories/collectionRepository";
+import { MoneyHelper } from "@/lib/helpers/money-helper";
 
 export default function Receipting ()  {
   const [collections, setCollections] = useState<Collection[]>([])
@@ -60,7 +61,7 @@ export default function Receipting ()  {
       sortable: true,
       visible: true,
       cell: (row) => (
-        <span>₹{row.loan_amount.toLocaleString()}</span>
+        <span>{MoneyHelper.formatPaise(Number(row.amount))}</span>
       )
     },
     {
