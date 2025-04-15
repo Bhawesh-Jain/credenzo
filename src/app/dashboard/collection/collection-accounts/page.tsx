@@ -23,7 +23,6 @@ interface OpenFormProps {
 export default function CollectionAccounts() {
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [vis, setVis] = useState(false);
   const [collectionAccounts, setCollectionAccounts] = useState<CollectionAccount[]>([]);
   const [openForm, setOpenForm] = useState<OpenFormProps | null>(null);
 

@@ -23,12 +23,16 @@ import { Icons } from "@/components/icons";
 import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
 import { useGlobalDialog } from '@/providers/DialogProvider';
 import DatePicker from "@/components/date-picker";
-import { updateDirectCollectionAccount } from "@/lib/actions/collection";
+import { getCollectionUserList, updateDirectCollectionAccount } from "@/lib/actions/collection";
+import { useEffect, useState } from "react";
+import { DefaultFormSelect } from "@/components/ui/default-form-field";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Extend your existing schema with an id field for editing
 const editDirectCollectionSchema = z.object({
   id: z.number(),
   customer_name: z.string().min(2, "Customer name must be at least 2 characters"),
+  handler_id: z.string().min(1, "Select Associated Handler"),
   customer_phone: z.string().min(10, "Please enter a valid phone number"),
   customer_address: z.string().min(5, "Address is required"),
   loan_ref: z.string().min(1, "Loan reference is required"),
@@ -70,6 +74,30 @@ export default function EditDirectCollectionAccount({
     resolver: zodResolver(editDirectCollectionSchema),
     defaultValues: initialData,
   });
+
+  const [collectionUsers, setCollectionUsers] = useState<any[]>([]);
+  const [formLoading, setFormLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    (async () => {
+      setFormLoading(true);
+      const accounts = await getCollectionUserList();
+
+
+      if (accounts.success) {
+        const formattedBranches = accounts.result.map((branch: any) => ({
+          label: branch.name,
+          value: branch.id.toString(),
+        }));
+
+        setCollectionUsers(formattedBranches)
+      } else {
+        showError('Users Not Found!', accounts.error)
+      }
+
+      setFormLoading(false);
+    })();
+  }, []);
 
   async function onSubmit(data: EditDirectCollectionAccountValues) {
     showConfirmation(
@@ -153,6 +181,18 @@ export default function EditDirectCollectionAccount({
                       </FormItem>
                     )}
                   />
+
+                  <div className='col-span-2'>
+                    {formLoading
+                      ? <Skeleton />
+                      : <DefaultFormSelect
+                        form={form}
+                        label='Associated Handler'
+                        name='handler_id'
+                        options={collectionUsers}
+                        placeholder='Select Associated Handler'
+                      />}
+                  </div>
                 </div>
               </div>
 

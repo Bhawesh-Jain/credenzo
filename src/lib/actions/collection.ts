@@ -53,3 +53,12 @@ export async function getCollectionList() {
 
   return result;
 }
+
+export async function getCollectionUserList() {
+  const session = await getSession();
+
+  const collectionRepository = new CollectionRepository(session.company_id);
+  const result = collectionRepository.getCollectionUsers()
+
+  return result;
+}

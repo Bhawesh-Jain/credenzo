@@ -198,4 +198,28 @@ export class CollectionRepository extends RepositoryBase {
     }
   }
 
+  async getCollectionUsers() {
+    try {
+      const companyConfig = await new QueryBuilder('company_master')
+        .where('company_id = ?', this.companyId)
+        .limit(1)
+        .select(['collection_roles']) as any[]
+
+      const data = await new QueryBuilder('users')
+        .where('company_id = ?', this.companyId)
+        .where(`role in (${companyConfig[0].collection_roles})`)
+        .select(['id, name'])
+
+      console.log(data);
+
+      if (data.length > 0) {
+        return this.success(data)
+      }
+
+      return this.failure('No Collection Users Found!')
+
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 } 
