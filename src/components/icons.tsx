@@ -18,7 +18,8 @@ import {
   Tag,
   Percent,
   Building,
-  IdCard
+  IdCard,
+  RefreshCcw  
 } from "lucide-react"
 
 export const Icons = {
@@ -40,6 +41,7 @@ export const Icons = {
   tag: Tag,
   percent: Percent,
   building: Building,
+  reload: RefreshCcw,
   idCard: IdCard,
   calendar: Calendar
 } 

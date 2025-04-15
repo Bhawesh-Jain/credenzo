@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowUpDownIcon, ChevronDown, ChevronUp, Settings2, SortAscIcon, SortDescIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Icons } from "../icons"
 
 export interface Column<T> {
   id: string
@@ -152,25 +153,28 @@ export function DataTable<T extends Record<string, any>>({
             className="max-w-xs "
           />
         )}
-        {toolbar && <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Settings2 className="mr-2 h-4 w-4" />
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="max-h-80 overflow-y-auto">
-            {columns.map(column => (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                checked={column.visible !== false}
-                onCheckedChange={() => toggleColumnVisibility(column.id)}
-              >
-                {column.header}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>}
+        <div className="flex flex-row md:items-center items-start justify-end gap-2">
+          {toolbar && <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Settings2 className="mr-2 h-4 w-4" />
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="max-h-80 overflow-y-auto">
+              {columns.map(column => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={column.visible !== false}
+                  onCheckedChange={() => toggleColumnVisibility(column.id)}
+                >
+                  {column.header}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>}
+          {setReload && <Button variant="outline" size="sm" onClick={() => setReload(true)}><Icons.reload className={cn(loading && 'animate-spin')} /></Button>}
+        </div>
       </div>
 
       <div className={cn("rounded-md border", className)}>
