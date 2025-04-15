@@ -14,6 +14,7 @@ export type CollectionAccount = {
   customer_phone: string,
   customer_address: string,
   handler_name: string,
+  branch_name: string,
   loan_ref: string,
   loan_amount: number,
   loan_emi_amount: number,
@@ -109,11 +110,14 @@ export class CollectionRepository extends RepositoryBase {
     try {
       let sql = `
         SELECT dca.*,
-          u.name as handler_name
+          u.name as handler_name,
+          br.name as branch_name
         FROM direct_collection_accounts dca
         LEFT JOIN users u 
           ON dca.handler_id = u.id
           AND u.status = 1
+        LEFT JOIN branches br
+          ON br.id = dca.branch_id
         WHERE dca.company_id = ?
           AND dca.status >= 0
       `

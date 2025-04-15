@@ -68,6 +68,13 @@ export default function CollectionAccounts() {
       visible: true,
     },
     {
+      id: "branch_name",
+      header: "Branch Name",
+      accessorKey: "branch_name",
+      sortable: true,
+      visible: true,
+    },
+    {
       id: "lendor_name",
       header: "Lendor",
       accessorKey: "lendor_name",
