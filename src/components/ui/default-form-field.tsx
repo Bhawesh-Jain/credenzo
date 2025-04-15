@@ -133,7 +133,7 @@ export function DefaultFormSelect({
           <FormControl>
             <Select
               onValueChange={field.onChange}
-              value={field.value}
+              value={String(field.value)}
               defaultValue={String(field.value)}
               form={form}
             >
@@ -142,7 +142,7 @@ export function DefaultFormSelect({
               </SelectTrigger>
               <SelectContent>
                 {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem key={option.value} value={String(option.value)}>
                     {option.label}
                   </SelectItem>
                 ))}

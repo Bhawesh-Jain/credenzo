@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFormContext } from "react-hook-form";
 import * as z from "zod";
 import {
   CardContent,
@@ -16,7 +16,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Icons } from "@/components/icons";
@@ -26,13 +25,16 @@ import DatePicker from "@/components/date-picker";
 import { getCollectionUserList, updateDirectCollectionAccount } from "@/lib/actions/collection";
 import { useEffect, useState } from "react";
 import { DefaultFormSelect } from "@/components/ui/default-form-field";
-import { Skeleton } from "@/components/ui/skeleton";
+import { getBranchListById } from "@/lib/actions/branch";
+import FormItemSkeleton from "@/components/skeletons/form-item-skeleton";
 
 // Extend your existing schema with an id field for editing
 const editDirectCollectionSchema = z.object({
   id: z.number(),
   customer_name: z.string().min(2, "Customer name must be at least 2 characters"),
   handler_id: z.string().min(1, "Select Associated Handler"),
+  branch_id: z.string().min(1, "Select Associated Branch"),
+  status: z.coerce.string().min(1, "Select Account Status"),
   customer_phone: z.string().min(10, "Please enter a valid phone number"),
   customer_address: z.string().min(5, "Address is required"),
   loan_ref: z.string().min(1, "Loan reference is required"),
@@ -76,23 +78,54 @@ export default function EditDirectCollectionAccount({
   });
 
   const [collectionUsers, setCollectionUsers] = useState<any[]>([]);
+  const [branchList, setBranchList] = useState([]);
+
   const [formLoading, setFormLoading] = useState<boolean>(false);
+  const { watch } = form;
+  const branchItem = watch("branch_id");
+
+  const statuses = [
+    {
+      label: 'Active',
+      value: '1'
+    },
+    {
+      label: 'Inactive',
+      value: '0'
+    },
+  ]
 
   useEffect(() => {
     (async () => {
-      setFormLoading(true);
-      const accounts = await getCollectionUserList();
-
+      const accounts = await getCollectionUserList(branchItem);
 
       if (accounts.success) {
-        const formattedBranches = accounts.result.map((branch: any) => ({
+        const formattedUsers = accounts.result.map((branch: any) => ({
           label: branch.name,
           value: branch.id.toString(),
         }));
 
-        setCollectionUsers(formattedBranches)
+        setCollectionUsers(formattedUsers)
       } else {
         showError('Users Not Found!', accounts.error)
+      }
+    })();
+  }, [branchItem]);
+
+
+  useEffect(() => {
+    (async () => {
+      setFormLoading(true);
+
+      let branchListData = await getBranchListById()
+
+      if (branchListData.success) {
+        const formattedBranches = branchListData.result.map((branch: any) => ({
+          label: branch.name,
+          value: branch.id.toString(),
+        }));
+
+        setBranchList(formattedBranches)
       }
 
       setFormLoading(false);
@@ -142,6 +175,14 @@ export default function EditDirectCollectionAccount({
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-700">Customer Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <DefaultFormSelect
+                    form={form}
+                    label='Account Status'
+                    name='status'
+                    options={statuses}
+                    placeholder='Select Account Status'
+                  />
+
                   <FormField
                     control={form.control}
                     name="customer_name"
@@ -184,7 +225,18 @@ export default function EditDirectCollectionAccount({
 
                   <div className='col-span-2'>
                     {formLoading
-                      ? <Skeleton />
+                      ? <FormItemSkeleton />
+                      : <DefaultFormSelect
+                        form={form}
+                        label='Associated Branch'
+                        name='branch_id'
+                        options={branchList}
+                        placeholder='Select Associated Branch'
+                      />}
+                  </div>
+                  <div className='col-span-2'>
+                    {formLoading
+                      ? <FormItemSkeleton />
                       : <DefaultFormSelect
                         form={form}
                         label='Associated Handler'

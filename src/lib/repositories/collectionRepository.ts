@@ -198,17 +198,26 @@ export class CollectionRepository extends RepositoryBase {
     }
   }
 
-  async getCollectionUsers() {
+  async getCollectionUsers(
+    branchId: string
+  ) {
     try {
       const companyConfig = await new QueryBuilder('company_master')
         .where('company_id = ?', this.companyId)
         .limit(1)
         .select(['collection_roles']) as any[]
 
-      const data = await new QueryBuilder('users')
-        .where('company_id = ?', this.companyId)
-        .where(`role in (${companyConfig[0].collection_roles})`)
-        .select(['id, name'])
+      let sql = `
+        SELECT u.id, u.name, roles.role_name, roles.department
+        FROM user_branches ub
+        LEFT JOIN users u ON ub.user_id = u.id
+        LEFT JOIN roles ON u.role = roles.id
+        WHERE ub.branch_id = ?
+          AND u.company_id = ?
+          AND u.role in (${companyConfig[0].collection_roles})
+      `
+
+      const data = await executeQuery(sql, [branchId, this.companyId]) as any[]
 
       console.log(data);
 
