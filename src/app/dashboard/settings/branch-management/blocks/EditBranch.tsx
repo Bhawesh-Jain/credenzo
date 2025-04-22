@@ -47,17 +47,6 @@ export default function EditBranch({
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      const branch = await getBranchById(branchId);
-      if (branch.success) {
-        form.reset(branch.result);
-      }
-      setLoading(false);
-    })();
-  }, [branchId]);
-
   const defaultValues: Partial<FormValues> = {
     name: "",
     branch_code: "",
@@ -69,6 +58,17 @@ export default function EditBranch({
     resolver: zodResolver(formScheme),
     defaultValues,
   })
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      const branch = await getBranchById(branchId);
+      if (branch.success) {
+        form.reset(branch.result);
+      }
+      setLoading(false);
+    })();
+  }, [branchId, form]);
 
   async function onSubmit(data: FormValues) {
     setLoading(true);
