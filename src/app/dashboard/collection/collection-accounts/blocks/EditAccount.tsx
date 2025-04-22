@@ -110,7 +110,7 @@ export default function EditDirectCollectionAccount({
         showError('Users Not Found!', accounts.error)
       }
     })();
-  }, [branchItem]);
+  }, [branchItem, showError]);
 
 
   useEffect(() => {
