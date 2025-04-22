@@ -106,7 +106,7 @@ export default function CreateDirectCollectionAccount({
         showError('Users Not Found!', accounts.error)
       }
     })();
-  }, [branchItem]);
+  }, [branchItem, showError]);
 
 
   useEffect(() => {
