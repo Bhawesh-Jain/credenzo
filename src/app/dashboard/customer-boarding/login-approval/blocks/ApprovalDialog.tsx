@@ -53,7 +53,7 @@ export default function ApprovalDialog({
         setLoading(false);
       }
     })();
-  }, [approvalId]);
+  }, [approvalId, toast, onClose]);
 
   const handleDecision = async (decision: 'approve' | 'reject') => {
     setSubmitting(true);
