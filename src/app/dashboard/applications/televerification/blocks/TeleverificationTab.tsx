@@ -49,8 +49,7 @@ export default function TeleverificationScreen({
   });
 
   const onSubmit = (data: TeleverificationFormValues) => {
-    console.log("Televerification Data:", data);
-
+    // TODO: Handle Submit
   };
 
   const closeForm = () => {

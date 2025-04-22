@@ -227,8 +227,6 @@ export class CollectionRepository extends RepositoryBase {
 
       const data = await executeQuery(sql, [branchId, this.companyId]) as any[]
 
-      console.log(data);
-
       if (data.length > 0) {
         return this.success(data)
       }

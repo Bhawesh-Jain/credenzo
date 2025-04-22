@@ -149,7 +149,6 @@ export default function CreateDirectCollectionAccount({
           }
         } catch (error: any) {
           setLoading(false);
-          console.log(error);
           if (error.message && error.message.includes("Duplicate entry")) {
             showError('Error', 'Loan Refernece Already Exists');
           } else {
