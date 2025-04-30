@@ -155,6 +155,28 @@ export class BranchRepository extends RepositoryBase {
     }
   }
 
+  async getBranchStringByUserId(userId: string) {
+    try {
+      var sql = `
+        SELECT b.id
+        FROM user_branches ub
+        LEFT JOIN branches b
+          ON b.id = ub.branch_id
+        WHERE ub.user_id = ?
+      `
+      const result = await executeQuery(sql, [userId]) as any[];
+
+      if (result.length > 0) {
+        const branchIds = result.map((branch) => branch.id).join(',');
+        return this.success(branchIds);
+      } else {
+        return this.failure('');
+      }
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
   async disableBranch(id: number, userId: string, status: number) {
     try {
       const result = await this.queryBuilder
