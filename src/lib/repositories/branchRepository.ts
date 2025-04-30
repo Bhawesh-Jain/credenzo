@@ -134,7 +134,7 @@ export class BranchRepository extends RepositoryBase {
     }
   }
 
-  async getBranchListById(userId: string) {
+  async getBranchListByUserId(userId: string) {
     try {
       var sql = `
         SELECT b.id, b.name, b.branch_code

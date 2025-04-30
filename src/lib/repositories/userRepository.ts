@@ -325,7 +325,7 @@ export class UserRepository extends RepositoryBase {
     try {
       var branches = data.branch.split(',')
 
-      const existingBranches = await new BranchRepository(this.companyId).getBranchListById(String(id));
+      const existingBranches = await new BranchRepository(this.companyId).getBranchListByUserId(String(id));
       let addableBranches = [] as string[];
       let removableBranches = [] as string[];
 
