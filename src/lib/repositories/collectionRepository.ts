@@ -1,9 +1,6 @@
-import { LeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/CreateLead";
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import mysql from "mysql2/promise"
-import { EditLeadFormValues } from "@/app/dashboard/customer-boarding/leads/blocks/EditLead";
-import { ProcessRepository } from "./processRepository";
 import { DirectCollectionAccountValues } from "@/app/dashboard/collection/collection-accounts/blocks/CreateAccount";
 import { CollectionFormValues } from "@/app/dashboard/collection/collection-accounts/blocks/AddCollection";
 import { MoneyHelper } from "../helpers/money-helper";
@@ -63,8 +60,16 @@ export class CollectionRepository extends RepositoryBase {
     transactionConnection?: mysql.Connection
   ) {
     try {
+      const account = await new QueryBuilder('direct_collection_accounts')
+        .setConnection(transactionConnection)
+        .where('loan_ref = ?', data.ref)
+        .limit(1)
+        .select(['handler_id', 'branch_id']) as any[] 
+
       const lead = {
         ...data,
+        handler_id: account[0].handler_id,
+        branch_id: account[0].branch_id,
         amount: MoneyHelper.rupeesToPaise(Number(data.amount)),
         status: 1,
         ref_type: 'Direct',

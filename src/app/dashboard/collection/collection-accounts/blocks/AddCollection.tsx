@@ -7,15 +7,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import Loading from "@/app/dashboard/loading";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DefaultFormTextField } from "@/components/ui/default-form-field";
-import { useUser } from "@/contexts/user-context";
 import { Card, CardContent, CardDescription, CardTitle, CardHeader } from "@/components/ui/card";
 import { CollectionAccount } from "@/lib/repositories/collectionRepository";
 import DatePicker from "@/components/date-picker";
 import { createCollection } from "@/lib/actions/collection";
 import { zodPatterns } from "@/lib/utils/zod-patterns";
-import { tr } from "date-fns/locale";
 
 
 const formScheme = z.object({
@@ -40,8 +38,6 @@ export default function AddCollection({
   const [loading, setLoading] = useState(false);
 
   const { toast } = useToast();
-  const { user } = useUser();
-
   
   const defaultValues: Partial<CollectionFormValues> = {
     ref: initialData.loan_ref
