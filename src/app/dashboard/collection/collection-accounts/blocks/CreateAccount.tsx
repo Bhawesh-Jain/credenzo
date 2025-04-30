@@ -106,7 +106,8 @@ export default function CreateDirectCollectionAccount({
         showError('Users Not Found!', accounts.error)
       }
     })();
-  }, [branchItem, showError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [branchItem]);
 
 
   useEffect(() => {

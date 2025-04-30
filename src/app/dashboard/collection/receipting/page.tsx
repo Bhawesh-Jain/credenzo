@@ -5,19 +5,20 @@ import { Column, DataTable } from "@/components/data-table/data-table";
 import formatDate from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Badge } from "@/components/ui/badge";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ReceiptForm from "./blocks/create-receipt";
 import { getCollectionList } from "@/lib/actions/collection";
 import { Collection } from "@/lib/repositories/collectionRepository";
 import { MoneyHelper } from "@/lib/helpers/money-helper";
+import { useGlobalDialog } from "@/providers/DialogProvider";
 
 export default function Receipting ()  {
   const [collections, setCollections] = useState<Collection[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>();
+  const [selectedId, setSelectedId] = useState<number>();
+  const { showError } = useGlobalDialog();
 
   useEffect(() => {
     (async () => {
@@ -26,9 +27,11 @@ export default function Receipting ()  {
 
       const result = await getCollectionList();
 
-      setCollections(result.result);
-
       setLoading(false);
+
+      if (result.success) {
+        setCollections(result.result);
+      }
     })();
   }, [reload]);
 
@@ -118,7 +121,7 @@ export default function Receipting ()  {
 
   return (
     <>
-      {form
+      {(form && selectedId)
         ? <Container>
           <CardHeader>
             <CardTitle>Receipting</CardTitle>
@@ -126,7 +129,7 @@ export default function Receipting ()  {
           </CardHeader>
 
           <CardContent>
-            <ReceiptForm collectors={[]} onSubmit={() => {}}/>
+            <ReceiptForm collectionId={selectedId} closeForm={() => setForm(false)}/>
           </CardContent>
         </Container>
 

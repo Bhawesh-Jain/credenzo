@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import DatePicker from "@/components/date-picker";
 
 // Types
@@ -20,8 +19,8 @@ interface LoanCollector {
 }
 
 interface ReceiptFormProps {
-  collectors: LoanCollector[];
-  onSubmit: (receiptData: ReceiptData) => void;
+  collectionId: number;
+  closeForm: () => void;
 }
 
 export interface ReceiptData {
@@ -36,7 +35,7 @@ export interface ReceiptData {
   notes: string;
 }
 
-export default function ReceiptForm({ collectors, onSubmit }: ReceiptFormProps) {
+export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProps) {
   const [date, setDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState<ReceiptData>({
     borrowerId: "",
@@ -56,7 +55,7 @@ export default function ReceiptForm({ collectors, onSubmit }: ReceiptFormProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...formData, paymentDate: date });
+   
   };
 
   // Payment methods
@@ -191,25 +190,6 @@ export default function ReceiptForm({ collectors, onSubmit }: ReceiptFormProps) 
                 For bank transfers, checks, or digital payments
               </p>
             </div>
-
-            <div>
-              <Label htmlFor="collector">Collected By</Label>
-              <Select
-                onValueChange={(value) => handleChange("collectorId", value)}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select collector" />
-                </SelectTrigger>
-                <SelectContent>
-                  {collectors.map((collector) => (
-                    <SelectItem key={collector.id} value={collector.id}>
-                      {collector.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           {/* Notes */}
@@ -226,7 +206,7 @@ export default function ReceiptForm({ collectors, onSubmit }: ReceiptFormProps) 
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline" type="button">Cancel</Button>
+        <Button variant="outline" type="button" onClick={closeForm}>Cancel</Button>
         <Button type="submit" onClick={handleSubmit}>Create Receipt</Button>
       </CardFooter>
     </Card>

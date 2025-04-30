@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFormContext } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
   CardContent,
@@ -96,6 +96,7 @@ export default function EditDirectCollectionAccount({
   ]
 
   useEffect(() => {
+    if (!branchItem) return;
     (async () => {
       const accounts = await getCollectionUserList(branchItem);
 
@@ -110,7 +111,8 @@ export default function EditDirectCollectionAccount({
         showError('Users Not Found!', accounts.error)
       }
     })();
-  }, [branchItem, showError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [branchItem]);
 
 
   useEffect(() => {

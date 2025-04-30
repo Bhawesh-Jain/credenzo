@@ -180,6 +180,8 @@ export class CollectionRepository extends RepositoryBase {
         return this.failure(branches.error) 
       }
 
+      console.log(branches.result)
+      
       const branchIds = branches.result as string
 
       let sql = `
