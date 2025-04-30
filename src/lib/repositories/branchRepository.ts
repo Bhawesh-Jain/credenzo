@@ -170,7 +170,7 @@ export class BranchRepository extends RepositoryBase {
         const branchIds = result.map((branch) => branch.id).join(',');
         return this.success(branchIds);
       } else {
-        return this.failure('');
+        return this.failure('No Branch mapped to user!');
       }
     } catch (error) {
       return this.handleError(error);

@@ -4,6 +4,7 @@ import mysql from "mysql2/promise"
 import { DirectCollectionAccountValues } from "@/app/dashboard/collection/collection-accounts/blocks/CreateAccount";
 import { CollectionFormValues } from "@/app/dashboard/collection/collection-accounts/blocks/AddCollection";
 import { MoneyHelper } from "../helpers/money-helper";
+import { BranchRepository } from "./branchRepository";
 
 
 export type CollectionAccount = {
@@ -68,7 +69,7 @@ export class CollectionRepository extends RepositoryBase {
 
       const lead = {
         ...data,
-        handler_id: account[0].handler_id,
+        // handler_id: account[0].handler_id,
         branch_id: account[0].branch_id,
         amount: MoneyHelper.rupeesToPaise(Number(data.amount)),
         status: 1,
@@ -172,6 +173,15 @@ export class CollectionRepository extends RepositoryBase {
     userId: string,
   ) {
     try {
+      const branches = await new BranchRepository(this.companyId)
+        .getBranchStringByUserId(userId)
+
+      if (branches.error) {
+        return this.failure(branches.error) 
+      }
+
+      const branchIds = branches.result as string
+
       let sql = `
         SELECT 
           cl.amount,
@@ -195,6 +205,7 @@ export class CollectionRepository extends RepositoryBase {
         WHERE cl.status > 0
           AND cl.company_id = ?
           AND (cl.handler_id = '' OR cl.handler_id = ?)
+          AND dca.branch_id IN (${branchIds})
         ORDER BY cl.id DESC
       `;
 
