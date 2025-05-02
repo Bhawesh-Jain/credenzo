@@ -5,6 +5,7 @@ import { getSession } from "../session";
 import { CollectionRepository } from "../repositories/collectionRepository";
 import { EditDirectCollectionAccountValues } from "@/app/dashboard/collection/collection-accounts/blocks/EditAccount";
 import { CollectionFormValues } from "@/app/dashboard/collection/collection-accounts/blocks/AddCollection";
+import { PaymentRepository } from "../repositories/paymentRepository";
 
 
 export async function createDirectCollectionAccount(data: DirectCollectionAccountValues) {
@@ -59,6 +60,24 @@ export async function getCollectionUserList(branchId: string) {
 
   const collectionRepository = new CollectionRepository(session.company_id);
   const result = collectionRepository.getCollectionUsers(branchId)
+
+  return result;
+}
+
+export async function getCollectionDetailById(collectionId: number) {
+  const session = await getSession();
+
+  const collectionRepository = new CollectionRepository(session.company_id);
+  const result = collectionRepository.getCollectionDetailById(collectionId)
+
+  return result;
+}
+
+export async function getPaymentMethod() {
+  const session = await getSession();
+
+  const paymentRepository = new PaymentRepository(session.company_id);
+  const result = paymentRepository.getPaymentMethod()
 
   return result;
 }

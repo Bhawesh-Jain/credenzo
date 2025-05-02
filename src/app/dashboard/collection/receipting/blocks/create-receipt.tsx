@@ -1,22 +1,18 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import DatePicker from "@/components/date-picker";
+import { getCollectionDetailById, getPaymentMethod } from "@/lib/actions/collection";
+import Loading from "@/app/loading";
+import { Form } from "@/components/ui/form";
+import { DefaultFormSelect, DefaultFormTextField } from "@/components/ui/default-form-field";
+import { zodPatterns } from "@/lib/utils/zod-patterns";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PaymentMethod } from "@/lib/repositories/paymentRepository";
 
-// Types
-interface LoanCollector {
-  id: string;
-  name: string;
-}
 
 interface ReceiptFormProps {
   collectionId: number;
@@ -35,180 +31,92 @@ export interface ReceiptData {
   notes: string;
 }
 
+const formScheme = z.object({
+  amount: zodPatterns.numberString.schema().min(1, "Amount is required"),
+  payment_date: zodPatterns.date.schema(),
+  payment_method: z.string().min(1, "Payment method is required"),
+  utr_number: z.string().min(1, "Reference number is required"),
+});
+
+export type ReceiptFormValues = z.infer<typeof formScheme>;
+
+
 export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProps) {
-  const [date, setDate] = useState<Date>(new Date());
-  const [formData, setFormData] = useState<ReceiptData>({
-    borrowerId: "",
-    borrowerName: "",
-    loanId: "",
+  const [loading, setLoading] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [paymentMethodArray, setPaymentMethodArray] = useState<any[]>([]);
+
+  const [data, setData] = useState<ReceiptData>();
+
+  const defaultValues: Partial<ReceiptFormValues> = {
     amount: 0,
-    paymentDate: new Date(),
-    paymentMethod: "",
-    referenceNumber: "",
-    collectorId: "",
-    notes: ""
+    payment_date: new Date(),
+    payment_method: "",
+    utr_number: "",
+  };
+
+  const form = useForm<ReceiptFormValues>({
+    resolver: zodResolver(formScheme),
+    defaultValues,
   });
 
-  const handleChange = (field: keyof ReceiptData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-   
-  };
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
 
-  // Payment methods
-  const paymentMethods = [
-    "Cash",
-    "Bank Transfer",
-    "Credit Card",
-    "Debit Card",
-    "Mobile Money",
-    "Check",
-    "Online Payment"
-  ];
+      const result = await getCollectionDetailById(collectionId);
+
+      const paymentMethodResult = await getPaymentMethod();
+      const formattedMethods = paymentMethodResult.result.map((method: PaymentMethod) => ({
+        label: method.name,
+        value: method.id,
+      }));
+
+      setPaymentMethodArray(formattedMethods);
+      setPaymentMethods(paymentMethodResult.result);
+
+      
+      setLoading(false);
+
+    })();
+  }, []);
+
+
+  async function onSubmit(data: ReceiptFormValues) {
+
+  }
 
   return (
-    <Card className="w-full max-w-3xl mx-auto">
+    <Card>
       <CardHeader>
-        <CardTitle>Create Payment Receipt</CardTitle>
-        <CardDescription>Record a new loan payment from a borrower</CardDescription>
+        <CardTitle>Add User</CardTitle>
+        <CardDescription>
+          Add a new user to the system
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Borrower Details */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="borrowerName">Borrower Name</Label>
-                <Input
-                  id="borrowerName"
-                  placeholder="Full name of borrower"
-                  value={formData.borrowerName}
-                  onChange={(e) => handleChange("borrowerName", e.target.value)}
-                  required
+        {loading
+          ? <Loading />
+          : <div className="my-3">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <DefaultFormSelect
+                  form={form}
+                  name="payment_method"
+                  label="Payment Method"
+                  placeholder="Select Payment Method"
+                  options={paymentMethodArray}
                 />
-              </div>
 
-              <div>
-                <Label htmlFor="borrowerId">Borrower ID</Label>
-                <Input
-                  id="borrowerId"
-                  placeholder="Enter borrower ID"
-                  value={formData.borrowerId}
-                  onChange={(e) => handleChange("borrowerId", e.target.value)}
-                  required
-                />
-              </div>
 
-              <div>
-                <Label htmlFor="loanId">Loan ID</Label>
-                <Input
-                  id="loanId"
-                  placeholder="Enter loan reference ID"
-                  value={formData.loanId}
-                  onChange={(e) => handleChange("loanId", e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Payment Details */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="amount">Payment Amount</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                  <Input
-                    id="amount"
-                    className="pl-8"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    value={formData.amount || ""}
-                    onChange={(e) => handleChange("amount", parseFloat(e.target.value))}
-                    required
-                  />
+                <div className="flex justify-end">
+                  <Button type="submit">Add User</Button>
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="paymentDate">Payment Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <DatePicker
-                      date={date}
-                      onChange={(date) => {
-                        setDate(date || new Date());
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div>
-                <Label htmlFor="paymentMethod">Payment Method</Label>
-                <Select
-                  onValueChange={(value) => handleChange("paymentMethod", value)}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select payment method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {paymentMethods.map((method) => (
-                      <SelectItem key={method} value={method}>{method}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          {/* Reference and Collector */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="referenceNumber">Reference Number</Label>
-              <Input
-                id="referenceNumber"
-                placeholder="Transaction reference number"
-                value={formData.referenceNumber}
-                onChange={(e) => handleChange("referenceNumber", e.target.value)}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                For bank transfers, checks, or digital payments
-              </p>
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div>
-            <Label htmlFor="notes">Additional Notes</Label>
-            <Textarea
-              id="notes"
-              placeholder="Add any additional information about this payment"
-              value={formData.notes}
-              onChange={(e) => handleChange("notes", e.target.value)}
-              className="min-h-24"
-            />
-          </div>
-        </form>
+              </form>
+            </Form>
+          </div>}
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline" type="button" onClick={closeForm}>Cancel</Button>
-        <Button type="submit" onClick={handleSubmit}>Create Receipt</Button>
-      </CardFooter>
     </Card>
   );
 }

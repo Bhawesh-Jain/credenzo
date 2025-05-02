@@ -253,4 +253,47 @@ export class CollectionRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+
+  async getCollectionDetailById(
+    collectionId: number
+  ) {
+    try {
+      let sql = `
+        SELECT 
+          cl.amount,
+          cl.due_date,
+          cl.id,
+          dca.customer_name,
+          dca.customer_phone,
+          dca.customer_address,
+          dca.loan_ref,
+          dca.loan_amount,
+          dca.loan_emi_amount,
+          dca.loan_type,
+          dca.loan_tenure,
+          dca.loan_start_date,
+          dca.interest_rate,
+          dca.lendor_name,
+          dca.status
+        FROM collections cl
+        LEFT JOIN direct_collection_accounts dca
+          ON dca.loan_ref = cl.ref
+        WHERE cl.id = ?
+          AND cl.company_id = ?
+          AND cl.status > 0
+        LIMIT 1
+      `;
+
+      const data = await executeQuery(sql, [collectionId, this.companyId]) as any
+
+      if (data.length > 0) {
+        return this.success(data[0])
+      }
+
+      return this.failure('No Collection Found!')
+
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 } 

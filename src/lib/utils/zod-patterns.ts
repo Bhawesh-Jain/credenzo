@@ -68,4 +68,12 @@ export const zodPatterns = {
   numberString: {
     schema: () => z.coerce.number()
   },
+  date: {
+    schema: () => z.coerce.date()
+  },
+  dateString: {
+    schema: () => z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid date format",
+    }),
+  },
 } as const;
