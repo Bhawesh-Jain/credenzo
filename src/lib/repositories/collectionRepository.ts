@@ -179,8 +179,6 @@ export class CollectionRepository extends RepositoryBase {
       if (branches.error) {
         return this.failure(branches.error) 
       }
-
-      console.log(branches.result)
       
       const branchIds = branches.result as string
 
