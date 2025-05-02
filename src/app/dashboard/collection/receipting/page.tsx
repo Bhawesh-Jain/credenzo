@@ -10,7 +10,6 @@ import ReceiptForm from "./blocks/create-receipt";
 import { getCollectionList } from "@/lib/actions/collection";
 import { Collection } from "@/lib/repositories/collectionRepository";
 import { MoneyHelper } from "@/lib/helpers/money-helper";
-import { useGlobalDialog } from "@/providers/DialogProvider";
 
 export default function Receipting ()  {
   const [collections, setCollections] = useState<Collection[]>([])
@@ -18,7 +17,6 @@ export default function Receipting ()  {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(false);
   const [selectedId, setSelectedId] = useState<number>();
-  const { showError } = useGlobalDialog();
 
   useEffect(() => {
     (async () => {
