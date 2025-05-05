@@ -1,114 +1,184 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCollectionDetailById, getPaymentMethod } from "@/lib/actions/collection";
 import Loading from "@/app/loading";
 import { Form } from "@/components/ui/form";
-import { DefaultFormSelect, DefaultFormTextField } from "@/components/ui/default-form-field";
-import { zodPatterns } from "@/lib/utils/zod-patterns";
+import { DefaultFormDatePicker, DefaultFormSelect, DefaultFormTextField } from "@/components/ui/default-form-field";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PaymentMethod } from "@/lib/repositories/paymentRepository";
 import { Collection } from "@/lib/repositories/collectionRepository";
+import formatDate from "@/lib/utils/date";
+import { cn } from "@/lib/utils";
+import { zodPatterns } from "@/lib/utils/zod-patterns";
 
+// Schema and type moved outside component for reuse
+export const receiptFormSchema = z.object({
+  amount: zodPatterns.numberString.schema().min(1, "Amount is required"),
+  payment_date: z.date(),
+  payment_method: z.string().min(1, "Payment method is required"),
+  utr_number: z.string().optional(),
+});
+
+export type ReceiptFormValues = z.infer<typeof receiptFormSchema>;
 
 interface ReceiptFormProps {
   collectionId: number;
   closeForm: () => void;
 }
 
-const formScheme = z.object({
-  amount: zodPatterns.numberString.schema().min(1, "Amount is required"),
-  payment_date: zodPatterns.date.schema(),
-  payment_method: z.string().min(1, "Payment method is required"),
-  utr_number: z.string().min(1, "Reference number is required"),
-});
-
-export type ReceiptFormValues = z.infer<typeof formScheme>;
-
-
 export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [paymentMethodArray, setPaymentMethodArray] = useState<any[]>([]);
-
-  const [data, setData] = useState<Collection>();
-
-  const defaultValues: Partial<ReceiptFormValues> = {
-    amount: 0,
-    payment_date: new Date(),
-    payment_method: "",
-    utr_number: "",
-  };
+  const [data, setData] = useState<Collection | null>(null);
 
   const form = useForm<ReceiptFormValues>({
-    resolver: zodResolver(formScheme),
-    defaultValues,
+    resolver: zodResolver(receiptFormSchema),
+    defaultValues: {
+      amount: 0,
+      payment_date: new Date(),
+      payment_method: "",
+      utr_number: "",
+    },
   });
 
+  const { watch, reset, setError } = form;
+  const selectedPaymentId = watch("payment_method");
+  const selectedMethod = paymentMethods.find(m => m.id.toString() === selectedPaymentId);
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
+    const initializeForm = async () => {
+      try {
+        const [collectionRes, paymentRes] = await Promise.all([
+          getCollectionDetailById(collectionId),
+          getPaymentMethod(),
+        ]);
 
-      const collection = await getCollectionDetailById(collectionId);
+        setData(collectionRes.result);
+        setPaymentMethods(paymentRes.result);
 
-      setData(collection.result)
+        reset({
+          payment_date: new Date(),
+          payment_method: "",
+          utr_number: "",
+          amount: collectionRes.result.amount,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      const paymentMethodResult = await getPaymentMethod();
-      const formattedMethods = paymentMethodResult.result.map((method: PaymentMethod) => ({
-        label: method.name,
-        value: method.id,
-      }));
+    initializeForm();
+  }, [collectionId, reset]);
 
-      setPaymentMethodArray(formattedMethods);
-      setPaymentMethods(paymentMethodResult.result);
+  const onSubmit = (values: ReceiptFormValues) => {
+    if (selectedMethod?.utr_required === 1 && !values.utr_number) {
+      setError("utr_number", { type: "manual", message: "UTR/Reference number is required for this payment method" });
+      return;
+    }
 
+    console.log("Form values:", values);
+    closeForm();
+  };
 
-      setLoading(false);
-
-    })();
-  }, []);
-
-
-  async function onSubmit(data: ReceiptFormValues) {
-
-  }
+  if (loading) return <Loading />;
+  if (!data) return <div>No data found</div>;
 
   return (
-    <Card>
+    <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>{data?.customer_name} | {data?.loan_ref}</CardTitle>
-        <CardDescription>
-          Loan Amount: {data?.currency_symbol} {data?.loan_amount} | EMI Amount: {data?.currency_symbol} {data?.loan_emi_amount} | {data?.loan_type}
-        </CardDescription>
+        <CardTitle className="text-2xl">Payment Receipt</CardTitle>
       </CardHeader>
-      <CardContent>
-        {loading
-          ? <Loading />
-          : <div className="my-3">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <DefaultFormSelect
+
+      <CardContent className="space-y-6">
+        {/* Account Details Section */}
+        <div className="space-y-4 p-4 bg-muted rounded-lg">
+          <h3 className="text-lg font-semibold">Account Details</h3>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <DetailItem label="Customer Name" value={data.customer_name} />
+            <DetailItem label="Loan Reference" value={data.loan_ref} />
+            <DetailItem label="Loan Amount" value={`${data.currency_symbol} ${data.loan_amount}`} />
+            <DetailItem label="EMI Amount" value={`${data.currency_symbol} ${data.loan_emi_amount}`} />
+            <DetailItem label="Loan Type" value={data.loan_type} />
+            <DetailItem label="Tenure" value={`${data.loan_tenure} Months`} />
+            <DetailItem label="Interest Rate" value={`${data.interest_rate}%`} />
+            <DetailItem label="Start Date" value={formatDate(data.loan_start_date)} />
+          </div>
+        </div>
+
+        <div className="grid gap-4 text-sm">
+          <DetailItem label="Collection Amount" value={`${data.currency_symbol} ${data.amount}`} />
+
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Due Date</span>
+            <span
+              className={cn(
+                "font-medium",
+                new Date(data.due_date) < new Date() ? "text-red-500" : "text-green-500"
+              )}
+            >
+              {formatDate(data.due_date)}
+            </span>
+          </div>
+
+          {new Date(data.due_date) < new Date() && (
+            <p className="text-sm text-red-500">This payment is overdue.</p>
+          )}
+        </div>
+
+        {/* Payment Form Section */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <DefaultFormSelect
+                form={form}
+                placeholder="Select Payment Method"
+                name="payment_method"
+                label="Payment Method"
+                options={paymentMethods.map(m => ({ value: m.id, label: m.name }))}
+              />
+
+              <DefaultFormTextField
+                form={form}
+                name="amount"
+                label="Amount"
+              />
+
+              <DefaultFormDatePicker
+                form={form}
+                name="payment_date"
+                label="Payment Date"
+              />
+
+              {selectedMethod?.utr_required === 1 && (
+                <DefaultFormTextField
                   form={form}
-                  name="payment_method"
-                  label="Payment Method"
-                  placeholder="Select Payment Method"
-                  options={paymentMethodArray}
+                  name="utr_number"
+                  label="UTR/Reference Number"
                 />
+              )}
+            </div>
 
-
-                <div className="flex justify-between gap-4">
-                  <Button variant='outline' onClick={closeForm}>Cancel</Button>
-                  <Button type="submit">Add User</Button>
-                </div>
-              </form>
-            </Form>
-          </div>}
+            <div className="flex justify-end gap-4">
+              <Button variant="outline" onClick={closeForm}>
+                Cancel
+              </Button>
+              <Button type="submit">Submit Payment</Button>
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );
 }
+
+const DetailItem = ({ label, value }: { label: string; value?: string | number }) => (
+  <div className="flex justify-between items-center">
+    <span className="text-muted-foreground">{label}</span>
+    <span className="font-medium">{value || "-"}</span>
+  </div>
+);

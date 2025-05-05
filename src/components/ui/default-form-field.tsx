@@ -1,3 +1,4 @@
+import DatePicker from "../date-picker";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./form";
 import { Input } from "./input";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "./select";
@@ -6,7 +7,7 @@ import { Textarea } from "./textarea";
 export function DefaultFormTextField({
   label,
   name,
-  placeholder,
+  placeholder = '',
   uppercase = false,
   disabled = false,
   capitalize = true,
@@ -14,7 +15,7 @@ export function DefaultFormTextField({
 }: {
   label: string,
   name: string,
-  placeholder: string,
+  placeholder?: string,
   uppercase?: boolean,
   disabled?: boolean,
   capitalize?: boolean,
@@ -156,3 +157,40 @@ export function DefaultFormSelect({
   )
 };
 
+export function DefaultFormDatePicker({
+  label,
+  name,
+  form,
+  subYear = 0,
+  minToday = false,
+  maxToday = false,
+}: {
+  label: string;
+  name: string;
+  form: any;
+  subYear?: number;
+  minToday?: boolean;
+  maxToday?: boolean;
+}) {
+  return (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <DatePicker
+              date={field.value || null}
+              minToday={minToday}
+              maxToday={maxToday}
+              subYear={subYear}
+              onChange={(date) => field.onChange(date)}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
