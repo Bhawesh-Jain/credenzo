@@ -5,6 +5,7 @@ import { DirectCollectionAccountValues } from "@/app/dashboard/collection/collec
 import { CollectionFormValues } from "@/app/dashboard/collection/collection-accounts/blocks/AddCollection";
 import { BranchRepository } from "./branchRepository";
 import { CompanyRepository } from "./companyRepository";
+import { ReceiptFormValues } from "@/app/dashboard/collection/receipting/blocks/create-receipt";
 
 
 export type CollectionAccount = {
@@ -66,7 +67,7 @@ export class CollectionRepository extends RepositoryBase {
         .setConnection(transactionConnection)
         .where('loan_ref = ?', data.ref)
         .limit(1)
-        .select(['handler_id', 'branch_id']) as any[] 
+        .select(['handler_id', 'branch_id']) as any[]
 
       const lead = {
         ...data,
@@ -75,7 +76,7 @@ export class CollectionRepository extends RepositoryBase {
         amount: data.amount,
         status: 1,
         ref_type: 'Direct',
-        updated_by: userId,
+        created_by: userId,
         company_id: this.companyId
       }
 
@@ -176,9 +177,9 @@ export class CollectionRepository extends RepositoryBase {
         .getBranchStringByUserId(userId)
 
       if (branches.error) {
-        return this.failure(branches.error) 
+        return this.failure(branches.error)
       }
-      
+
       const branchIds = branches.result as string
 
       let sql = `
@@ -202,8 +203,9 @@ export class CollectionRepository extends RepositoryBase {
         LEFT JOIN direct_collection_accounts dca
           ON dca.loan_ref = cl.ref
         WHERE cl.status > 0
+          AND cl.status < 10
           AND cl.company_id = ?
-          AND (cl.handler_id = '' OR cl.handler_id = ?)
+          AND (cl.handler_id IS NULL OR cl.handler_id = ?)
           AND dca.branch_id IN (${branchIds})
         ORDER BY cl.id DESC
       `;
@@ -294,6 +296,47 @@ export class CollectionRepository extends RepositoryBase {
       }
 
       return this.failure('No Collection Found!')
+
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async createReceipt(
+    userId: string,
+    collectionId: number,
+    data: ReceiptFormValues,
+    transactionConnection?: mysql.Connection
+  ) {
+    try {
+      const receipt = {
+        collection_type: data.payment_method,
+        status: 10,
+        updated_by: userId,
+      }
+
+      const result = await new QueryBuilder('collections')
+        .setConnection(transactionConnection)
+        .insert(receipt);
+
+      if (result > 0) {
+        return this.success('Receipt Created!');
+      }
+      return this.failure('Failed to create receipt');
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+
+  async submitReceipt(
+    userId: string,
+    collectionId: number,
+    data: ReceiptFormValues,
+  ) {
+    try {
+
+      return this.failure('Request Failed!')
 
     } catch (error) {
       return this.handleError(error);

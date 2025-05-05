@@ -81,6 +81,11 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
       return;
     }
 
+    if (values.amount <= 0) {
+      setError("amount", { type: "manual", message: "Amount must be greater than 0" });
+      return;
+    }
+    
     console.log("Form values:", values);
     closeForm();
   };
@@ -89,7 +94,7 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
   if (!data) return <div>No data found</div>;
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="">
       <CardHeader>
         <CardTitle className="text-2xl">Payment Receipt</CardTitle>
       </CardHeader>
