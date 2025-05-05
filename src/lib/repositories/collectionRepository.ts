@@ -313,11 +313,17 @@ export class CollectionRepository extends RepositoryBase {
         collection_type: data.payment_method,
         status: 10,
         updated_by: userId,
+        paid_amount: data.amount,
+        payment_date: data.payment_date,
+        receipt_on: new Date()
       }
 
       const result = await new QueryBuilder('collections')
         .setConnection(transactionConnection)
-        .insert(receipt);
+        .where('id = ?', collectionId)
+        .update(receipt)
+
+      
 
       if (result > 0) {
         return this.success('Receipt Created!');
