@@ -66,6 +66,9 @@ export default function CollectionAccounts() {
       accessorKey: "handler_name",
       sortable: true,
       visible: true,
+      cell: (row) => (
+        <span>{row.handler_name ?? 'N/A'}</span>
+      )
     },
     {
       id: "branch_name",

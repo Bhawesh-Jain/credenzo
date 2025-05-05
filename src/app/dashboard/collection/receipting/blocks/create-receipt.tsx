@@ -12,23 +12,12 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PaymentMethod } from "@/lib/repositories/paymentRepository";
+import { Collection } from "@/lib/repositories/collectionRepository";
 
 
 interface ReceiptFormProps {
   collectionId: number;
   closeForm: () => void;
-}
-
-export interface ReceiptData {
-  borrowerId: string;
-  borrowerName: string;
-  loanId: string;
-  amount: number;
-  paymentDate: Date;
-  paymentMethod: string;
-  referenceNumber: string;
-  collectorId: string;
-  notes: string;
 }
 
 const formScheme = z.object({
@@ -46,7 +35,7 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodArray, setPaymentMethodArray] = useState<any[]>([]);
 
-  const [data, setData] = useState<ReceiptData>();
+  const [data, setData] = useState<Collection>();
 
   const defaultValues: Partial<ReceiptFormValues> = {
     amount: 0,
@@ -65,7 +54,9 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
     (async () => {
       setLoading(true);
 
-      const result = await getCollectionDetailById(collectionId);
+      const collection = await getCollectionDetailById(collectionId);
+
+      setData(collection.result)
 
       const paymentMethodResult = await getPaymentMethod();
       const formattedMethods = paymentMethodResult.result.map((method: PaymentMethod) => ({
@@ -76,7 +67,7 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
       setPaymentMethodArray(formattedMethods);
       setPaymentMethods(paymentMethodResult.result);
 
-      
+
       setLoading(false);
 
     })();
@@ -90,9 +81,9 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add User</CardTitle>
+        <CardTitle>{data?.customer_name} | {data?.loan_ref}</CardTitle>
         <CardDescription>
-          Add a new user to the system
+          Loan Amount: {data?.currency_symbol} {data?.loan_amount} | EMI Amount: {data?.currency_symbol} {data?.loan_emi_amount} | {data?.loan_type}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -110,7 +101,8 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
                 />
 
 
-                <div className="flex justify-end">
+                <div className="flex justify-between gap-4">
+                  <Button variant='outline' onClick={closeForm}>Cancel</Button>
                   <Button type="submit">Add User</Button>
                 </div>
               </form>

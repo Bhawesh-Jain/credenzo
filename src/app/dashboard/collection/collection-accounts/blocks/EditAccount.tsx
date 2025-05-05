@@ -24,28 +24,23 @@ import { useGlobalDialog } from '@/providers/DialogProvider';
 import DatePicker from "@/components/date-picker";
 import { getCollectionUserList, updateDirectCollectionAccount } from "@/lib/actions/collection";
 import { useEffect, useState } from "react";
-import { DefaultFormSelect } from "@/components/ui/default-form-field";
+import { DefaultFormSelect, DefaultFormTextField } from "@/components/ui/default-form-field";
 import { getBranchListById } from "@/lib/actions/branch";
 import FormItemSkeleton from "@/components/skeletons/form-item-skeleton";
+import { zodPatterns } from "@/lib/utils/zod-patterns";
 
 // Extend your existing schema with an id field for editing
 const editDirectCollectionSchema = z.object({
   id: z.number(),
   customer_name: z.string().min(2, "Customer name must be at least 2 characters"),
-  handler_id: z.string().min(1, "Select Associated Handler"),
+  handler_id: z.string(),
   branch_id: z.string().min(1, "Select Associated Branch"),
   status: z.coerce.string().min(1, "Select Account Status"),
   customer_phone: z.string().min(10, "Please enter a valid phone number"),
   customer_address: z.string().min(5, "Address is required"),
   loan_ref: z.string().min(1, "Loan reference is required"),
-  loan_amount: z.number({
-    required_error: "Loan amount is required",
-    invalid_type_error: "Please enter a valid number",
-  }).min(1, "Loan amount must be positive"),
-  loan_emi_amount: z.number({
-    required_error: "EMI amount is required",
-    invalid_type_error: "Please enter a valid number",
-  }).min(1, "EMI amount must be positive"),
+  loan_amount: zodPatterns.numberString.schema().min(1, "Loan amount is required"),
+  loan_emi_amount: zodPatterns.numberString.schema().min(1, "EMI amount is required"),
   loan_type: z.string().min(1, "Loan type is required"),
   loan_tenure: z.number({
     required_error: "Loan tenure is required",
@@ -108,6 +103,8 @@ export default function EditDirectCollectionAccount({
 
         setCollectionUsers(formattedUsers)
       } else {
+        setCollectionUsers([])
+        form.setValue('handler_id', '')
         showError('Users Not Found!', accounts.error)
       }
     })();
@@ -255,55 +252,28 @@ export default function EditDirectCollectionAccount({
                 <h3 className="text-lg font-semibold text-gray-700">Loan Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Loan reference is often not editable */}
-                  <FormField
-                    control={form.control}
-                    name="loan_ref"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabelWithIcon icon={Icons.fileText}>Loan Reference</FormLabelWithIcon>
-                        <FormControl>
-                          <Input placeholder="Unique loan reference" {...field} disabled />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                  <DefaultFormTextField
+                    form={form}
+                    label='Unique loan reference'
+                    name='loan_ref'
+                    disabled={true}
+                    placeholder='Select Loan Reference'
                   />
-                  <FormField
-                    control={form.control}
-                    name="loan_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabelWithIcon icon={Icons.receiptIndianRupee}>Loan Amount</FormLabelWithIcon>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Enter loan amount"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+
+                  <DefaultFormTextField
+                    form={form}
+                    label='Loan amount'
+                    name='loan_amount'
+                    placeholder='Enter loan amount'
                   />
-                  <FormField
-                    control={form.control}
-                    name="loan_emi_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabelWithIcon icon={Icons.currency}>EMI Amount</FormLabelWithIcon>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Enter EMI amount"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+
+                  <DefaultFormTextField
+                    form={form}
+                    label='EMI Amount'
+                    name='loan_emi_amount'
+                    placeholder='Enter EMI amount'
                   />
+
                   <FormField
                     control={form.control}
                     name="loan_type"

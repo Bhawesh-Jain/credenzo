@@ -3,8 +3,8 @@ import { RepositoryBase } from "../helpers/repository-base";
 import mysql from "mysql2/promise"
 import { DirectCollectionAccountValues } from "@/app/dashboard/collection/collection-accounts/blocks/CreateAccount";
 import { CollectionFormValues } from "@/app/dashboard/collection/collection-accounts/blocks/AddCollection";
-import { MoneyHelper } from "../helpers/money-helper";
 import { BranchRepository } from "./branchRepository";
+import { CompanyRepository } from "./companyRepository";
 
 
 export type CollectionAccount = {
@@ -43,6 +43,7 @@ export type Collection = {
   loan_start_date: string,
   interest_rate: string,
   lendor_name: string,
+  currency_symbol: string,
   status: string,
 }
 
@@ -71,7 +72,7 @@ export class CollectionRepository extends RepositoryBase {
         ...data,
         // handler_id: account[0].handler_id,
         branch_id: account[0].branch_id,
-        amount: MoneyHelper.rupeesToPaise(Number(data.amount)),
+        amount: data.amount,
         status: 1,
         ref_type: 'Direct',
         updated_by: userId,
@@ -99,8 +100,6 @@ export class CollectionRepository extends RepositoryBase {
     try {
       const lead = {
         ...data,
-        loan_amount: MoneyHelper.rupeesToPaise(Number(data.loan_amount)),
-        loan_emi_amount: MoneyHelper.rupeesToPaise(Number(data.loan_emi_amount)),
         status: 1,
         updated_by: userId,
         company_id: this.companyId
@@ -285,9 +284,13 @@ export class CollectionRepository extends RepositoryBase {
       `;
 
       const data = await executeQuery(sql, [collectionId, this.companyId]) as any
+      const currencySymbol = await new CompanyRepository(this.companyId).getCurrencySymbol();
 
       if (data.length > 0) {
-        return this.success(data[0])
+        return this.success({
+          ...data[0],
+          currency_symbol: currencySymbol.result,
+        })
       }
 
       return this.failure('No Collection Found!')
