@@ -54,7 +54,7 @@ export default function PermissionTree({
       return perms.map(perm => {
         if (perm.id === parentId) {
           var newC = !perm.checked
-          const updateChildren = (items: PermissionItem[]): PermissionItem[] => 
+          const updateChildren = (items: PermissionItem[]): PermissionItem[] =>
             items.map(item => ({
               ...item,
               checked: newC,
@@ -87,16 +87,16 @@ export default function PermissionTree({
           level > 0 && "ml-6",
         )}>
           {level > 0 && (
-            <div className="absolute -left-6 top-0 h-full w-6">
-              <div className="absolute left-0 -top-[1px] h-7 w-6 border-l-2 border-gray-200" />
+            <div className="absolute -left-2 top-0 h-full w-6">
+              <div className="absolute left-0 -top-[1px] h-5 w-6 border-l-2 border-gray-200" />
               {!isLast && <div className="absolute left-0 top-0 h-full border-l-2 border-gray-200" />}
-              <div className="absolute left-0 top-3 h-0.5 w-6 bg-gray-200" />
+              {<div className="absolute left-0 top-[1.2rem] h-0.5 w-5 bg-gray-200" />}
             </div>
           )}
 
           <div className="flex justify-between">
             <div className={cn(
-              "relative flex items-center gap-2 rounded-lg border border-transparent p-2",
+              "relative flex items-center gap-2 rounded-lg border border-transparent ml-2 p-2",
               "hover:bg-accent/50 hover:border-accent",
               "transition-colors duration-200"
             )}>
@@ -114,10 +114,10 @@ export default function PermissionTree({
             </div>
 
             {hasChildren && (
-              <Button 
-                size='sm' 
-                variant='outline' 
-                type="button" 
+              <Button
+                size='sm'
+                variant='outline'
+                type="button"
                 onClick={() => handleSelectAllChildren(perm.id)}
               >
                 All
