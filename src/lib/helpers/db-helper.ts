@@ -164,6 +164,21 @@ export class QueryBuilder {
     return result.affectedRows;
   }
   
+  async updateAndReturn(data: Record<string, any>): Promise<any[]> {
+    const affectedRows = await this.update(data);
+    
+    if (affectedRows === 0) {
+        return [];
+    }
+    
+    const { clause, parameters } = this.buildWhereClause();
+    
+    const selectQuery = `SELECT * FROM ${this.table} ${clause}`;
+    const selectResult = await executeQuery<any[]>(selectQuery, parameters, this.connection);
+    
+    return selectResult;
+}
+  
   async delete(): Promise<number> {    
     const { clause, parameters } = this.buildWhereClause();
     

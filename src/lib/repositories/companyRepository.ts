@@ -26,4 +26,22 @@ export class CompanyRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+
+  async getCompanyDetails() {
+    try {
+      const data = await new QueryBuilder('company_master')
+        .where('company_id = ?', this.companyId)
+        .limit(1)
+        .select() 
+
+      if (data.length > 0) {
+        return this.success(data[0])
+      }
+
+      return this.failure('No Company Found!')
+
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 } 

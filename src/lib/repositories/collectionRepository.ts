@@ -306,7 +306,6 @@ export class CollectionRepository extends RepositoryBase {
     userId: string,
     collectionId: number,
     data: ReceiptFormValues,
-    transactionConnection?: mysql.Connection
   ) {
     try {
       const receipt = {
@@ -319,14 +318,42 @@ export class CollectionRepository extends RepositoryBase {
       }
 
       const result = await new QueryBuilder('collections')
-        .setConnection(transactionConnection)
+        .setConnection()
         .where('id = ?', collectionId)
         .update(receipt)
-
-      
-
+        
       if (result > 0) {
-        return this.success('Receipt Created!');
+        var sql = `
+          SELECT cl.*,
+            pm.name as collection_type,
+            pm.utr_required,
+            br.name as branch_name,
+            ds.name as status_name,
+            dca.customer_name,
+            dca.loan_amount,
+            dca.loan_emi_amount,
+            dca.loan_type,
+            dca.loan_tenure,
+            dca.interest_rate,
+            dca.loan_start_date,
+            dca.lendor_name,
+          FROM collections cl
+          LEFT JOIN direct_collection_accounts dca
+            ON dca.loan_ref = cl.ref
+          LEFT JOIN payment_methods pm
+            ON pm.id = cl.collection_type
+          LEFT JOIN branches br
+            ON br.id = cl.branch_id
+          LEFT JOIN data_status ds
+            ON ds.id = cl.status
+          WHERE cl.company_id = ?
+            AND cl.id = ?
+          LIMIT 1
+        `
+
+      const receipt = await executeQuery(sql, [this.companyId, collectionId]) as any[]
+
+        return this.success(receipt[0]);
       }
       return this.failure('Failed to create receipt');
     } catch (error) {
@@ -335,17 +362,4 @@ export class CollectionRepository extends RepositoryBase {
   }
 
 
-  async submitReceipt(
-    userId: string,
-    collectionId: number,
-    data: ReceiptFormValues,
-  ) {
-    try {
-
-      return this.failure('Request Failed!')
-
-    } catch (error) {
-      return this.handleError(error);
-    }
-  }
 } 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getCollectionDetailById, getPaymentMethod } from "@/lib/actions/collection";
+import { createReceipt, getCollectionDetailById, getPaymentMethod } from "@/lib/actions/collection";
 import Loading from "@/app/loading";
 import { Form } from "@/components/ui/form";
 import { DefaultFormDatePicker, DefaultFormSelect, DefaultFormTextField } from "@/components/ui/default-form-field";
@@ -15,6 +15,9 @@ import { Collection } from "@/lib/repositories/collectionRepository";
 import formatDate from "@/lib/utils/date";
 import { cn } from "@/lib/utils";
 import { zodPatterns } from "@/lib/utils/zod-patterns";
+import { useGlobalDialog } from "@/providers/DialogProvider";
+import { getCompanyDetails } from "@/lib/actions/company";
+// import PdfHelper from "@/lib/helpers/pdf-helper";
 
 // Schema and type moved outside component for reuse
 export const receiptFormSchema = z.object({
@@ -32,9 +35,10 @@ interface ReceiptFormProps {
 }
 
 export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProps) {
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [data, setData] = useState<Collection | null>(null);
+  const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog();
 
   const form = useForm<ReceiptFormValues>({
     resolver: zodResolver(receiptFormSchema),
@@ -68,29 +72,87 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
           amount: collectionRes.result.amount,
         });
       } finally {
-        setLoading(false);
+        setPageLoading(false);
       }
     };
 
     initializeForm();
   }, [collectionId, reset]);
 
-  const onSubmit = (values: ReceiptFormValues) => {
-    if (selectedMethod?.utr_required === 1 && !values.utr_number) {
-      setError("utr_number", { type: "manual", message: "UTR/Reference number is required for this payment method" });
-      return;
-    }
+  const onSubmit = async (values: ReceiptFormValues) => {
+    try {
+      if (selectedMethod?.utr_required === 1 && !values.utr_number) {
+        setError("utr_number", { type: "manual", message: "UTR/Reference number is required for this payment method" });
+        return;
+      }
 
-    if (values.amount <= 0) {
-      setError("amount", { type: "manual", message: "Amount must be greater than 0" });
-      return;
+      if (values.amount <= 0) {
+        setError("amount", { type: "manual", message: "Amount must be greater than 0" });
+        return;
+      }
+      setLoading(true);
+      
+      const result = await createReceipt(collectionId, values);
+
+      setLoading(false);
+      if (result.success) {
+        handlePdfGeneratetion(result.result);
+        closeForm();
+      } else {
+        showError("Request Failed!", result.error);
+      }
+    } catch (error: Error | any) {
+      showError("Failed to create receipt", error.message);
     }
-    
-    console.log("Form values:", values);
-    closeForm();
   };
 
-  if (loading) return <Loading />;
+  const handlePdfGeneratetion = async (receiptData: any) => {
+    const companyResult = await getCompanyDetails();
+
+    if (!companyResult.success) {
+      showError("Request Failed", companyResult.error);
+      return;
+    }
+
+    var companyDetails = companyResult.result;
+
+    var pdfData = {
+      companyLogoUrl: companyDetails.logo_url,
+      companyName: companyDetails.company_name,
+      companyAddress: companyDetails.address,
+      companyContact: companyDetails.phone,
+      receiptNumber: receiptData.id,
+      paymentDate: formatDate(receiptData.payment_date),
+      paymentMethod: receiptData.collection_type,
+      utrNumber: receiptData.utr_number,
+      customerName: receiptData.customer_name,
+      loanRef: receiptData.ref,
+      loanAmount:  receiptData.loan_amount,
+      loanEmiAmount: receiptData.loan_emi_amount,
+      loanType: receiptData.loan_type,
+      loanTenure: receiptData.loan_tenure,
+      interestRate: receiptData.interest_rate,
+      loanStartDate: formatDate(receiptData.loan_start_date),
+      dueDate: formatDate(receiptData.due_date),
+      currencySymbol: companyDetails.currency_symbol,
+      amount: receiptData.amount,
+      lendorName: receiptData.lendor_name,
+    }
+
+    try {
+      // const pdfBuffer = await PdfHelper.generate('receipt', pdfData);
+      
+      // const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+      // const pdfUrl = URL.createObjectURL(blob);
+  
+      // window.open(pdfUrl, '_blank');
+    } catch (error: any) {
+      showError("PDF Generation Failed", error.message);
+    }
+    
+  }
+
+  if (pageLoading) return <Loading />;
   if (!data) return <div>No data found</div>;
 
   return (
