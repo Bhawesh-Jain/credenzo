@@ -1,0 +1,194 @@
+<!-- /templates/receipt.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment Receipt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 0 20px;
+    }
+    header {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    header img {
+      max-height: 60px;
+      margin-bottom: 10px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    header p {
+      margin: 2px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    .section {
+      margin: 30px 0;
+    }
+    .section h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .details-table td {
+      padding: 6px 4px;
+      vertical-align: top;
+    }
+    .details-table td.label {
+      color: #555;
+      width: 30%;
+    }
+    .details-table td.value {
+      font-weight: bold;
+    }
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    .receipt-table th,
+    .receipt-table td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    .receipt-summary {
+      margin-top: 20px;
+      text-align: right;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Company Header -->
+  <header>
+    {{#if companyLogoUrl}}
+      <img src="{{companyLogoUrl}}" alt="{{companyName}} Logo" />
+    {{/if}}
+    <h1>{{companyName}}</h1>
+    <p>{{companyAddress}}</p>
+    {{#if companyContact}}
+      <p>Contact: {{companyContact}}</p>
+    {{/if}}
+  </header>
+
+  <!-- Receipt Info -->
+  <div class="section">
+    <h2>Payment Receipt</h2>
+    <table class="details-table">
+      <tr>
+        <td class="label">Receipt #:</td>
+        <td class="value">{{receiptNumber}}</td>
+      </tr>
+      <tr>
+        <td class="label">Date:</td>
+        <td class="value">{{paymentDate}}</td>
+      </tr>
+      <tr>
+        <td class="label">Payment Method:</td>
+        <td class="value">{{paymentMethod}}</td>
+      </tr>
+      {{#if utrNumber}}
+      <tr>
+        <td class="label">UTR / Ref #:</td>
+        <td class="value">{{utrNumber}}</td>
+      </tr>
+      {{/if}}
+    </table>
+  </div>
+
+  <!-- Customer & Loan Details -->
+  <div class="section">
+    <h2>Account Details</h2>
+    <table class="details-table">
+      <tr>
+        <td class="label">Customer Name:</td>
+        <td class="value">{{customerName}}</td>
+      </tr>
+      <tr>
+        <td class="label">Loan Reference:</td>
+        <td class="value">{{loanRef}}</td>
+      </tr>
+      <tr>
+        <td class="label">Loan Amount:</td>
+        <td class="value">{{currencySymbol}} {{loanAmount}}</td>
+      </tr>
+      <tr>
+        <td class="label">EMI Amount:</td>
+        <td class="value">{{currencySymbol}} {{loanEmiAmount}}</td>
+      </tr>
+      <tr>
+        <td class="label">Loan Type:</td>
+        <td class="value">{{loanType}}</td>
+      </tr>
+      <tr>
+        <td class="label">Tenure:</td>
+        <td class="value">{{loanTenure}} Months</td>
+      </tr>
+      <tr>
+        <td class="label">Interest Rate:</td>
+        <td class="value">{{interestRate}}%</td>
+      </tr>
+      <tr>
+        <td class="label">Start Date:</td>
+        <td class="value">{{loanStartDate}}</td>
+      </tr>
+      <tr>
+        <td class="label">Due Date:</td>
+        <td class="value">{{dueDate}}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Payment Amount Section -->
+  <div class="section">
+    <h2>Payment Details</h2>
+    <table class="receipt-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Collection Amount</td>
+          <td>{{currencySymbol}} {{amount}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="receipt-summary">
+      Total Paid: {{currencySymbol}} {{amount}}
+    </div>
+  </div>
+
+  <footer>
+    Thank you for your payment.<br/>
+    If you have any questions, please contact us at {{companyContact}}.
+  </footer>
+
+</body>
+</html>
