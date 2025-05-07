@@ -11,6 +11,7 @@ import {
   Info,
   Loader2
 } from 'lucide-react'
+import { DialogButton } from '@/providers/DialogProvider'
 
 export type DialogType = 'success' | 'error' | 'warning' | 'info' | 'delete' | 'confirm' | 'loading'
 
@@ -24,6 +25,7 @@ interface DialogWrapperProps {
   confirmText?: string
   cancelText?: string
   isLoading?: boolean
+  buttons?: DialogButton[]
 }
 
 const dialogConfig = {
@@ -73,14 +75,32 @@ export default function DialogWrapper({
   onConfirm,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
+  buttons,
   isLoading = false,
 }: DialogWrapperProps) {
   const config = dialogConfig[isLoading ? 'loading' : type]
   const Icon = config.icon
   const showActions = type === 'delete' || type === 'confirm' || !!onConfirm
   
-  // Prevent closing when loading
   const handleClose = isLoading ? () => {} : onClose
+
+  const getButtonClasses = (variant?: DialogButton['variant']) => {
+    const base = 'inline-flex justify-center rounded-md px-4 py-2 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
+    switch (variant) {
+      case 'destructive':
+        return `${base} bg-red-100 text-red-900 hover:bg-red-200 focus-visible:ring-red-500`
+      case 'outline':
+        return `${base} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-500`
+      case 'secondary':
+        return `${base} bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500`
+      case 'ghost':
+        return `${base} bg-transparent hover:bg-gray-100 text-gray-900 focus-visible:ring-gray-500`
+      case 'link':
+        return `${base} text-blue-600 underline hover:text-blue-700 focus-visible:ring-blue-500`
+      default:
+        return `${base} bg-blue-100 text-blue-900 hover:bg-blue-200 focus-visible:ring-blue-500`
+    }
+  }
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -124,36 +144,51 @@ export default function DialogWrapper({
                       {isLoading ? 'Please wait while we process your request.' : message}
                     </p>
                   </div>
-
-                  <div className="mt-4 flex gap-3">
-                    {showActions && !isLoading ? (
+                  <div className="mt-4 flex gap-3 w-full">
+                    {buttons ? (
+                      buttons.map((button) => (
+                        <button
+                          key={button.text}
+                          type="button"
+                          className={getButtonClasses(button.variant)}
+                          onClick={() => {
+                            button.onClick?.()
+                            if (!isLoading) onClose()
+                          }}
+                          disabled={isLoading}
+                        >
+                          {button.text}
+                        </button>
+                      ))
+                    ) : (
                       <>
-                        <button
-                          type="button"
-                          className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium ${config.buttonClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          onClick={onConfirm}
-                          disabled={isLoading}
-                        >
-                          {confirmText}
-                        </button>
-                        <button
-                          type="button"
-                          className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
-                          onClick={onClose}
-                          disabled={isLoading}
-                        >
-                          {cancelText}
-                        </button>
+                        {showActions && !isLoading ? (
+                          <>
+                            <button
+                              type="button"
+                              className={`${config.buttonClass} px-4 py-2 rounded-md text-sm font-medium`}
+                              onClick={onConfirm}
+                            >
+                              {confirmText}
+                            </button>
+                            <button
+                              type="button"
+                              className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm font-medium"
+                              onClick={onClose}
+                            >
+                              {cancelText}
+                            </button>
+                          </>
+                        ) : !isLoading && (
+                          <button
+                            type="button"
+                            className={`${config.buttonClass} px-4 py-2 rounded-md text-sm font-medium`}
+                            onClick={onClose}
+                          >
+                            Got it, thanks!
+                          </button>
+                        )}
                       </>
-                    ) : !isLoading && (
-                      <button
-                        type="button"
-                        className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium ${config.buttonClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2`}
-                        onClick={onClose}
-                        disabled={isLoading}
-                      >
-                        Got it, thanks!
-                      </button>
                     )}
                   </div>
                 </div>
@@ -164,4 +199,4 @@ export default function DialogWrapper({
       </Dialog>
     </Transition>
   )
-} 
+}

@@ -108,18 +108,17 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
 
   const handlePdfGeneratetion = async (receiptData: any) => {
     const encryptedId = encryptId(receiptData);
+    const pdfUrl = `/api/ext/pdf/receipt?id=${encryptedId}`;
+
+    console.log("PDF URL: ", pdfUrl);
     
     showSuccess("Receipt Created", "Receipt has been created successfully", [
       {
-        text: "Download PDF",
+        text: "Download Receipt",
         onClick: () => {
-          const pdfUrl = `/api/pdf?id=${encryptedId}`;
+          
           window.open(pdfUrl, '_blank');
         }
-      },
-      {
-        text: "Close",
-        onClick: closeForm
       }
     ]);
   }
@@ -137,7 +136,7 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
         {/* Account Details Section */}
         <div className="space-y-4 p-4 bg-muted rounded-lg">
           <h3 className="text-lg font-semibold">Account Details</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
             <DetailItem label="Customer Name" value={data.customer_name} />
             <DetailItem label="Loan Reference" value={data.loan_ref} />
             <DetailItem label="Loan Amount" value={`${data.currency_symbol} ${data.loan_amount}`} />
@@ -172,7 +171,7 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
         {/* Payment Form Section */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <DefaultFormSelect
                 form={form}
                 placeholder="Select Payment Method"
@@ -216,7 +215,7 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
 }
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number }) => (
-  <div className="flex justify-between items-center">
+  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
     <span className="text-muted-foreground">{label}</span>
     <span className="font-medium">{value || "-"}</span>
   </div>

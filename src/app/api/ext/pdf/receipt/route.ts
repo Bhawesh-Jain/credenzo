@@ -15,24 +15,24 @@ export async function GET(req: NextRequest) {
 
     try {
         const receiptId = decryptId(encryptedId);
+        console.log(receiptId, encryptedId);
+        
 
-        const [receiptRes, companyRes] = await Promise.all([
-            getReceiptById(receiptId),
-            getCompanyDetails()
-        ]);
+        const receiptRes = await getReceiptById(receiptId);
 
-        if (!receiptRes.success || !companyRes.success) {
+        if (!receiptRes.success) {
             return new Response('Failed to fetch data', { status: 500 })
         }
 
-        var companyDetails = companyRes.result;
         var receiptData = receiptRes.result;
+
+        
         
         var pdfData = {
-            companyLogoUrl: companyDetails.logo_url,
-            companyName: companyDetails.company_name,
-            companyAddress: companyDetails.address,
-            companyContact: companyDetails.phone,
+            companyLogoUrl: process.env.NEXT_PUBLIC_BASE_URL + receiptData.logo_url,
+            companyName: receiptData.company_name,
+            companyAddress: receiptData.address,
+            companyContact: receiptData.phone,
             receiptNumber: receiptData.id,
             paymentDate: formatDate(receiptData.payment_date),
             paymentMethod: receiptData.collection_type,
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
             interestRate: receiptData.interest_rate,
             loanStartDate: formatDate(receiptData.loan_start_date),
             dueDate: formatDate(receiptData.due_date),
-            currencySymbol: companyDetails.currency_symbol,
+            currencySymbol: receiptData.currency_symbol,
             amount: receiptData.amount,
             lendorName: receiptData.lendor_name,
         }

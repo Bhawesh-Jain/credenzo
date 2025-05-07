@@ -358,13 +358,19 @@ export class CollectionRepository extends RepositoryBase {
             ON br.id = cl.branch_id
           LEFT JOIN data_status ds
             ON ds.id = cl.status
-          WHERE AND cl.id = ?
+          WHERE cl.id = ?
           LIMIT 1
         `
 
       const receipt = await executeQuery(sql, [receiptId]) as any[]
       if (receipt.length > 0) {
-        return this.success(receipt[0]);
+        const companyDetails = await new CompanyRepository(receipt[0].company_id).getCompanyDetails()
+        if (!companyDetails.success) return this.failure('Failed to create receipt');
+        var data = {
+          ...receipt[0],
+          ...companyDetails.result,
+        }
+        return this.success(data);
       }
       return this.failure('Failed to create receipt');
     } catch (error) {

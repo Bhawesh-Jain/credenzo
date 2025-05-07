@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { DialogType } from '@/components/DialogWrapper'
+import { DialogButton } from '@/providers/DialogProvider'
 
 interface DialogConfig {
   title: string
@@ -9,6 +10,7 @@ interface DialogConfig {
   confirmText?: string
   cancelText?: string
   isLoading?: boolean
+  buttons?: DialogButton[]
 }
 
 export function useDialog() {

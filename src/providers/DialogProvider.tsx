@@ -5,18 +5,25 @@ import DialogWrapper from '@/components/DialogWrapper'
 import { useDialog } from '@/hooks/useDialog'
 import { DialogType } from '@/components/DialogWrapper'
 
+export interface DialogButton {
+  text: string
+  onClick?: () => void
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+}
+
 interface DialogContextType {
   showDialog: (config: {
     title: string
     message: string
     type?: DialogType
+    buttons?: DialogButton[]
     onConfirm?: () => void
     confirmText?: string
     cancelText?: string
   }) => void
-  showSuccess: (title: string, message: string) => void
-  showError: (title: string, message: string) => void
-  showWarning: (title: string, message: string) => void
+  showSuccess: (title: string, message: string, buttons?: DialogButton[]) => void
+  showError: (title: string, message: string, buttons?: DialogButton[]) => void
+  showWarning: (title: string, message: string, buttons?: DialogButton[]) => void
   showDeleteConfirmation: (
     title: string,
     message: string,
@@ -71,6 +78,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         title={dialogConfig.title}
         message={dialogConfig.message}
         type={dialogConfig.type}
+        buttons={dialogConfig.buttons}
         onConfirm={dialogConfig.onConfirm}
         confirmText={dialogConfig.confirmText}
         cancelText={dialogConfig.cancelText}
@@ -86,4 +94,4 @@ export function useGlobalDialog() {
     throw new Error('useGlobalDialog must be used within a DialogProvider')
   }
   return context
-} 
+}
