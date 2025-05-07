@@ -144,7 +144,7 @@ export default function DialogWrapper({
                       {isLoading ? 'Please wait while we process your request.' : message}
                     </p>
                   </div>
-                  <div className="mt-4 flex gap-3 w-full">
+                  <div className="mt-4 flex gap-3 w-full items-center justify-center">
                     {buttons ? (
                       buttons.map((button) => (
                         <button

@@ -30,6 +30,7 @@ export function useDialog() {
       onConfirm: config.onConfirm,
       confirmText: config.confirmText,
       cancelText: config.cancelText,
+      buttons: config.buttons,
       isLoading: false
     })
     setIsOpen(true)
@@ -51,16 +52,16 @@ export function useDialog() {
   }
 
   // Convenience methods for common dialog types
-  const showSuccess = (title: string, message: string) => {
-    showDialog({ title, message, type: 'success' })
+  const showSuccess = (title: string, message: string, buttons?: DialogButton[]) => {
+    showDialog({ title, message, type: 'success', buttons: buttons })
   }
 
-  const showError = (title: string, message: string) => {
-    showDialog({ title, message, type: 'error' })
+  const showError = (title: string, message: string, buttons?: DialogButton[]) => {
+    showDialog({ title, message, type: 'error', buttons: buttons })
   }
 
-  const showWarning = (title: string, message: string) => {
-    showDialog({ title, message, type: 'warning' })
+  const showWarning = (title: string, message: string, buttons?: DialogButton[]) => {
+    showDialog({ title, message, type: 'warning', buttons: buttons })
   }
 
   const showDeleteConfirmation = (

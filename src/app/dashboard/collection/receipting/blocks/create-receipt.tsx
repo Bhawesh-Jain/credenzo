@@ -38,7 +38,7 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
   const [pageLoading, setPageLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [data, setData] = useState<Collection | null>(null);
-  const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog();
+  const { showSuccess, showError, showDialog, setLoading } = useGlobalDialog();
 
   const form = useForm<ReceiptFormValues>({
     resolver: zodResolver(receiptFormSchema),
@@ -90,6 +90,7 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
         setError("amount", { type: "manual", message: "Amount must be greater than 0" });
         return;
       }
+      showDialog({title: "Creating Receipt", message: "Please wait while we create the receipt.", type: "info"});
       setLoading(true);
       
       const result = await createReceipt(collectionId, values);
@@ -116,9 +117,16 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
       {
         text: "Download Receipt",
         onClick: () => {
-          
           window.open(pdfUrl, '_blank');
+          closeForm();
         }
+      },
+      {
+        text: "Close",
+        onClick: () => {
+          closeForm();
+        },
+        variant: "outline"
       }
     ]);
   }
