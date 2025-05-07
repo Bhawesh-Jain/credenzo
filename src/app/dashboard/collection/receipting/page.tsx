@@ -126,7 +126,7 @@ export default function Receipting ()  {
           </CardHeader>
 
           <CardContent>
-            <ReceiptForm collectionId={selectedId} closeForm={() => setForm(false)}/>
+            <ReceiptForm collectionId={selectedId} closeForm={() => setForm(false)} setReload={setReload} />
           </CardContent>
         </Container>
 

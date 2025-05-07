@@ -309,7 +309,7 @@ export class CollectionRepository extends RepositoryBase {
   ) {
     try {
       const receipt = {
-        collection_type: data.payment_method,
+        payment_method: data.payment_method,
         status: 10,
         updated_by: userId,
         paid_amount: data.amount,
@@ -321,9 +321,21 @@ export class CollectionRepository extends RepositoryBase {
         .setConnection()
         .where('id = ?', collectionId)
         .update(receipt)
-        
+
       if (result > 0) {
-        var sql = `
+        return this.success(collectionId);
+      }
+      return this.failure('Failed to create receipt');
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async getReceiptById(
+    receiptId: string,
+  ) {
+    try {
+      var sql = `
           SELECT cl.*,
             pm.name as collection_type,
             pm.utr_required,
@@ -336,23 +348,22 @@ export class CollectionRepository extends RepositoryBase {
             dca.loan_tenure,
             dca.interest_rate,
             dca.loan_start_date,
-            dca.lendor_name,
+            dca.lendor_name
           FROM collections cl
           LEFT JOIN direct_collection_accounts dca
             ON dca.loan_ref = cl.ref
           LEFT JOIN payment_methods pm
-            ON pm.id = cl.collection_type
+            ON pm.id = cl.payment_method
           LEFT JOIN branches br
             ON br.id = cl.branch_id
           LEFT JOIN data_status ds
             ON ds.id = cl.status
-          WHERE cl.company_id = ?
-            AND cl.id = ?
+          WHERE AND cl.id = ?
           LIMIT 1
         `
 
-      const receipt = await executeQuery(sql, [this.companyId, collectionId]) as any[]
-
+      const receipt = await executeQuery(sql, [receiptId]) as any[]
+      if (receipt.length > 0) {
         return this.success(receipt[0]);
       }
       return this.failure('Failed to create receipt');

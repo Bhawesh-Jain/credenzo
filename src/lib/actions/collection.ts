@@ -91,3 +91,12 @@ export async function createReceipt(collectionId: number, data: ReceiptFormValue
 
   return result;
 }
+
+// EXTERNAL API ACCESS
+export async function getReceiptById(receiptId: string) {
+
+  const collectionRepository = new CollectionRepository('1');
+  const result = collectionRepository.getReceiptById(receiptId)
+
+  return result;
+}

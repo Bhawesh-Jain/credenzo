@@ -16,8 +16,7 @@ import formatDate from "@/lib/utils/date";
 import { cn } from "@/lib/utils";
 import { zodPatterns } from "@/lib/utils/zod-patterns";
 import { useGlobalDialog } from "@/providers/DialogProvider";
-import { getCompanyDetails } from "@/lib/actions/company";
-// import PdfHelper from "@/lib/helpers/pdf-helper";
+import { encryptId } from "@/lib/utils/crypto";
 
 // Schema and type moved outside component for reuse
 export const receiptFormSchema = z.object({
@@ -32,9 +31,10 @@ export type ReceiptFormValues = z.infer<typeof receiptFormSchema>;
 interface ReceiptFormProps {
   collectionId: number;
   closeForm: () => void;
+  setReload: (flag: boolean) => void;
 }
 
-export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProps) {
+export default function ReceiptForm({ collectionId, closeForm, setReload }: ReceiptFormProps) {
   const [pageLoading, setPageLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [data, setData] = useState<Collection | null>(null);
@@ -97,7 +97,7 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
       setLoading(false);
       if (result.success) {
         handlePdfGeneratetion(result.result);
-        closeForm();
+        setReload(true);
       } else {
         showError("Request Failed!", result.error);
       }
@@ -107,49 +107,21 @@ export default function ReceiptForm({ collectionId, closeForm }: ReceiptFormProp
   };
 
   const handlePdfGeneratetion = async (receiptData: any) => {
-    const companyResult = await getCompanyDetails();
-
-    if (!companyResult.success) {
-      showError("Request Failed", companyResult.error);
-      return;
-    }
-
-    var companyDetails = companyResult.result;
-
-    var pdfData = {
-      companyLogoUrl: companyDetails.logo_url,
-      companyName: companyDetails.company_name,
-      companyAddress: companyDetails.address,
-      companyContact: companyDetails.phone,
-      receiptNumber: receiptData.id,
-      paymentDate: formatDate(receiptData.payment_date),
-      paymentMethod: receiptData.collection_type,
-      utrNumber: receiptData.utr_number,
-      customerName: receiptData.customer_name,
-      loanRef: receiptData.ref,
-      loanAmount:  receiptData.loan_amount,
-      loanEmiAmount: receiptData.loan_emi_amount,
-      loanType: receiptData.loan_type,
-      loanTenure: receiptData.loan_tenure,
-      interestRate: receiptData.interest_rate,
-      loanStartDate: formatDate(receiptData.loan_start_date),
-      dueDate: formatDate(receiptData.due_date),
-      currencySymbol: companyDetails.currency_symbol,
-      amount: receiptData.amount,
-      lendorName: receiptData.lendor_name,
-    }
-
-    try {
-      // const pdfBuffer = await PdfHelper.generate('receipt', pdfData);
-      
-      // const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
-      // const pdfUrl = URL.createObjectURL(blob);
-  
-      // window.open(pdfUrl, '_blank');
-    } catch (error: any) {
-      showError("PDF Generation Failed", error.message);
-    }
+    const encryptedId = encryptId(receiptData);
     
+    showSuccess("Receipt Created", "Receipt has been created successfully", [
+      {
+        text: "Download PDF",
+        onClick: () => {
+          const pdfUrl = `/api/pdf?id=${encryptedId}`;
+          window.open(pdfUrl, '_blank');
+        }
+      },
+      {
+        text: "Close",
+        onClick: closeForm
+      }
+    ]);
   }
 
   if (pageLoading) return <Loading />;
