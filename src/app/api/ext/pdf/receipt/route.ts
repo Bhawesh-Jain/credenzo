@@ -4,6 +4,7 @@ import { pdfGenerate } from '@/lib/actions/pdf'
 import { getCompanyDetails } from '@/lib/actions/company'
 import { decryptId } from '@/lib/utils/crypto'
 import formatDate from '@/lib/utils/date'
+import { customLog } from '@/lib/utils'
 
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams
@@ -14,9 +15,7 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const receiptId = decryptId(encryptedId);
-        console.log(receiptId, encryptedId);
-        
+        const receiptId = decryptId(encryptedId);       
 
         const receiptRes = await getReceiptById(receiptId);
 
@@ -25,8 +24,6 @@ export async function GET(req: NextRequest) {
         }
 
         var receiptData = receiptRes.result;
-
-        
         
         var pdfData = {
             companyLogoUrl: process.env.NEXT_PUBLIC_BASE_URL + receiptData.logo_url,
@@ -59,7 +56,7 @@ export async function GET(req: NextRequest) {
             }
         })
     } catch (error) {
-        console.log('Error generating PDF:', error)
+        customLog('Error generating PDF:', error)
         return new Response('PDF generation failed', { status: 500 })
     }
 }

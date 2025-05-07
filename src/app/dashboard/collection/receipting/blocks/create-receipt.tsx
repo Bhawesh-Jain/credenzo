@@ -111,8 +111,6 @@ export default function ReceiptForm({ collectionId, closeForm, setReload }: Rece
     const encryptedId = encryptId(receiptData);
     const pdfUrl = `/api/ext/pdf/receipt?id=${encryptedId}`;
 
-    console.log("PDF URL: ", pdfUrl);
-    
     showSuccess("Receipt Created", "Receipt has been created successfully", [
       {
         text: "Download Receipt",

@@ -4,8 +4,6 @@ const ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ID_ENCRYPTION_KEY as string;
 const IV_LENGTH = 16; 
 
 export function encryptId(id: string): string {
-    console.log(id, ENCRYPTION_KEY);
-    
   const iv = randomBytes(IV_LENGTH);
   const cipher = createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY, 'utf8'), iv);
   const encrypted = Buffer.concat([cipher.update(id.toString()), cipher.final()]);
