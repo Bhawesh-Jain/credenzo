@@ -9,8 +9,9 @@ import { CardContent, CardDescription, CardHeader, CardTitle } from "@/component
 import ReceiptForm from "./blocks/create-receipt";
 import { getCollectionList } from "@/lib/actions/collection";
 import { Collection } from "@/lib/repositories/collectionRepository";
+import { encryptId } from "@/lib/utils/crypto";
 
-export default function Receipting ()  {
+export default function Receipting() {
   const [collections, setCollections] = useState<Collection[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -94,6 +95,13 @@ export default function Receipting ()  {
       visible: true,
     },
     {
+      id: "loan_status",
+      header: "Receipt Status",
+      accessorKey: "status_name",
+      sortable: true,
+      visible: true,
+    },
+    {
       id: "actions",
       header: "Actions",
       accessorKey: "id",
@@ -101,16 +109,28 @@ export default function Receipting ()  {
       visible: true,
       cell: (row) => (
         <div className="flex gap-2 justify-end">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setSelectedId(row.id)
-              setForm(true)
-            }}
-          >
-            Create Receipt
-          </Button>
+          {row.status == '10'
+            ?
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSelectedId(row.id)
+                setForm(true)
+              }}
+            >
+              Create Receipt
+            </Button>
+            : <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                window.open(`${process.env.NEXT_PUBLIC_BASE_URL}/api/ext/pdf/receipt?id=${encryptId(row.id.toString())}`, '_blank')
+              }}
+            >
+              Download Receipt
+            </Button>
+          }
         </div>
       ),
     },

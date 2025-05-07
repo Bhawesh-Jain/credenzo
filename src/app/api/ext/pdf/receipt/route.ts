@@ -3,7 +3,7 @@ import { getReceiptById } from '@/lib/actions/collection'
 import { pdfGenerate } from '@/lib/actions/pdf'
 import { getCompanyDetails } from '@/lib/actions/company'
 import { decryptId } from '@/lib/utils/crypto'
-import formatDate from '@/lib/utils/date'
+import formatDate, { formatDateTime } from '@/lib/utils/date'
 import { customLog } from '@/lib/utils'
 
 export async function GET(req: NextRequest) {
@@ -46,6 +46,8 @@ export async function GET(req: NextRequest) {
             currencySymbol: receiptData.currency_symbol,
             amount: receiptData.amount,
             lendorName: receiptData.lendor_name,
+            paymentStatus: receiptData.status_name,
+            receiptGenerationDate: formatDateTime(new Date().toString()),
         }
 
         const pdfBuffer = await pdfGenerate('receipt', pdfData)

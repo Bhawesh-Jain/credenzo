@@ -46,6 +46,7 @@ export type Collection = {
   lendor_name: string,
   currency_symbol: string,
   status: string,
+  status_name: string,
 }
 
 
@@ -198,12 +199,15 @@ export class CollectionRepository extends RepositoryBase {
           dca.loan_start_date,
           dca.interest_rate,
           dca.lendor_name,
-          dca.status
+          dca.status,
+          ds.name as status_name
         FROM collections cl
         LEFT JOIN direct_collection_accounts dca
           ON dca.loan_ref = cl.ref
+        LEFT JOIN data_status ds
+          ON ds.id = cl.status
         WHERE cl.status > 0
-          AND cl.status < 10
+          AND cl.status < 100
           AND cl.company_id = ?
           AND (cl.handler_id IS NULL OR cl.handler_id = ?)
           AND dca.branch_id IN (${branchIds})
