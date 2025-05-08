@@ -10,6 +10,7 @@ import ReceiptForm from "./blocks/create-receipt";
 import { getCollectionList } from "@/lib/actions/collection";
 import { Collection } from "@/lib/repositories/collectionRepository";
 import { encryptId } from "@/lib/utils/crypto";
+import { cn, getStatusColor } from "@/lib/utils";
 
 export default function Receipting() {
   const [collections, setCollections] = useState<Collection[]>([])
@@ -100,6 +101,14 @@ export default function Receipting() {
       accessorKey: "status_name",
       sortable: true,
       visible: true,
+      cell: (row) => {
+        console.log(row.status, getStatusColor(row.status))
+        return (
+          <span className={cn('text-info font-semibold', getStatusColor(row.status))}>
+            {row.status_name}
+          </span>
+        )
+      }
     },
     {
       id: "actions",
@@ -109,7 +118,7 @@ export default function Receipting() {
       visible: true,
       cell: (row) => (
         <div className="flex gap-2 justify-end">
-          {row.status == '10'
+          {row.status == '1'
             ?
             <Button
               variant="outline"

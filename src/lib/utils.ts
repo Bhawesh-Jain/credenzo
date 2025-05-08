@@ -8,3 +8,23 @@ export function cn(...inputs: ClassValue[]) {
 export function customLog(message?: any, ...optionalParams: any[]) {
   console.log(message, optionalParams);
 }
+
+export function getStatusColor(status: string) {
+  var s = status.toString().trim();
+  switch (s) {
+    case "-10":
+      return "text-destructive";
+    case "0":
+      return "text-destructive";
+    case "1":
+      return "text-success";
+    case "10":
+      return "text-warning";
+    case "50":
+      return "text-info";
+    case "100":
+      return "text-success";
+    default:
+      return "";
+  }
+}

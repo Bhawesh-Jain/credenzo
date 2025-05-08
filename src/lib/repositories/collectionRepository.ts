@@ -188,6 +188,7 @@ export class CollectionRepository extends RepositoryBase {
           cl.amount,
           cl.due_date,
           cl.id,
+          cl.status,
           dca.customer_name,
           dca.customer_phone,
           dca.customer_address,
@@ -199,7 +200,6 @@ export class CollectionRepository extends RepositoryBase {
           dca.loan_start_date,
           dca.interest_rate,
           dca.lendor_name,
-          dca.status,
           ds.name as status_name
         FROM collections cl
         LEFT JOIN direct_collection_accounts dca
