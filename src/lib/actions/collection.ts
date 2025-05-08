@@ -56,6 +56,15 @@ export async function getCollectionList() {
   return result;
 }
 
+export async function getApprovalPendingCollectionList() {
+  const session = await getSession();
+
+  const collectionRepository = new CollectionRepository(session.company_id);
+  const result = collectionRepository.getApprovalPendingCollectionList(session.user_id)
+
+  return result;
+}
+
 export async function getCollectionUserList(branchId: string) {
   const session = await getSession();
 

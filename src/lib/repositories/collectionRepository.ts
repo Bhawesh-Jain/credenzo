@@ -47,6 +47,8 @@ export type Collection = {
   currency_symbol: string,
   status: string,
   status_name: string,
+  receiptor_name: string,
+  receipt_on: string,
 }
 
 
@@ -226,6 +228,65 @@ export class CollectionRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
+  
+  async getApprovalPendingCollectionList(
+    userId: string,
+  ) {
+    try {
+      const branches = await new BranchRepository(this.companyId)
+        .getBranchStringByUserId(userId)
+
+      if (branches.error) {
+        return this.failure(branches.error)
+      }
+
+      const branchIds = branches.result as string
+
+      let sql = `
+        SELECT 
+          cl.amount,
+          cl.due_date,
+          cl.id,
+          cl.status,
+          cl.receipt_on,
+          u.name as receiptor_name,
+          dca.customer_name,
+          dca.customer_phone,
+          dca.customer_address,
+          dca.loan_ref,
+          dca.loan_amount,
+          dca.loan_emi_amount,
+          dca.loan_type,
+          dca.loan_tenure,
+          dca.loan_start_date,
+          dca.interest_rate,
+          dca.lendor_name,
+          ds.name as status_name
+        FROM collections cl
+        LEFT JOIN direct_collection_accounts dca
+          ON dca.loan_ref = cl.ref
+        LEFT JOIN data_status ds
+          ON ds.id = cl.status
+        LEFT JOIN users u
+          ON u.id = cl.receipt_by
+        WHERE cl.status = 10
+          AND cl.company_id = ?
+          AND dca.branch_id IN (${branchIds})
+        ORDER BY cl.id DESC
+      `;
+
+      const data = await executeQuery(sql, [this.companyId]) as any
+
+      if (data.length > 0) {
+        return this.success(data)
+      }
+
+      return this.failure('No Collection Found!')
+
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 
   async getCollectionUsers(
     branchId: string
@@ -315,7 +376,7 @@ export class CollectionRepository extends RepositoryBase {
       const receipt = {
         payment_method: data.payment_method,
         status: 10,
-        updated_by: userId,
+        receipt_by: userId,
         paid_amount: data.amount,
         payment_date: data.payment_date,
         receipt_on: new Date()
