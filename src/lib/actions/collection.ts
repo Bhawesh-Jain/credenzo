@@ -65,6 +65,17 @@ export async function getApprovalPendingCollectionList() {
   return result;
 }
 
+export async function handleReceiptApproval(decision: 'approve' | 'rejecte', receiptId: number) {
+  const session = await getSession();
+
+  var decisionStatus = decision === 'approve' ? 100 : -1;
+
+  const collectionRepository = new CollectionRepository(session.company_id);
+  const result = collectionRepository.handleReceiptApproval(session.user_id, receiptId, decisionStatus);
+
+  return result;
+}
+
 export async function getCollectionUserList(branchId: string) {
   const session = await getSession();
 

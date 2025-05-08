@@ -14,6 +14,8 @@ export function getStatusColor(status: string) {
   switch (s) {
     case "-10":
       return "text-destructive";
+    case "-1":
+      return "text-destructive";
     case "0":
       return "text-destructive";
     case "1":

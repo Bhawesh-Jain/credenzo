@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
             companyContact: receiptData.phone,
             receiptNumber: receiptData.id,
             paymentDate: formatDate(receiptData.payment_date),
-            paymentMethod: receiptData.collection_type,
+            paymentMethod: receiptData.payment_method,
             utrNumber: receiptData.utr_number,
             customerName: receiptData.customer_name,
             loanRef: receiptData.ref,

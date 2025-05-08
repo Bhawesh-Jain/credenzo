@@ -10,12 +10,13 @@ import { getApprovalPendingCollectionList } from "@/lib/actions/collection";
 import { Collection } from "@/lib/repositories/collectionRepository";
 import { encryptId } from "@/lib/utils/crypto";
 import { cn, getStatusColor } from "@/lib/utils";
+import ReceiptApprovalDialog from "./blocks/ReceiptApproval";
 
 export default function Receipting() {
   const [collections, setCollections] = useState<Collection[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number>();
 
   useEffect(() => {
@@ -33,9 +34,6 @@ export default function Receipting() {
     })();
   }, [reload]);
 
-  const handleAction = async (id: number, action: 'approve' | 'reject') => {
-    
-  };
 
   const columns: Column<Collection>[] = [
     {
@@ -47,22 +45,22 @@ export default function Receipting() {
     },
     {
       id: "customer_name",
-      header: "Applicant Name",
+      header: "Customer Name",
       accessorKey: "customer_name",
       sortable: true,
       visible: true,
     },
     {
       id: "handler_name",
-      header: "Receiptor Name",
+      header: "Agent Name",
       accessorKey: "receiptor_name",
       sortable: true,
       visible: true,
     },
     {
       id: "amount",
-      header: "Amount",
-      accessorKey: "amount",
+      header: "Paid Amount",
+      accessorKey: "paid_amount",
       sortable: true,
       visible: true,
       cell: (row) => (
@@ -75,6 +73,20 @@ export default function Receipting() {
       accessorKey: "loan_ref",
       sortable: true,
       visible: true,
+    },
+    {
+      id: "loan_status",
+      header: "Receipt Status",
+      accessorKey: "status_name",
+      sortable: true,
+      visible: true,
+      cell: (row) => {
+        return (
+          <span className={cn('text-info font-semibold', getStatusColor(row.approval_status == '0' ? row.status : row.approval_status))}>
+            {row.status_name}
+          </span>
+        )
+      }
     },
     {
       id: "submission_date",
@@ -92,13 +104,13 @@ export default function Receipting() {
       visible: true,
       cell: (row) => (
         <div className="flex gap-2 justify-end">
-        <Button size="sm" variant="outline" onClick={() => handleAction(row.id, 'approve')}>
-          Approve
-        </Button>
-        <Button size="sm" variant="destructive" onClick={() => handleAction(row.id, 'reject')}>
-          Reject
-        </Button>
-      </div>
+          <Button size="sm" variant="default" onClick={() => {
+            setDialogOpen(true);
+            setSelectedId(row.id);
+          }}>
+            View Receipt
+          </Button>
+        </div>
       ),
     },
   ]
@@ -119,6 +131,14 @@ export default function Receipting() {
             setReload={setReload}
           />
         </CardContent>
+
+        {dialogOpen && selectedId && (
+          <ReceiptApprovalDialog
+          receiptId={selectedId}
+            onClose={() => setDialogOpen(false)}
+            onDecision={() => setReload(true)}
+          />
+        )}
       </Container>
     </>
   )

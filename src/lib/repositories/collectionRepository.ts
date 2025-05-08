@@ -46,9 +46,64 @@ export type Collection = {
   lendor_name: string,
   currency_symbol: string,
   status: string,
+  approval_status: string,
   status_name: string,
   receiptor_name: string,
   receipt_on: string,
+  paid_amount: string,
+}
+
+export interface Receipt {
+  id: number;
+  company_id: number;
+  branch_id: number;
+  ref: string;
+  ref_type: string;
+  payment_method: number;
+  utr_number: string;
+  trxn_id: string | null;
+  handler_id: number | null;
+  amount: string;
+  paid_amount: string;
+  status: number;
+  receipt_by: number;
+  created_by: number;
+  payment_date: string;
+  due_date: string;
+  receipt_on: string;
+  approved_by: number | null;
+  approval_status: number;
+  latitude: string;
+  longitude: string;
+  approved_on: string | null;
+  updated_on: string;
+  created_on: string;
+  utr_required: number;
+  branch_name: string;
+  status_name: string;
+  customer_name: string;
+  loan_amount: string;
+  loan_emi_amount: string;
+  loan_type: string;
+  loan_tenure: number;
+  interest_rate: string;
+  loan_start_date: string;
+  lendor_name: string;
+  company_name: string;
+  abbr: string;
+  currency: string;
+  currency_symbol: string;
+  phone: string;
+  email: string;
+  web_address: string;
+  logo_url: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+  corporate_address: string;
+  corporate_phone: string;
 }
 
 
@@ -228,7 +283,7 @@ export class CollectionRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
-  
+
   async getApprovalPendingCollectionList(
     userId: string,
   ) {
@@ -248,7 +303,13 @@ export class CollectionRepository extends RepositoryBase {
           cl.due_date,
           cl.id,
           cl.status,
+          cl.approval_status,
+          CASE 
+            WHEN cl.approval_status = 0 THEN  ds.name
+            ELSE ads.name
+          END as status_name,
           cl.receipt_on,
+          cl.paid_amount,
           u.name as receiptor_name,
           dca.customer_name,
           dca.customer_phone,
@@ -260,16 +321,17 @@ export class CollectionRepository extends RepositoryBase {
           dca.loan_tenure,
           dca.loan_start_date,
           dca.interest_rate,
-          dca.lendor_name,
-          ds.name as status_name
+          dca.lendor_name
         FROM collections cl
         LEFT JOIN direct_collection_accounts dca
           ON dca.loan_ref = cl.ref
         LEFT JOIN data_status ds
           ON ds.id = cl.status
+        LEFT JOIN data_status ads
+          ON ads.id = cl.approval_status
         LEFT JOIN users u
           ON u.id = cl.receipt_by
-        WHERE cl.status = 10
+        WHERE cl.status >= 10
           AND cl.company_id = ?
           AND dca.branch_id IN (${branchIds})
         ORDER BY cl.id DESC
@@ -377,6 +439,7 @@ export class CollectionRepository extends RepositoryBase {
         payment_method: data.payment_method,
         status: 10,
         receipt_by: userId,
+        utr_number: data.utr_number,
         paid_amount: data.amount,
         payment_date: data.payment_date,
         receipt_on: new Date()
@@ -396,16 +459,46 @@ export class CollectionRepository extends RepositoryBase {
     }
   }
 
+  async handleReceiptApproval(
+    userId: string,
+    collectionId: number,
+    decision: number,
+  ) {
+    try {
+      const receipt = {
+        status: 100,
+        approval_status: decision,
+        approved_by: userId,
+        approved_on: new Date()
+      }
+
+      const result = await new QueryBuilder('collections')
+        .where('id = ?', collectionId)
+        .update(receipt)
+
+      if (result > 0) {
+        return this.success('Receipt Updated');
+      }
+      return this.failure('Failed to update receipt');
+    } catch (error) { 
+      return this.handleError(error);
+    }
+  }
+
+
   async getReceiptById(
     receiptId: string,
   ) {
     try {
       var sql = `
           SELECT cl.*,
-            pm.name as collection_type,
+            CASE 
+              WHEN cl.approval_status = 0 THEN  ds.name
+              ELSE ads.name
+            END as status_name,
+            pm.name as payment_method,
             pm.utr_required,
             br.name as branch_name,
-            ds.name as status_name,
             dca.customer_name,
             dca.loan_amount,
             dca.loan_emi_amount,
@@ -423,6 +516,8 @@ export class CollectionRepository extends RepositoryBase {
             ON br.id = cl.branch_id
           LEFT JOIN data_status ds
             ON ds.id = cl.status
+          LEFT JOIN data_status ads
+            ON ads.id = cl.approval_status
           WHERE cl.id = ?
           LIMIT 1
         `

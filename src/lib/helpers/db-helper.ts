@@ -159,6 +159,8 @@ export class QueryBuilder {
       SET ${fields.map(field => `${field} = ?`).join(', ')}
       ${clause}
     `;
+    console.log(query, [...values, ...parameters]);
+    console.log('Parameters:', [...values, ...parameters]);
     
     const result = await executeQuery<any>(query, [...values, ...parameters], this.connection);
     return result.affectedRows;

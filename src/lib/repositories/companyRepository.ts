@@ -32,7 +32,23 @@ export class CompanyRepository extends RepositoryBase {
       const data = await new QueryBuilder('company_master')
         .where('company_id = ?', this.companyId)
         .limit(1)
-        .select() 
+        .select([
+          'company_name',
+          'abbr',
+          'currency',
+          'currency_symbol',
+          'phone',
+          'email',
+          'web_address',
+          'logo_url',
+          'address',
+          'city',
+          'state',
+          'pincode',
+          'country',
+          'corporate_address',
+          'corporate_phone',
+        ])
 
       if (data.length > 0) {
         return this.success(data[0])
@@ -44,4 +60,4 @@ export class CompanyRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
-} 
+}
