@@ -11,8 +11,6 @@ import {
   UserIcon,
   LandmarkIcon,
   FileTextIcon,
-  CalendarIcon,
-  BadgeDollarSignIcon,
   PcCase,
   CheckIcon
 } from "lucide-react";
@@ -53,7 +51,7 @@ export default function ApprovalDialog({
         setLoading(false);
       }
     })();
-  }, [approvalId, toast, onClose]);
+  }, [approvalId]);
 
   const handleDecision = async (decision: 'approve' | 'reject') => {
     setSubmitting(true);
@@ -105,7 +103,7 @@ export default function ApprovalDialog({
                     <DetailItem label="Contact" value={approval.phone} />
                     <DetailItem label="PAN Number" value={approval.pan} />
                     <DetailItem label="Email" value={approval.email} />
-                    <DetailItem label="Date of Birth" value={formatDate(approval.dob)} />
+                    <DetailItem label="Date of Birth" value={approval.dob} />
                   </dl>
                 </div>
               </div>

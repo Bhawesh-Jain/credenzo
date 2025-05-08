@@ -56,8 +56,6 @@ export default function ReceiptApprovalDialog({ receiptId, onClose, onDecision }
       toast({ variant: 'destructive', title: `Approval failed`, description: res.error });
     }
   };
-
-  console.log(receipt);
   
   if (!receipt) return null;
 

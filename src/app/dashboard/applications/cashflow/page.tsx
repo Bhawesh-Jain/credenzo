@@ -82,7 +82,6 @@ export default function BankingInfoForm({
     // Handle form submission
     const onSubmit = async (values: BankingInfoFormValues) => {
         setLoading(true);
-        console.log("Submitting banking info:", values); // Log values for debugging
 
         if (saveBankingDetails) {
             try {
