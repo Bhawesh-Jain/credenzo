@@ -102,10 +102,9 @@ export default function Receipting() {
       sortable: true,
       visible: true,
       cell: (row) => {
-        console.log(row.status, getStatusColor(row.status))
         return (
-          <span className={cn('text-info font-semibold', getStatusColor(row.status))}>
-            {row.status_name}
+          <span className={cn('text-info font-semibold', getStatusColor(row.approval_status == '0' ? row.status : row.approval_status))}>
+            {row.approval_status == '0' ? row.status_name : row.approval_status_name}
           </span>
         )
       }

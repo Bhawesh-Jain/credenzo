@@ -48,6 +48,7 @@ export type Collection = {
   status: string,
   approval_status: string,
   status_name: string,
+  approval_status_name: string,
   receiptor_name: string,
   receipt_on: string,
   paid_amount: string,
@@ -246,6 +247,7 @@ export class CollectionRepository extends RepositoryBase {
           cl.due_date,
           cl.id,
           cl.status,
+          cl.approval_status,
           dca.customer_name,
           dca.customer_phone,
           dca.customer_address,
@@ -257,14 +259,16 @@ export class CollectionRepository extends RepositoryBase {
           dca.loan_start_date,
           dca.interest_rate,
           dca.lendor_name,
-          ds.name as status_name
+          ds.name as status_name,
+          ads.name as approval_status_name
         FROM collections cl
         LEFT JOIN direct_collection_accounts dca
           ON dca.loan_ref = cl.ref
         LEFT JOIN data_status ds
           ON ds.id = cl.status
-        WHERE cl.status > 0
-          AND cl.status < 100
+        LEFT JOIN data_status ads
+          ON ads.id = cl.approval_status
+        WHERE cl.status > -10
           AND cl.company_id = ?
           AND (cl.handler_id IS NULL OR cl.handler_id = ?)
           AND dca.branch_id IN (${branchIds})
@@ -484,7 +488,6 @@ export class CollectionRepository extends RepositoryBase {
       return this.handleError(error);
     }
   }
-
 
   async getReceiptById(
     receiptId: string,
