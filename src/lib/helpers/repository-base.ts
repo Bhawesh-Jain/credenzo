@@ -1,16 +1,19 @@
 import { customLog } from "../utils";
 import { DatabaseError } from "./db-helper";
 
+export type RepositoryResponse<T> = {
+  success: boolean;
+  error: string;
+  result: T;
+}
+
 export class RepositoryBase {
-  constructor() {
-
-  }
-
+  
   private getClassName() {
     return this.constructor.name;
   }
 
-  handleError(error: any) {
+  handleError(error: any): RepositoryResponse<any> {
     customLog(this.getClassName(), error);
 
     if (error instanceof DatabaseError) {
@@ -24,7 +27,7 @@ export class RepositoryBase {
     }
   }
 
-  failure(reason: string) {
+  failure(reason: string): RepositoryResponse<any> {
     return {
       success: false,
       error: reason,
@@ -32,7 +35,7 @@ export class RepositoryBase {
     }
   }
 
-  success(data: any) {
+  success(data: any): RepositoryResponse<any> {
     return {
       success: true,
       error: '',
