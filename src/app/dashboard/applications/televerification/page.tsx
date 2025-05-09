@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { getApprovedCases } from "@/lib/actions/approved-cases";
-import { usePathname, useRouter } from "next/navigation";
-import { Heading } from "@/components/text/heading";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import TeleverificationScreen from "./blocks/TeleverificationTab";
 
