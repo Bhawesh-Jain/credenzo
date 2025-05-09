@@ -1,48 +1,37 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from "react";
 import { Column, DataTable } from "@/components/data-table/data-table";
-import formatDate from "@/lib/utils/date";
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
-import { getApprovedCases } from "@/lib/actions/applications";
+import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import TeleverificationScreen from "./blocks/TeleverificationTab";
+import { Container } from "@/components/ui/container";
+import { getApplicationsList } from "@/lib/actions/applications";
+import { getProcessName } from "@/lib/helpers/string-helper";
+import { Application } from "@/lib/repositories/applicationsRepository";
+import formatDate from "@/lib/utils/date";
+import { useEffect, useState } from "react";
 
-type LoanApproval = {
-  id: number;
-  prop_no: string;
-  customer_name: string;
-  loan_amount: number;
-  product_name: string;
-  branch_name: string;
-  login_date: string;
-  status_label: string;
-  handler_name: string;
-}
-
-export default function TeleverificationPage() {
-  const [approvals, setApprovals] = useState<LoanApproval[]>([])
+export default function QueuePage() {
+  const [approvals, setApprovals] = useState<Application[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>();
 
   useEffect(() => {
     (async () => {
       setReload(false);
       setLoading(true);
 
-      const result = await getApprovedCases();
+      const result = await getApplicationsList();
 
       setApprovals(result.result);
+
+      console.log(result.result);
 
       setLoading(false);
     })();
   }, [reload]);
 
-  const columns: Column<LoanApproval>[] = [
+  const columns: Column<Application>[] = [
     {
       id: "prop_no",
       header: "Proposal #",
@@ -105,7 +94,7 @@ export default function TeleverificationPage() {
       align: 'center',
       cell: (row) => (
         <Badge variant={'secondary'}  >
-          Televerification
+          {getProcessName(row.current_process)}
         </Badge>
       )
     },
@@ -121,8 +110,7 @@ export default function TeleverificationPage() {
             variant="outline"
             size="sm"
             onClick={() => {
-              setSelectedId(row.id)
-              setForm(true)
+
             }}
           >
             Review
@@ -133,35 +121,20 @@ export default function TeleverificationPage() {
   ]
 
   return (
-    <>
-      {form
-        ? <Container>
-          <CardHeader>
-            <CardTitle>Televerification</CardTitle>
-            <CardDescription>Complete The Televerification Form</CardDescription>
-          </CardHeader>
+    <Container>
+      <CardHeader>
+        <CardTitle>Queue</CardTitle>
+        <CardDescription>Current Application Queue</CardDescription>
+      </CardHeader>
 
-          <CardContent>
-            <TeleverificationScreen loanDetails={selectedId} setForm={setForm} />
-          </CardContent>
-        </Container>
-
-        : <Container>
-          <CardHeader>
-            <CardTitle>Televerification</CardTitle>
-            <CardDescription>Cases Awaiting Televerification</CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <DataTable
-              data={approvals}
-              columns={columns}
-              loading={loading}
-              setReload={setReload}
-            />
-          </CardContent>
-        </Container>
-      }
-    </>
-  )
+      <CardContent>
+        <DataTable
+          data={approvals}
+          columns={columns}
+          loading={loading}
+          setReload={setReload}
+        />
+      </CardContent>
+    </Container>
+  );
 }
