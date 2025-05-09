@@ -31,10 +31,6 @@ export default function TeleverificationPage() {
   const [form, setForm] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>();
 
-
-  const router = useRouter();
-  const pathname = usePathname();
-
   useEffect(() => {
     (async () => {
       setReload(false);
