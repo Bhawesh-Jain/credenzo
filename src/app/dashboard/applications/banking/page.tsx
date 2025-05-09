@@ -6,12 +6,9 @@ import formatDate from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
-import { getApprovedCases } from "@/lib/actions/approved-cases";
+import { getApprovedCases } from "@/lib/actions/applications";
 import { usePathname, useRouter } from "next/navigation";
-import { Heading } from "@/components/text/heading";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import TeleverificationScreen from "./blocks/BankingTab";
-import BankingForm from "./blocks/BankingTab";
 import BankAccountsPage from "./blocks/BankingTab";
 
 type LoanApproval = {
