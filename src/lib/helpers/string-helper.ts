@@ -1,5 +1,5 @@
 export default function capitalizeWord(s: string) : string {
-  if (s.length == 0) {
+  if (!s || s.length == 0) {
     return '';
   }
 
