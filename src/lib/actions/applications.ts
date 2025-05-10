@@ -21,3 +21,11 @@ export async function getApprovedCases() {
 
   return result;
 }
+export async function getTeleverificationCases() {
+  const session = await getSession();
+  
+  const approvedCasesRepository = new ApplicationsRepository(session.company_id);
+  const result = await approvedCasesRepository.getTeleverificationCases(session.user_id);
+
+  return result;
+}

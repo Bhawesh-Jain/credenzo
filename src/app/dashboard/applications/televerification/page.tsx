@@ -2,28 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { Column, DataTable } from "@/components/data-table/data-table";
-import formatDate from "@/lib/utils/date";
+import { formatDateTime } from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Badge } from "@/components/ui/badge";
-import { getApprovedCases } from "@/lib/actions/applications";
+import { getTeleverificationCases } from "@/lib/actions/applications";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import TeleverificationScreen from "./blocks/TeleverificationTab";
-
-type LoanApproval = {
-  id: number;
-  prop_no: string;
-  customer_name: string;
-  loan_amount: number;
-  product_name: string;
-  branch_name: string;
-  login_date: string;
-  status_label: string;
-  handler_name: string;
-}
+import { QueueItem } from "@/lib/repositories/applicationsRepository";
 
 export default function TeleverificationPage() {
-  const [approvals, setApprovals] = useState<LoanApproval[]>([])
+  const [items, setItems] = useState<QueueItem[]>([])
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(false);
@@ -34,15 +22,17 @@ export default function TeleverificationPage() {
       setReload(false);
       setLoading(true);
 
-      const result = await getApprovedCases();
+      const result = await getTeleverificationCases();
 
-      setApprovals(result.result);
+      setItems(result.result);
+
+      console.log(result);
 
       setLoading(false);
     })();
   }, [reload]);
 
-  const columns: Column<LoanApproval>[] = [
+  const columns: Column<QueueItem>[] = [
     {
       id: "prop_no",
       header: "Proposal #",
@@ -83,31 +73,18 @@ export default function TeleverificationPage() {
     },
     {
       id: "handler_name",
-      header: "Added By",
+      header: "Handler",
       accessorKey: "handler_name",
       sortable: true,
       visible: true,
     },
     {
-      id: "login_date",
+      id: "date",
       header: "Date",
-      accessorKey: "login_date",
+      accessorKey: "date",
       sortable: true,
       visible: true,
-      cell: (row) => formatDate(row.login_date)
-    },
-    {
-      id: "status_label",
-      header: "Status",
-      accessorKey: "status_label",
-      sortable: true,
-      visible: true,
-      align: 'center',
-      cell: (row) => (
-        <Badge variant={'secondary'}  >
-          Televerification
-        </Badge>
-      )
+      cell: (row) => formatDateTime(row.date)
     },
     {
       id: "actions",
@@ -154,7 +131,7 @@ export default function TeleverificationPage() {
 
           <CardContent>
             <DataTable
-              data={approvals}
+              data={items}
               columns={columns}
               loading={loading}
               setReload={setReload}
