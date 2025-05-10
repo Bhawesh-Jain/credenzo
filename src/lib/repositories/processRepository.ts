@@ -191,6 +191,43 @@ export class ProcessRepository extends RepositoryBase {
     }
   }
 
+    private async getDynamicColumns() {
+    try {
+      // Get columns for all three tables
+      const [statusColumns, logColumns, workerColumns] = await Promise.all([
+        this.getTableColumns('process_status'),
+        this.getTableColumns('process_log', ['lead_id', 'prop_id', 'loan_id', 'lan']),
+        this.getTableColumns('process_worker', ['lead_id', 'prop_id', 'loan_id', 'lan'])
+      ]);
+
+      // Build dynamic select clauses
+      const statusSelect = statusColumns.map(c => `s.${c} AS status_${c}`).join(',\n  ');
+      const logSelect = logColumns.map(c => `l.${c} AS log_${c}`).join(',\n  ');
+      const workerSelect = workerColumns.map(c => `w.${c} AS worker_${c}`).join(',\n  ');
+
+      return { statusSelect, logSelect, workerSelect };
+    } catch (error: any) {
+      throw new Error(`Failed to get dynamic columns: ${error.message}`);
+    }
+  }
+
+  private async getTableColumns(tableName: string, exclude: string[] = []) {
+    const sql = `
+      SELECT COLUMN_NAME
+      FROM INFORMATION_SCHEMA.COLUMNS
+      WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = ?
+        ${exclude.length ? `AND COLUMN_NAME NOT IN (${exclude.map(() => '?').join(',')})` : ''}
+    `;
+
+    const result = await executeQuery<{ COLUMN_NAME: string }[]>(
+      sql, 
+      [tableName, ...exclude]
+    );
+
+    return result.map(row => row.COLUMN_NAME);
+  }
+
   async getProcessLog({
     leadId = '',
     propId = '',
@@ -201,71 +238,39 @@ export class ProcessRepository extends RepositoryBase {
     lan?: string,
   }) {
     try {
-      var sql = `
-              SELECT
-              s.id AS status_id,
-              s.lead_id,
-              s.prop_id,
-              s.loan_id,
-              s.lan,
-              s.last_updated AS status_last_updated,
-              l.last_updated AS log_last_updated,
-              w.last_updated AS worker_last_updated,
-              s.lead_process AS status_lead,
-              l.lead_process AS log_lead,
-              w.lead_process AS worker_lead,
-              s.proposal_process AS status_proposal,
-              l.proposal_process AS log_proposal,
-              w.proposal_process AS worker_proposal,
-              s.kyc_process AS status_kyc,
-              l.kyc_process AS log_kyc,
-              w.kyc_process AS worker_kyc,
-              s.imd_process AS status_imd,
-              l.imd_process AS log_imd,
-              w.imd_process AS worker_imd,
-              s.sales_process AS status_sales,
-              l.sales_process AS log_sales,
-              w.sales_process AS worker_sales,
-              s.approval_process AS status_approval,
-              l.approval_process AS log_approval,
-              w.approval_process AS worker_approval,
-              s.fi_process AS status_fi,
-              l.fi_process AS log_fi,
-              w.fi_process AS worker_fi,
-              s.legal_process AS status_legal,
-              l.legal_process AS log_legal,
-              w.legal_process AS worker_legal,
-              s.technical_process AS status_technical,
-              l.technical_process AS log_technical,
-              w.technical_process AS worker_technical,
-              s.disbursement_process AS status_disbursement,
-              l.disbursement_process AS log_disbursement,
-              w.disbursement_process AS worker_disbursement
-            FROM process_status s
-            LEFT JOIN process_log l 
-              ON s.lead_id = l.lead_id 
-              AND s.prop_id = l.prop_id 
-              AND s.loan_id = l.loan_id 
-              AND s.lan = l.lan
-            LEFT JOIN process_worker w 
-              ON s.lead_id = w.lead_id 
-              AND s.prop_id = w.prop_id 
-              AND s.loan_id = w.loan_id 
-              AND s.lan = w.lan
-            WHERE s.lead_id = ?
-              OR s.prop_id = ?
-              OR s.lan = ?
-            LIMIT 1
-      `
-      const result = await executeQuery<any[]>(sql, [leadId, propId, lan])
+      const { statusSelect, logSelect, workerSelect } = await this.getDynamicColumns();
+
+      const sql = `
+        SELECT
+          ${statusSelect},
+          ${logSelect},
+          ${workerSelect}
+        FROM process_status s
+        LEFT JOIN process_log l 
+          ON s.lead_id = l.lead_id 
+          AND s.prop_id = l.prop_id 
+          AND s.loan_id = l.loan_id 
+          AND s.lan = l.lan
+        LEFT JOIN process_worker w 
+          ON s.lead_id = w.lead_id 
+          AND s.prop_id = w.prop_id 
+          AND s.loan_id = w.loan_id 
+          AND s.lan = w.lan
+        WHERE s.lead_id = ?
+          OR s.prop_id = ?
+          OR s.lan = ?
+        LIMIT 1
+      `;
+
+      const result = await executeQuery<any[]>(sql, [leadId, propId, lan]);
 
       if (result.length > 0) {
-        return this.success('Logs Found!')
+        return this.success(result[0]);
       }
 
-      return this.failure('Request Failed!')
+      return this.failure('No records found');
     } catch (error) {
-      return this.handleError(error)
+      return this.handleError(error);
     }
   }
 

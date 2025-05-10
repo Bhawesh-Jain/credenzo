@@ -1,6 +1,7 @@
 import { executeQuery } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import { BranchRepository } from "./branchRepository";
+import { ProcessRepository } from "./processRepository";
 import { UserRepository } from "./userRepository";
 
 export interface Application {
@@ -73,7 +74,7 @@ export class ApplicationsRepository extends RepositoryBase {
           `
 
       const result = await executeQuery<any[]>(sql, [this.companyId]);
-
+      
       if (result.length > 0) {
         return this.success(result)
       }
