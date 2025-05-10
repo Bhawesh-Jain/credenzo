@@ -27,7 +27,7 @@ export async function handleLoginForm(formData: FormData) {
   try {
     const authService = new UserAuthRepository();
 
-    const result = await authService.login(username.toString(), password.toString(), ip.toString());
+    const result = await authService.login(username.toString().trim(), password.toString(), ip.toString());
 
     if (result.success) {
       if (result.user == null) {
