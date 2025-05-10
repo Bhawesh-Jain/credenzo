@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import DatePicker from "@/components/date-picker";
-import { DefaultFormTextField } from "@/components/ui/default-form-field";
+import { DefaultFormDatePicker, DefaultFormTextField, DefaultFormTimeField } from "@/components/ui/default-form-field";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -90,29 +90,19 @@ export default function TeleverificationScreen({
           <div className="grid grid-cols-2 gap-5">
 
             {/* Verification Date */}
-            <FormField
-              control={form.control}
+            <DefaultFormDatePicker
+              form={form}
+              label="Verification Date"
               name="verification_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Verification Date</FormLabel>
-                  <FormControl>
-                    <DatePicker
-                      date={field.value}
-                      onChange={(date) => field.onChange(date)}
-                    />
-                  </FormControl>
-                  <FormMessage>{form.formState.errors.verification_date?.message}</FormMessage>
-                </FormItem>
-              )}
+              maxToday={true}
             />
 
             {/* Verification Time */}
-            <DefaultFormTextField
+            <DefaultFormTimeField
               form={form}
               label="Verification Time"
               name="verification_time"
-              placeholder="e.g., 14:30"
+              placeholder="e.g., 10:30 AM"
             />
 
             {/* Call Status */}

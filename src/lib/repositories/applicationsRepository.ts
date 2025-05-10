@@ -275,6 +275,7 @@ export class ApplicationsRepository extends RepositoryBase {
                     SELECT 'approval_process',          ps.approval_process                       UNION ALL
                     SELECT 'televerification_process',  ps.televerification_process               UNION ALL
                     SELECT 'fi_process',                ps.fi_process                             UNION ALL
+                    SELECT 'banking_process',           ps.banking_process                        UNION ALL
                     SELECT 'legal_process',             ps.legal_process                          UNION ALL
                     SELECT 'technical_process',         ps.technical_process                      UNION ALL
                     SELECT 'sanction_process',          ps.sanction_process                       UNION ALL
@@ -291,6 +292,7 @@ export class ApplicationsRepository extends RepositoryBase {
                     'approval_process',
                     'televerification_process',
                     'fi_process',
+                    'banking_process',
                     'legal_process',
                     'technical_process',
                     'sanction_process',
