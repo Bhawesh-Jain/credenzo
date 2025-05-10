@@ -94,7 +94,7 @@ export default function QueuePage() {
       align: 'center',
       cell: (row) => (
         <Badge variant={'secondary'}  >
-          {getProcessName(row.current_process)}
+          {getProcessName(row.current_process)} Pending
         </Badge>
       )
     },
