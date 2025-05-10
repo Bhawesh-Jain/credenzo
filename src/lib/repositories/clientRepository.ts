@@ -58,7 +58,7 @@ export class ClientRepository extends RepositoryBase {
   }
 
   private async checkExisting(
-    pan: string,
+    pan?: string,
     transactionConnection?: mysql.Connection
   ) {
     try {
@@ -170,7 +170,7 @@ export class ClientRepository extends RepositoryBase {
   }
 
   async createClient(
-    client: Client,
+    client: Client | Partial<Client>,
     transactionConnection?: mysql.Connection
   ) {
     try {

@@ -66,21 +66,15 @@ export class ProposalRepository extends RepositoryBase {
 
       const leadResult = await new LeadRepository(this.companyId).createLead(userId, lead, 15, transactionConnection)
 
-      const client: Client = {
-        id: 0,
-        client_id: '',
+      const client: Partial<Client> = {
         lead_id: leadResult.result,
-        prop_id: '',
-        lan: '',
         first_name: data.firstName,
-        middle_name: '',
         last_name: data.lastName,
         product_type: data.productType,
         phone: data.phone,
         pan: data.panCard,
         email: String(data.email),
         dob: formatDate(data.dob.toString()),
-        type: '',
         status: '1',
         income_emp_type: data.empType,
         income_entity_name: data.entityName,
@@ -120,7 +114,9 @@ export class ProposalRepository extends RepositoryBase {
         .setConnection(transactionConnection)
         .insert(propItem);
 
-      await new ProcessRepository().updateProcess({
+      const processsRepository = new ProcessRepository();
+        
+      await processsRepository.updateProcess({
         processName: 'proposal_process',
         processValue: 1,
         leadId: leadResult.result,

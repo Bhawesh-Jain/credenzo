@@ -150,16 +150,18 @@ export class ApplicationsRepository extends RepositoryBase {
                   LEFT JOIN LATERAL (
                   SELECT process
                   FROM (
-                    SELECT 'lead_process'         AS process, ps.lead_process         AS status UNION ALL
-                    SELECT 'proposal_process',    ps.proposal_process                       UNION ALL
-                    SELECT 'kyc_process',         ps.kyc_process                            UNION ALL
-                    SELECT 'imd_process',         ps.imd_process                            UNION ALL
-                    SELECT 'sales_process',       ps.sales_process                          UNION ALL
-                    SELECT 'approval_process',    ps.approval_process                       UNION ALL
-                    SELECT 'fi_process',          ps.fi_process                             UNION ALL
-                    SELECT 'legal_process',       ps.legal_process                          UNION ALL
-                    SELECT 'technical_process',   ps.technical_process                      UNION ALL
-                    SELECT 'disbursement_process',ps.disbursement_process
+                    SELECT 'lead_process'               AS process, ps.lead_process     AS status UNION ALL
+                    SELECT 'proposal_process',          ps.proposal_process                       UNION ALL
+                    SELECT 'kyc_process',               ps.kyc_process                            UNION ALL
+                    SELECT 'imd_process',               ps.imd_process                            UNION ALL
+                    SELECT 'sales_process',             ps.sales_process                          UNION ALL
+                    SELECT 'approval_process',          ps.approval_process                       UNION ALL
+                    SELECT 'televerification_process',  ps.televerification_process               UNION ALL
+                    SELECT 'fi_process',                ps.fi_process                             UNION ALL
+                    SELECT 'legal_process',             ps.legal_process                          UNION ALL
+                    SELECT 'technical_process',         ps.technical_process                      UNION ALL
+                    SELECT 'sanction_process',          ps.sanction_process                       UNION ALL
+                    SELECT 'disbursement_process',      ps.disbursement_process
                   ) AS unpiv
                   WHERE status = 0
                   ORDER BY FIELD(
@@ -170,9 +172,11 @@ export class ApplicationsRepository extends RepositoryBase {
                     'imd_process',
                     'sales_process',
                     'approval_process',
+                    'televerification_process',
                     'fi_process',
                     'legal_process',
                     'technical_process',
+                    'sanction_process',
                     'disbursement_process'
                   )
                   LIMIT 1
