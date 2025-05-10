@@ -73,7 +73,7 @@ export function DefaultFormTimeField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input type="time" placeholder={placeholder} {...field} />
+            <Input type="time" placeholder={placeholder} {...field} autoCapitalize="characters"/>
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -86,11 +86,13 @@ export function DefaultFormTextArea({
   label,
   name,
   placeholder,
-  form
+  form,
+  rows = 3
 }: {
   label: string,
   name: string,
   placeholder: string,
+  rows?: number,
   form: any
 }) {
   return (
@@ -101,7 +103,7 @@ export function DefaultFormTextArea({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Textarea placeholder={placeholder} {...field} />
+            <Textarea placeholder={placeholder} {...field} rows={rows} />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -114,14 +116,14 @@ export function DefaultFormTextArea({
 export function DefaultFormSelect({
   label,
   name,
-  placeholder,
+  placeholder = '',
   options,
   form,
 }: {
   label: string,
   name: string,
   options: any[],
-  placeholder: string,
+  placeholder?: string,
   form: any,
 }) {
   return (

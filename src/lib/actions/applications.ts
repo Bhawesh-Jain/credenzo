@@ -3,6 +3,7 @@
 import { TeleverificationFormValues } from "@/app/dashboard/applications/televerification/blocks/TeleverificationTab";
 import { ApplicationsRepository } from "../repositories/applicationsRepository";
 import { getSession } from "../session";
+import { FieldInvestigationFormValues } from "@/app/dashboard/applications/field-investigation/blocks/FieldInvestigationTab";
 
 
 export async function getApplicationsList() {
@@ -46,6 +47,15 @@ export async function submitTeleverification(propId: string, clientId: string, d
   
   const approvedCasesRepository = new ApplicationsRepository(session.company_id);
   const result = await approvedCasesRepository.submitTeleverification(session.user_id, propId, clientId, data);
+
+  return result;
+}
+
+export async function submitFieldInvestigation(propId: string, data: FieldInvestigationFormValues) {
+  const session = await getSession();
+  
+  const approvedCasesRepository = new ApplicationsRepository(session.company_id);
+  const result = await approvedCasesRepository.submitFieldInvestigation(session.user_id, propId, data);
 
   return result;
 }

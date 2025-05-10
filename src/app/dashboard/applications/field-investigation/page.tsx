@@ -5,10 +5,10 @@ import { Column, DataTable } from "@/components/data-table/data-table";
 import { formatDateTime } from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { getFiCases, getTeleverificationCases } from "@/lib/actions/applications";
+import { getFiCases } from "@/lib/actions/applications";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueueItem } from "@/lib/repositories/applicationsRepository";
-import TeleverificationScreen from "../televerification/blocks/TeleverificationTab";
+import FieldInvestigationScreen from "./blocks/FieldInvestigationTab";
 
 export default function FieldInvestigationPage() {
   const [items, setItems] = useState<QueueItem[]>([])
@@ -84,6 +84,7 @@ export default function FieldInvestigationPage() {
       accessorKey: "date",
       sortable: true,
       visible: true,
+      noWrap: true,
       cell: (row) => formatDateTime(row.date)
     },
     {
@@ -119,7 +120,7 @@ export default function FieldInvestigationPage() {
           </CardHeader>
 
           <CardContent>
-            <TeleverificationScreen loanDetails={selectedRow} setForm={setForm} setReload={setReload} />
+            <FieldInvestigationScreen loanDetails={selectedRow} setForm={setForm} setReload={setReload} />
           </CardContent>
         </Container>
 

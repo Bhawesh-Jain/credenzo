@@ -4,6 +4,7 @@ import { RepositoryBase } from "../helpers/repository-base";
 import { BranchRepository } from "./branchRepository";
 import { ProcessRepository } from "./processRepository";
 import { UserRepository } from "./userRepository";
+import { FieldInvestigationFormValues } from "@/app/dashboard/applications/field-investigation/blocks/FieldInvestigationTab";
 
 export interface Application {
   id: number;
@@ -350,5 +351,36 @@ export class ApplicationsRepository extends RepositoryBase {
     }
   }
 
+  async submitFieldInvestigation(
+    userId: string,
+    propId: string,
+    data: FieldInvestigationFormValues
+  ) {
+    try {
+      const record = {
+        ...data,
+        handler_id: userId,
+        prop_id: propId,
+        status: 1,
+      }
 
+      const result = await new QueryBuilder('fi_log')
+        .insert(record);
+
+      await new ProcessRepository().updateProcess({
+        processName: 'fi_process',
+        processValue: 1,
+        propId: propId
+      });
+
+      if (result > 0) {
+        return this.success('Record Updated!');
+      }
+
+      return this.failure('Request Failed');
+
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
 }
