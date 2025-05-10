@@ -278,8 +278,27 @@ export class ProposalRepository extends RepositoryBase {
         .where('id = ?', approvalId)
         .update({ status })
 
+      const processRepository = new ProcessRepository();
+      await processRepository.updateProcess({
+        processName: 'imd_process',
+        processValue: 5,
+        propId: (approvalId).toString()
+      })
+      
+      await processRepository.updateProcess({
+        processName: 'sales_process',
+        processValue: 1,
+        propId: (approvalId).toString()
+      })
+      
+      await processRepository.updateProcess({
+        processName: 'approval_process',
+        processValue: 1,
+        propId: (approvalId).toString()
+      })
+        
       if (result > 0) {
-        return this.success(result)
+        return this.success('Update Successful')
       }
 
       return this.failure('Update Failed')
