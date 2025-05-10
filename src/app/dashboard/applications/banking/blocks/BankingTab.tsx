@@ -340,7 +340,10 @@ export default function BankAccountsManager({
               </div>
             )}
           </CardContent>
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 flex justify-between">
+            <Button variant="outline" onClick={() => setForm(false)}>
+              Cancel
+            </Button>
             <Button variant="outline" onClick={() => setShowAddForm(true)}>
               Add Bank
             </Button>

@@ -5,10 +5,10 @@ import { Column, DataTable } from "@/components/data-table/data-table";
 import { formatDateTime } from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { getTeleverificationCases } from "@/lib/actions/applications";
+import { getBankingCases } from "@/lib/actions/applications";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueueItem } from "@/lib/repositories/applicationsRepository";
-import TeleverificationScreen from "../televerification/blocks/TeleverificationTab";
+import BankAccountsManager from "./blocks/BankingTab";
 
 export default function BankingPage() {
   const [items, setItems] = useState<QueueItem[]>([])
@@ -22,11 +22,9 @@ export default function BankingPage() {
       setReload(false);
       setLoading(true);
 
-      const result = await getTeleverificationCases();
+      const result = await getBankingCases();
 
       setItems(result.result);
-
-      console.log(result);
 
       setLoading(false);
     })();
@@ -83,6 +81,7 @@ export default function BankingPage() {
       header: "Date",
       accessorKey: "date",
       sortable: true,
+      noWrap: true,
       visible: true,
       cell: (row) => formatDateTime(row.date)
     },
@@ -119,7 +118,7 @@ export default function BankingPage() {
           </CardHeader>
 
           <CardContent>
-            <TeleverificationScreen loanDetails={selectedRow} setForm={setForm} setReload={setReload} />
+            <BankAccountsManager loanDetails={selectedRow} setForm={setForm} />
           </CardContent>
         </Container>
 
