@@ -4,6 +4,7 @@ const config: Config = {
 	darkMode: ['class'],
 	safelist: [
 		'text-destructive',
+		'text-primary',
 		'text-success',
 		'text-warning',
 		'text-info',

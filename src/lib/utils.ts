@@ -19,7 +19,7 @@ export function getStatusColor(status: string) {
     case "0":
       return "text-destructive";
     case "1":
-      return "text-success";
+      return "text-primary";
     case "10":
       return "text-warning";
     case "50":
