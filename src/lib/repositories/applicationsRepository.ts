@@ -150,6 +150,57 @@ export class ApplicationsRepository extends RepositoryBase {
     }
   }
 
+  async getFiCases(
+    userId: string
+  ) {
+    try {
+      const userBranches = await new UserRepository(this.companyId).getUserBranchesById(userId);
+
+      let branchList = userBranches.result as any[];
+
+      branchList = branchList.map(item => item.branch_id)
+
+      let branches = branchList.join(',').toString();
+
+      let sql = `
+              SELECT 
+                  p.id,  
+                  p.client_id,  
+                  p.prop_no,  
+                  p.customer_name,  
+                  p.loan_amount,  
+                  p.mobile_no,  
+                  pl.approval_process as date,  
+                  br.name AS branch_name,  
+                  lpt.name AS product_name,  
+                  u.name AS handler_name  
+              FROM proposals p  
+              LEFT JOIN branches br ON p.branch_id = br.id  
+              LEFT JOIN loan_product_type lpt ON lpt.id = p.product_id  
+              LEFT JOIN users u ON u.id = p.handler_id  
+              LEFT JOIN process_status ps ON ps.prop_id = p.id
+                AND ps.lead_id = p.lead_id
+              LEFT JOIN process_log pl ON pl.prop_id = p.id
+                AND pl.lead_id = p.lead_id
+              WHERE p.branch_id IN (${branches})  
+                AND p.status > 5  
+                AND p.status < 20  
+                AND p.company_id = ?  
+                AND ps.fi_process = 0
+          `
+
+      const result = await executeQuery<any[]>(sql, [this.companyId]);
+
+      if (result.length > 0) {
+        return this.success(result)
+      }
+
+      return this.failure('No Cases Found!')
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
   async getApplicationsList(
     userId: string
   ) {

@@ -32,6 +32,15 @@ export async function getTeleverificationCases() {
   return result;
 }
 
+export async function getFiCases() {
+  const session = await getSession();
+  
+  const approvedCasesRepository = new ApplicationsRepository(session.company_id);
+  const result = await approvedCasesRepository.getFiCases(session.user_id);
+
+  return result;
+}
+
 export async function submitTeleverification(propId: string, clientId: string, data: TeleverificationFormValues) {
   const session = await getSession();
   

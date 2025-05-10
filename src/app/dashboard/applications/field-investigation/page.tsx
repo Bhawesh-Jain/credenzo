@@ -5,7 +5,7 @@ import { Column, DataTable } from "@/components/data-table/data-table";
 import { formatDateTime } from "@/lib/utils/date";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { getTeleverificationCases } from "@/lib/actions/applications";
+import { getFiCases, getTeleverificationCases } from "@/lib/actions/applications";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueueItem } from "@/lib/repositories/applicationsRepository";
 import TeleverificationScreen from "../televerification/blocks/TeleverificationTab";
@@ -22,7 +22,7 @@ export default function FieldInvestigationPage() {
       setReload(false);
       setLoading(true);
 
-      const result = await getTeleverificationCases();
+      const result = await getFiCases();
 
       setItems(result.result);
 
