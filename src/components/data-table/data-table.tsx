@@ -27,6 +27,7 @@ export interface Column<T> {
   accessorKey: keyof T
   cell?: (row: T) => React.ReactNode
   sortable?: boolean
+  noWrap?: boolean
   filterable?: boolean
   visible: boolean
 }
@@ -228,7 +229,7 @@ export function DataTable<T extends Record<string, any>>({
                         )
                       }
                       return (
-                        <TableCell key={column.id} align={column.align || 'left'}>
+                        <TableCell key={column.id} className={cn(column.noWrap && 'whitespace-nowrap')} align={column.align || 'left'}>
                           {column.cell
                             ? column.cell(row)
                             : String(row[column.accessorKey] ?? "")}
