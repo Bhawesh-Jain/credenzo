@@ -15,7 +15,7 @@ export default function TeleverificationPage() {
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>();
+  const [selectedRow, setSelectedRow] = useState<QueueItem | null>();
 
   useEffect(() => {
     (async () => {
@@ -98,7 +98,7 @@ export default function TeleverificationPage() {
             variant="outline"
             size="sm"
             onClick={() => {
-              setSelectedId(row.id)
+              setSelectedRow(row)
               setForm(true)
             }}
           >
@@ -111,7 +111,7 @@ export default function TeleverificationPage() {
 
   return (
     <>
-      {form
+      {form && selectedRow
         ? <Container>
           <CardHeader>
             <CardTitle>Televerification</CardTitle>
@@ -119,7 +119,7 @@ export default function TeleverificationPage() {
           </CardHeader>
 
           <CardContent>
-            <TeleverificationScreen loanDetails={selectedId} setForm={setForm} />
+            <TeleverificationScreen loanDetails={selectedRow} setForm={setForm} setReload={setReload} />
           </CardContent>
         </Container>
 

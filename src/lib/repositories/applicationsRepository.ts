@@ -1,4 +1,5 @@
-import { executeQuery } from "../helpers/db-helper";
+import { TeleverificationFormValues } from "@/app/dashboard/applications/televerification/blocks/TeleverificationTab";
+import { executeQuery, QueryBuilder } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 import { BranchRepository } from "./branchRepository";
 import { ProcessRepository } from "./processRepository";
@@ -37,6 +38,7 @@ export interface Application {
 
 export interface QueueItem {
   id: number;
+  client_id: number;
   prop_no: string;
   customer_name: string;
   loan_amount: string;
@@ -86,7 +88,7 @@ export class ApplicationsRepository extends RepositoryBase {
           `
 
       const result = await executeQuery<any[]>(sql, [this.companyId]);
-      
+
       if (result.length > 0) {
         return this.success(result)
       }
@@ -112,6 +114,7 @@ export class ApplicationsRepository extends RepositoryBase {
       let sql = `
               SELECT 
                   p.id,  
+                  p.client_id,  
                   p.prop_no,  
                   p.customer_name,  
                   p.loan_amount,  
@@ -136,7 +139,7 @@ export class ApplicationsRepository extends RepositoryBase {
           `
 
       const result = await executeQuery<any[]>(sql, [this.companyId]);
-      
+
       if (result.length > 0) {
         return this.success(result)
       }
@@ -257,6 +260,40 @@ export class ApplicationsRepository extends RepositoryBase {
       }
 
       return this.failure('No Cases Found!')
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async submitTeleverification(
+    userId: string,
+    propId: string,
+    clientId: string,
+    data: TeleverificationFormValues
+  ) {
+    try {
+      const record = {
+        ...data,
+        user_id: userId,
+        prop_id: propId,
+        client_id: clientId
+      }
+
+      const result = await new QueryBuilder('televerification_log')
+        .insert(record);
+
+      await new ProcessRepository().updateProcess({
+        processName: 'televerification_process',
+        processValue: 1,
+        propId: propId
+      });
+
+      if (result > 0) {
+        return this.success('Record Updated!');
+      }
+
+      return this.failure('Request Failed');
+
     } catch (error) {
       return this.handleError(error)
     }

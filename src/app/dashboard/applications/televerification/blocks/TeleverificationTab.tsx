@@ -10,47 +10,74 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { QueueItem } from "@/lib/repositories/applicationsRepository";
+import { useGlobalDialog } from "@/providers/DialogProvider";
+import { submitTeleverification } from "@/lib/actions/applications";
 
 // Zod schema for validation
 const televerificationSchema = z.object({
-  phoneDialed: z.string().min(10, "Enter a valid phone number"),
-  verificationDate: z.date({ required_error: "Verification date is required" }),
-  verificationTime: z.string().min(1, "Verification time is required"),
-  callStatus: z.enum(["Connected", "Voicemail", "No Answer"], {
+  verification_date: z.date({ required_error: "Verification date is required" }),
+  verification_time: z.string().min(1, "Verification time is required"),
+  call_status: z.enum(["Connected", "Voicemail", "No Answer"], {
     errorMap: () => ({ message: "Please select a call status" })
   }),
-  verificationOutcome: z.enum(["Verified", "Not Verified", "Pending"], {
+  verification_outcome: z.enum(["Verified", "Not Verified", "Pending"], {
     errorMap: () => ({ message: "Please select an outcome" })
   }),
-  verifierComments: z.string().optional(),
-  additionalDocs: z.string().optional()
+  remarks: z.string().optional()
 });
 
-type TeleverificationFormValues = z.infer<typeof televerificationSchema>;
+export type TeleverificationFormValues = z.infer<typeof televerificationSchema>;
 
 export default function TeleverificationScreen({
   loanDetails,
-  setForm
+  setForm,
+  setReload,
 }: {
-  loanDetails: any,
+  loanDetails: QueueItem,
   setForm: (vis: boolean) => void,
+  setReload: (flag: boolean) => void,
 }) {
+  const { showSuccess, showError, showConfirmation, setLoading } = useGlobalDialog();
+
+
   const form = useForm<TeleverificationFormValues>({
     resolver: zodResolver(televerificationSchema),
     defaultValues: {
-      phoneDialed: "",
-      verificationDate: new Date(),
-      verificationTime: "",
-      callStatus: "Connected",
-      verificationOutcome: "Pending",
-      verifierComments: "",
-      additionalDocs: ""
+      verification_date: new Date(),
+      verification_time: "",
+      call_status: "Connected",
+      verification_outcome: "Pending",
+      remarks: ""
     }
   });
 
-  const onSubmit = (data: TeleverificationFormValues) => {
-    // TODO: Handle Submit
-  };
+  async function onSubmit(data: TeleverificationFormValues) {
+    showConfirmation(
+      'Submit Televerificaiton',
+      'Are you sure you want to submit this data?',
+      async () => {
+        try {
+          setLoading(true);
+
+          const result = await submitTeleverification(loanDetails.id.toString(), loanDetails.client_id.toString(), data);
+
+          setLoading(false);
+          if (result.success) {
+            showSuccess('Request Successful', result.result);
+            form.reset();
+            closeForm();
+            setReload(true);
+          } else {
+            showError('Error', result.error);
+          }
+        } catch (error: any) {
+          setLoading(false);
+          showError('Error', 'There was a problem submitting televerification.');
+        }
+      }
+    );
+  }
 
   const closeForm = () => {
     setForm(false)
@@ -61,18 +88,11 @@ export default function TeleverificationScreen({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 gap-5">
-            {/* Phone Dialed */}
-            <DefaultFormTextField
-              form={form}
-              label="Phone Dialed"
-              name="phoneDialed"
-              placeholder="Enter phone number"
-            />
 
             {/* Verification Date */}
             <FormField
               control={form.control}
-              name="verificationDate"
+              name="verification_date"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Verification Date</FormLabel>
@@ -82,7 +102,7 @@ export default function TeleverificationScreen({
                       onChange={(date) => field.onChange(date)}
                     />
                   </FormControl>
-                  <FormMessage>{form.formState.errors.verificationDate?.message}</FormMessage>
+                  <FormMessage>{form.formState.errors.verification_date?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -91,14 +111,14 @@ export default function TeleverificationScreen({
             <DefaultFormTextField
               form={form}
               label="Verification Time"
-              name="verificationTime"
+              name="verification_time"
               placeholder="e.g., 14:30"
             />
 
             {/* Call Status */}
             <FormField
               control={form.control}
-              name="callStatus"
+              name="call_status"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Call Status</FormLabel>
@@ -114,7 +134,7 @@ export default function TeleverificationScreen({
                       <SelectItem value="No Answer">No Answer</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage>{form.formState.errors.callStatus?.message}</FormMessage>
+                  <FormMessage>{form.formState.errors.call_status?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -122,7 +142,7 @@ export default function TeleverificationScreen({
             {/* Verification Outcome */}
             <FormField
               control={form.control}
-              name="verificationOutcome"
+              name="verification_outcome"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Verification Outcome</FormLabel>
@@ -138,7 +158,7 @@ export default function TeleverificationScreen({
                       <SelectItem value="Pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage>{form.formState.errors.verificationOutcome?.message}</FormMessage>
+                  <FormMessage>{form.formState.errors.verification_outcome?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -146,7 +166,7 @@ export default function TeleverificationScreen({
             {/* Verifier's Comments */}
             <FormField
               control={form.control}
-              name="verifierComments"
+              name="remarks"
               render={({ field }) => (
                 <FormItem className="col-span-2">
                   <FormLabel>Verifier Comment</FormLabel>
@@ -155,18 +175,11 @@ export default function TeleverificationScreen({
                     className="p-2 border border-gray-300 rounded-md w-full"
                     placeholder="Enter your comments"
                   />
-                  <FormMessage>{form.formState.errors.verifierComments?.message}</FormMessage>
+                  <FormMessage>{form.formState.errors.remarks?.message}</FormMessage>
                 </FormItem>
               )}
             />
 
-            {/* Additional Documents */}
-            <DefaultFormTextField
-              form={form}
-              label="Additional Documents (optional)"
-              name="additionalDocs"
-              placeholder="Upload document URL or file reference"
-            />
           </div>
           <div className="mt-6 flex gap-4 justify-end">
             <SubmitButton>Submit</SubmitButton>
