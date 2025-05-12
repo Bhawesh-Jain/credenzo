@@ -9,14 +9,15 @@ export default function capitalizeWord(s: string) : string {
 }
 
 export function getProcessName(process: string) : string {
-  if (!process || process.length == 0) {
+ if (!process || process.length == 0) {
     return '';
   }
-
 
   var processName = process.charAt(0).toUpperCase();
   processName += process.substring(1, process.length)
 
-  processName = processName.split('_')[0];
-  return processName
+  let processNameArr = processName.split('_');
+  processNameArr.pop();  
+  
+  return processNameArr.join(' ')
 }
