@@ -1,15 +1,8 @@
-import { UserData } from "../actions/auth";
 import { QueryBuilder, executeQuery } from "../helpers/db-helper";
-import bcrypt from 'bcryptjs';
 import { RepositoryBase } from "../helpers/repository-base";
 import { UserFormValues } from "@/app/dashboard/settings/user-management/blocks/AddUser";
 import { BranchRepository } from "./branchRepository";
-
-type LoginResponse = {
-  success: boolean;
-  user?: UserData;
-  error: string;
-};
+import bcrypt from 'bcryptjs';
 
 export interface User {
   id: number;
@@ -26,133 +19,6 @@ export interface User {
   company_id: string;
   branch_id: string;
 }
-
-export class UserAuthRepository extends RepositoryBase {
-  private builder: QueryBuilder;
-
-  constructor() {
-    super()
-    this.builder = new QueryBuilder('users');
-  }
-
-  private async validatePassword(
-    password: string,
-    hashedPassword: string
-  ): Promise<boolean> {
-    return password == hashedPassword;
-    // return bcrypt.compare(password, hashedPassword);
-  }
-
-  private async logAttempt(
-    userId: number | null,
-    identifier: string,
-    password: string,
-    success: boolean,
-    ipAddress: string
-  ): Promise<number> {
-    const attemptBuilder = new QueryBuilder('login_attempts');
-
-    const logId = await attemptBuilder.insert({
-      user_id: userId,
-      identifier_used: identifier,
-      password_used: 'N/A',
-      success,
-      ip_address: ipAddress
-    });
-
-    return logId;
-  }
-
-  async login(
-    identifier: string,
-    password: string,
-    ipAddress: string
-  ): Promise<LoginResponse> {
-    try {
-      const recentAttempts = await executeQuery<any[]>(`
-        SELECT COUNT(*) as count 
-        FROM login_attempts 
-        WHERE ip_address = ? 
-        AND success = false 
-        AND attempted_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
-      `, [ipAddress]);
-
-      if (recentAttempts[0].count >= 5) {
-        return {
-          success: false,
-          error: "Too many failed attempts. Please try again later."
-        };
-      }
-
-
-      const users = await executeQuery<any[]>(`
-        SELECT iu.*, 
-        cm.company_id, cm.company_name, cm.abbr
-        FROM users iu
-        LEFT JOIN company_master cm
-          ON cm.company_id = iu.company_id
-          AND cm.is_active = 1
-        WHERE (iu.id = ? 
-          OR iu.employee_code = ? 
-          OR iu.email = ? 
-          OR iu.phone = ?)
-          AND iu.status = 1
-        LIMIT 1
-      `, [identifier, identifier, identifier, identifier]);
-
-      if (users.length === 0) {
-        await this.logAttempt(null, identifier, password, false, ipAddress);
-        return {
-          success: false,
-          error: "Invalid credentials"
-        };
-      }
-
-      const user = users[0];
-
-      const isValidPassword = await this.validatePassword(
-        password,
-        user.password
-      );
-
-      if (!isValidPassword) {
-        await this.logAttempt(user.id, identifier, password, false, ipAddress);
-        return {
-          success: false,
-          error: "Invalid credentials"
-        };
-      }
-
-      await this.builder
-        .where('id = ?', user.id)
-        .update({ last_login: new Date() });
-
-      await this.logAttempt(user.id, identifier, password, true, ipAddress);
-
-
-      const userObj = {
-        user_id: user.id,
-        user_phone: user.phone,
-        user_email: user.email,
-        user_avatar: user.image,
-        user_name: user.name,
-        company_name: user.company_name,
-        company_id: user.company_id,
-        company_abbr: user.abbr,
-        role: user.role,
-      }
-
-      return {
-        success: true,
-        user: userObj,
-        error: ''
-      };
-    } catch (error) {
-      return this.handleError(error);
-    }
-  }
-}
-
 
 export class UserRepository extends RepositoryBase {
   private queryBuilder: QueryBuilder;
@@ -267,6 +133,13 @@ export class UserRepository extends RepositoryBase {
     }
   }
 
+  private async passwordHash(
+    password: string
+  ) {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
+
   async createUser(
     data: UserFormValues,
     updated_by: string
@@ -285,6 +158,7 @@ export class UserRepository extends RepositoryBase {
           name: data.name,
           email: data.email,
           phone: data.phone,
+          // password: this.passwordHash(data.password),
           password: data.password,
           role: data.role,
           company_id: this.companyId,
@@ -297,7 +171,7 @@ export class UserRepository extends RepositoryBase {
 
         for (let i = 0; i < branches.length; i++) {
           const element = branches[i];
-          
+
           const branchRepository = new BranchRepository(this.companyId);
           await branchRepository.addUserBranch(String(result), element);
         }
@@ -329,23 +203,23 @@ export class UserRepository extends RepositoryBase {
       let addableBranches = [] as string[];
       let removableBranches = [] as string[];
 
-      if (existingBranches.success) {        
+      if (existingBranches.success) {
         const currentBranchList = existingBranches.result.map((role: any) => (role.id.toString())) as string[];
-        
+
         addableBranches = branches.filter(x => !currentBranchList.includes(x));
         removableBranches = currentBranchList.filter(x => !branches.includes(x));
-      }      
+      }
 
       for (let i = 0; i < addableBranches.length; i++) {
         const element = addableBranches[i];
-        
+
         const branchRepository = new BranchRepository(this.companyId);
         await branchRepository.addUserBranch(String(id), element);
       }
 
       for (let i = 0; i < removableBranches.length; i++) {
         const element = removableBranches[i];
-        
+
         const branchRepository = new BranchRepository(this.companyId);
         await branchRepository.removeUserBranch(String(id), element);
       }
