@@ -1,6 +1,6 @@
 "use server"
 import { getSession } from "../session";
-import { UserAuthRepository } from "../repositories/userRepository";
+import { UserAuthRepository } from "../repositories/userAuthRepository";
 import { cookies } from "next/headers";
 import { customLog } from "../utils";
 
