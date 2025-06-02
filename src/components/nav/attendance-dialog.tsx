@@ -51,8 +51,8 @@ export function AttendanceDialog() {
 
   const handleBreak = () => {
     if (attendanceStatus === 'away') {
-      setAttendanceStatus('present');
-      setActivities(prev => [...prev, { type: 'Break Ended', time: new Date().toLocaleTimeString() }]);
+      // setAttendanceStatus('present');
+      // setActivities(prev => [...prev, { type: 'Break Ended', time: new Date().toLocaleTimeString() }]);
     } else {
       setAttendanceStatus('away');
       setActivities(prev => [...prev, { type: 'Break Started', time: new Date().toLocaleTimeString() }]);
