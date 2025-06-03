@@ -19,10 +19,13 @@ export class AttendanceRepository extends RepositoryBase {
     deviceInfo: string,
     location: { latitude: number; longitude: number; }
   }) {
+    console.log("-------",type)
     try {
       if (!['clock_in', 'clock_out', 'break_start', 'break_end'].includes(type)) {
+        console.error("Invalid type provided:", type);
         throw('Invalid Type');
       }
+  console.log("Addding type activity", type,userId)
 
       const result = new QueryBuilder('attendance_events')
         .insert({

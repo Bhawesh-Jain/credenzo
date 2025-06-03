@@ -39,6 +39,7 @@ export default function TeleverificationPage() {
       accessorKey: "prop_no",
       sortable: true,
       visible: true,
+      
     },
     {
       id: "customer_name",

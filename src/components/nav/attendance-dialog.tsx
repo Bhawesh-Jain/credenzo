@@ -45,23 +45,37 @@ export function AttendanceDialog() {
     setActivities(prev => [...prev, { type: 'Clocked In', time: new Date().toLocaleTimeString() }]);
 
     if (location) {
+      console.log("Adding location activity", location);
       const add = await addAttendanceActivity('clock_in', location);
     }
   };
 
-  const handleBreak = () => {
+  const handleBreak = async() => {
     if (attendanceStatus === 'away') {
-      // setAttendanceStatus('present');
-      // setActivities(prev => [...prev, { type: 'Break Ended', time: new Date().toLocaleTimeString() }]);
+      setAttendanceStatus('present');
+      setActivities(prev => [...prev, { type: 'Break Ended', time: new Date().toLocaleTimeString() }]);
+      if (location) {
+      console.log("Adding location activity", location);
+       await addAttendanceActivity('break_end', location);
+    }
     } else {
       setAttendanceStatus('away');
       setActivities(prev => [...prev, { type: 'Break Started', time: new Date().toLocaleTimeString() }]);
+       if (location) {
+      console.log("Adding location activity", location);
+     await addAttendanceActivity('break_start', location);
+    }
     }
   };
 
-  const handleClockOut = () => {
+  const handleClockOut = async() => {
     setAttendanceStatus('offline');
     setActivities(prev => [...prev, { type: 'Clocked Out', time: new Date().toLocaleTimeString() }]);
+    if(location){
+       console.log("Addding location activity", location)
+
+       await addAttendanceActivity('clock_out', location);
+    }
   };
 
   return (
