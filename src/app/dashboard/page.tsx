@@ -15,6 +15,7 @@ import {
 import { ApprovalRateChart, LoanChart } from "@/components/loan-chart";
 import { RecentApprovals } from "@/components/recent-approvals";
 import { useUser } from "@/contexts/user-context";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const metrics = [

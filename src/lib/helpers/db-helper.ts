@@ -129,6 +129,7 @@ export class QueryBuilder {
     if (this.offsetValue !== undefined) {
       query += ` OFFSET ${this.offsetValue}`;
     }
+    console.log("Executing query:", query, "with parameters:", parameters);
         
     return executeQuery<T[]>(query, parameters, this.connection);
   }

@@ -17,3 +17,9 @@ export async function addAttendanceActivity(type: string, location: { latitude: 
   });
   return result;
 }
+ export async function getAttendanceEvents() {
+  const attendanceRepository = new AttendanceRepository();
+  const result = attendanceRepository.getAttendance_events();
+
+  return result;
+ }

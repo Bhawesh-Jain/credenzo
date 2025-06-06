@@ -1,6 +1,6 @@
 'use client'
 import * as React from "react"
-import { Bell, HelpCircle, LucideClock, Search } from "lucide-react"
+import { Bell, HelpCircle, LucideClock, Search, X } from "lucide-react"
 import { UserData } from "@/lib/actions/auth"
 import { Button, ButtonTooltip } from "@/components/ui/button"
 import {
@@ -12,6 +12,7 @@ import {
 import { useSearchParams, usePathname } from "next/navigation"
 import { getHeadingFromPath } from "@/lib/utils/getHeading"
 import { AttendanceDialog } from "./attendance-dialog"
+import { SearchForm } from "../search-form"
 
 interface TopBarProps {
   user: UserData;
@@ -22,13 +23,14 @@ const TopBar: React.FC<TopBarProps> = ({ user }) => {
   const pathname = usePathname();
   const headingFromQuery = searchParams.get('h');
   const heading = headingFromQuery || getHeadingFromPath(pathname);
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
 
   return (
     <div className="flex justify-between items-center w-full py-4 px-2 bg-background rounded-lg">
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold">{heading}</h1>
       </div>
-      
+
       <div className="flex items-center gap-4">
         {/* Attendance */}
         <AttendanceDialog />
@@ -69,9 +71,17 @@ const TopBar: React.FC<TopBarProps> = ({ user }) => {
         </DropdownMenu>
 
         {/* Settings */}
-        <Button variant="outline" size="icon" className="text-muted-foreground hover:text-foreground">
+        <Button variant="outline" size="icon" className="text-muted-foreground hover:text-foreground" onClick={() => { setIsSearchOpen(true) }}>
           <Search className="h-5 w-5" />
         </Button>
+        {isSearchOpen && (
+          <div className="w-full p-4 absolute left-0 bg-white shadow-md flex items-center gap-2">
+            <SearchForm className="flex-1" />
+            <Button variant="outline" size="icon" className="text-muted-foreground hover:text-foreground " onClick={() => { setIsSearchOpen(false) }}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

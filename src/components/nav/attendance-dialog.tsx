@@ -9,7 +9,9 @@ import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
-import { addAttendanceActivity } from "@/lib/actions/attendance";
+import { addAttendanceActivity, getAttendanceEvents } from "@/lib/actions/attendance";
+import { Toast } from "../ui/toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function AttendanceDialog() {
   const [open, setOpen] = useState(false);
@@ -17,10 +19,20 @@ export function AttendanceDialog() {
   const [activities, setActivities] = useState<Array<{ type: string; time: string }>>([]);
   const [error, setError] = useState<string>();
   const [location, setLocation] = useState<{ latitude: number; longitude: number; }>();
-
+  const { toast } = useToast();
 
   useEffect(() => {
     (async () => {
+      const data = await getAttendanceEvents();
+      setActivities(data?.result?.map((event: any) => ({
+        type: event.event_type=== 'clock_in' ? 'Clocked In' :
+              event.event_type === 'clock_out' ? 'Clocked Out' :
+              event.event_type === 'break_start' ? 'Break Started' :
+              event.event_type === 'break_end' ? 'Break Ended' :
+              'Unknown Event',
+        time: new Date(event.event_time).toLocaleTimeString()
+      })));
+
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -40,41 +52,50 @@ export function AttendanceDialog() {
   }, [open]);
 
   const handleClockIn = async () => {
-
     setAttendanceStatus('present');
     setActivities(prev => [...prev, { type: 'Clocked In', time: new Date().toLocaleTimeString() }]);
-
     if (location) {
-      console.log("Adding location activity", location);
       const add = await addAttendanceActivity('clock_in', location);
+    } else {
+      setError('Location not available, cannot add attendance activity');
+      toast({
+        title: "Error",
+        description: "Location not available, cannot add attendance activity",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleBreak = async() => {
+  const handleBreak = async () => {
     if (attendanceStatus === 'away') {
       setAttendanceStatus('present');
       setActivities(prev => [...prev, { type: 'Break Ended', time: new Date().toLocaleTimeString() }]);
       if (location) {
-      console.log("Adding location activity", location);
-       await addAttendanceActivity('break_end', location);
-    }
+        console.log("Adding location activity", location);
+        await addAttendanceActivity('break_end', location);
+      }
     } else {
       setAttendanceStatus('away');
       setActivities(prev => [...prev, { type: 'Break Started', time: new Date().toLocaleTimeString() }]);
-       if (location) {
-      console.log("Adding location activity", location);
-     await addAttendanceActivity('break_start', location);
-    }
+      if (location) {
+        console.log("Adding location activity", location);
+        await addAttendanceActivity('break_start', location);
+      }
     }
   };
 
-  const handleClockOut = async() => {
+  const handleClockOut = async () => {
     setAttendanceStatus('offline');
     setActivities(prev => [...prev, { type: 'Clocked Out', time: new Date().toLocaleTimeString() }]);
-    if(location){
-       console.log("Addding location activity", location)
-
-       await addAttendanceActivity('clock_out', location);
+    if (location) {
+      console.log("Addding location activity", location)
+      await addAttendanceActivity('clock_out', location);
+    }else{
+      toast({
+        title: "Error",
+        description: "Location not available, cannot add attendance activity",
+        variant: "destructive",
+      });
     }
   };
 
@@ -194,6 +215,7 @@ export function AttendanceDialog() {
           </Container>
         </ScrollArea>
       </DialogContent>
+
     </Dialog>
   );
 }

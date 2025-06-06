@@ -26,7 +26,9 @@ export default function RoleSettings(
       setReload(false);
       setLoading(true);
       const rolesData = await getRoles();
+      console.log("Roles Data", rolesData);
       const permissionsData = await getAllPermissions();
+      console.log("Permissions Data", permissionsData);
       setRoles(rolesData.result);
       setPermissions(permissionsData.result);
       setSelectedRole(rolesData.result.find((role: Role) => role.id === selectedRole?.id) || null);

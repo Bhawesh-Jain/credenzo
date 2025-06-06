@@ -2,8 +2,9 @@ import { QueryBuilder } from "../helpers/db-helper";
 import { RepositoryBase } from "../helpers/repository-base";
 
 export class AttendanceRepository extends RepositoryBase {
+
   constructor() {
-    super()
+    super();
   }
 
   async addAttendanceActivity({
@@ -12,20 +13,17 @@ export class AttendanceRepository extends RepositoryBase {
     ipAddress,
     deviceInfo,
     location,
-  } : {
+  }: {
     userId: string,
     type: string,
     ipAddress: string,
     deviceInfo: string,
     location: { latitude: number; longitude: number; }
   }) {
-    console.log("-------",type)
     try {
       if (!['clock_in', 'clock_out', 'break_start', 'break_end'].includes(type)) {
-        console.error("Invalid type provided:", type);
-        throw('Invalid Type');
+        throw ('Invalid Type');
       }
-  console.log("Addding type activity", type,userId)
 
       const result = new QueryBuilder('attendance_events')
         .insert({
@@ -37,6 +35,28 @@ export class AttendanceRepository extends RepositoryBase {
         })
     } catch (error) {
       return this.handleError(error)
+    }
+  }
+
+  async getAttendance_events() {
+    try {
+      const today = new Date();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+      
+      const result = await new QueryBuilder('attendance_events')
+        .where('event_time >= ?', startOfDay)
+        .where('event_time < ?', endOfDay)
+        .limit(15)
+        .select(['id', 'event_type', 'event_time'])
+
+      if (result.length > 0) {
+        return this.success(result);
+      } else {
+        return this.failure('No branches found');
+      }
+    } catch (error) {
+      return this.handleError(error);
     }
   }
 }

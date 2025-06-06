@@ -20,7 +20,7 @@ export default function PermissionTree({
 }) {
   const rolePermissions = selectedRole.permissions.split(',').map(id => parseInt(id));
   const [updatedPermissions, setUpdatedPermissions] = useState<PermissionItem[]>([]);
-
+  console.log("updatedPermissions",updatedPermissions)
   const initializePermissions = (perms: PermissionItem[]): PermissionItem[] => {
     return perms.map((perm) => ({
       ...perm,
@@ -80,7 +80,7 @@ export default function PermissionTree({
     return perms.map((perm, index) => {
       const isLast = index === perms.length - 1;
       const hasChildren = perm.items && perm.items.length > 0;
-
+      console.log("perm", perm, "level", level,"index",index, "isLast", isLast, "hasChildren", hasChildren,"perms.length ",perms.length );
       return (
         <div key={perm.id} className={cn(
           "relative",
