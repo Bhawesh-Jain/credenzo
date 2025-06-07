@@ -1,5 +1,7 @@
+import AddProductType from "@/app/dashboard/settings/product-management/blocks/AddProductType";
 import DatePicker from "../date-picker";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./form";
+import { FormLabelWithIcon } from "./form-label-with-icon";
 import { Input } from "./input";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "./select";
 import { Textarea } from "./textarea";
@@ -133,6 +135,7 @@ export function DefaultFormSelect({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
+          
           <FormControl>
             <Select
               onValueChange={field.onChange}

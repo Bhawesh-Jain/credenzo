@@ -4,7 +4,11 @@ import { UserFormValues } from "@/app/dashboard/settings/user-management/blocks/
 import { AccessRepository } from "../repositories/accessRepository";
 import { BranchRepository } from "../repositories/branchRepository";
 import { UserRepository } from "../repositories/userRepository";
+
 import { getSession } from "../session";
+import { ProductRepository } from "../repositories/productRepository";
+import { DirectCollectionAccountValues } from "@/app/dashboard/settings/product-management/blocks/AddProduct";
+import { EditProductsValues } from "@/app/dashboard/settings/product-management/blocks/EditProduct";
 
 export async function getRoles() {
   const session = await getSession();
@@ -103,3 +107,43 @@ export async function editUser(id: number, data: UserFormValues) {
   const userRepository = new UserRepository(session.company_id);
   return await userRepository.editUser(id, data, session.user_id);
 }
+
+// export async function createProducts(name: string, minimum_tenure: string, maximum_tenure: string, type: string, mimimum_cibil_score: string, minimum_age: number,interest_rate: Number) {
+//   const session = await getSession();
+
+//   const porductRepository = new ProductRepository(session.company_id);
+//   return await porductRepository.createProducts(name,minimum_tenure , maximum_tenure, type, mimimum_cibil_score, minimum_age, interest_rate, session.user_id);
+// }
+export async function createProducts(data: DirectCollectionAccountValues) {
+  const session = await getSession();
+console.log('Session:-----', data);
+  const porductRepository = new ProductRepository(session.company_id);
+  return await porductRepository.createProducts( session.user_id,data);
+}
+export async function createProductsType(data: string) {
+  const session = await getSession();
+console.log('Session:-----', data);
+  const porductRepository = new ProductRepository(session.company_id);
+  return await porductRepository.createProductsType( session.user_id,data);
+}
+export async function getProductsType() {
+  const session = await getSession();
+  const porductRepository = new ProductRepository(session.company_id);
+  return await porductRepository.getProductsType();
+}
+
+export async function updateProducts(data: EditProductsValues){
+  const session = await getSession();
+  const porductRepository = new ProductRepository(session.company_id);
+  return await porductRepository.updateProducts( data.id,
+    session.user_id,
+    data
+  );
+}
+export async function getProducts() {
+    const session = await getSession();
+
+  const porductRepository = new ProductRepository(session.company_id);
+  return await porductRepository.getProducts();
+}
+

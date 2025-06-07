@@ -19,9 +19,9 @@ import {
   Percent,
   Building,
   IdCard,
-  RefreshCcw  
+  RefreshCcw  ,
+  CirclePlus
 } from "lucide-react"
-
 export const Icons = {
   user: User,
   users: Users,
@@ -43,5 +43,6 @@ export const Icons = {
   building: Building,
   reload: RefreshCcw,
   idCard: IdCard,
-  calendar: Calendar
+  calendar: Calendar,
+  plus:CirclePlus
 } 
