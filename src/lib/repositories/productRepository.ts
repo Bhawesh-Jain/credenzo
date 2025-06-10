@@ -26,10 +26,7 @@ export class ProductRepository extends RepositoryBase {
       userId: string,
       data: DirectCollectionAccountValues,
     ) {
-      try {
-        console.log('Data:-----', data);
-        
-       
+      try {        
     const result = await this.queryBuilder.insert({
       name: data.name,
       type: data.type,
@@ -53,10 +50,7 @@ export class ProductRepository extends RepositoryBase {
       userId: string,
       data: String,
     ) {
-      try {
-        console.log('type:-----',data );
-        
-       
+      try {   
     const result = await this.userProductBuilder.insert({
       type: data,
       status: 1,
@@ -76,11 +70,10 @@ export class ProductRepository extends RepositoryBase {
          .where('company_id = ?', this.companyId)
         .select([ 'type','status']);
 
-      console.log('Products:-----', result);
       if (result.length > 0) {
         return this.success(result);
       } else {
-        return this.failure('No branches found');
+        return this.failure('No products found');
       }
     } catch (error) {
       return this.handleError(error);
@@ -112,11 +105,10 @@ export class ProductRepository extends RepositoryBase {
         .where('company_id = ?', this.companyId)
         .select(['id', 'name', 'type','minimum_tenure','maximum_tenure','minimum_cibil_score','age','interest_rate','status', 'created_on']);
 
-      console.log('Products:-----', result);
       if (result.length > 0) {
         return this.success(result);
       } else {
-        return this.failure('No branches found');
+        return this.failure('No products found');
       }
     } catch (error) {
       return this.handleError(error);

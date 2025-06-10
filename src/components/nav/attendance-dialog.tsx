@@ -24,6 +24,7 @@ export function AttendanceDialog() {
   useEffect(() => {
     (async () => {
       const data = await getAttendanceEvents();
+       if (data.result.length>0) {
       setActivities(data?.result?.map((event: any) => ({
         type: event.event_type=== 'clock_in' ? 'Clocked In' :
               event.event_type === 'clock_out' ? 'Clocked Out' :
@@ -32,6 +33,9 @@ export function AttendanceDialog() {
               'Unknown Event',
         time: new Date(event.event_time).toLocaleTimeString()
       })));
+    }else{
+      console.log("No Branches Found")
+     }
 
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(

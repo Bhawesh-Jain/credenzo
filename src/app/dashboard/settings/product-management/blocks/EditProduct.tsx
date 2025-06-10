@@ -45,7 +45,7 @@ const editDirectCollectionSchema = z.object({
         required_error: "Loan tenure is required",
         invalid_type_error: "Please enter a valid number"
     }).min(1, "maximum tenure should be at least 1 month"),
-    age: z.date({
+    age: z.number({
         required_error: "Age is required"
     }),
     interest_rate: z.number().min(1, "Interest rate is required"),
@@ -188,7 +188,6 @@ export default function EditProduct({
                                 </div>
                             </div>
 
-                            {/* Loan Information Section */}
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <FormField
@@ -271,10 +270,11 @@ export default function EditProduct({
                                             <FormItem>
                                                 <FormLabelWithIcon icon={Icons.calendar}> Minimum Age</FormLabelWithIcon>
                                                 <FormControl>
-                                                    <DatePicker
-                                                        date={field.value || null}
-                                                        maxToday={false}
-                                                        onChange={(date) => field.onChange(date)}
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="Enter maximum tenure"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />

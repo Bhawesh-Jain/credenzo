@@ -9,7 +9,6 @@ export async function addAttendanceActivity(type: string, location: { latitude: 
   const session = await getSession();
   const ipAddress = getDeviceIp();
   const deviceInfo = getDeviceInfo();
-  console.log("Addding type activity", type,location)
 
   const attendanceRepository = new AttendanceRepository();
   const result = attendanceRepository.addAttendanceActivity({

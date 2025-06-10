@@ -116,13 +116,11 @@ export async function editUser(id: number, data: UserFormValues) {
 // }
 export async function createProducts(data: DirectCollectionAccountValues) {
   const session = await getSession();
-console.log('Session:-----', data);
   const porductRepository = new ProductRepository(session.company_id);
   return await porductRepository.createProducts( session.user_id,data);
 }
 export async function createProductsType(data: string) {
   const session = await getSession();
-console.log('Session:-----', data);
   const porductRepository = new ProductRepository(session.company_id);
   return await porductRepository.createProductsType( session.user_id,data);
 }
@@ -142,7 +140,6 @@ export async function updateProducts(data: EditProductsValues){
 }
 export async function getProducts() {
     const session = await getSession();
-
   const porductRepository = new ProductRepository(session.company_id);
   return await porductRepository.getProducts();
 }
