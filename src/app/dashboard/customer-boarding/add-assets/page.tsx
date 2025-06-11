@@ -32,6 +32,8 @@ import { getBranchListById } from "@/lib/actions/branch";
 import PersonalDetails from "./blocks/PropertyIdentification";
 import FinancialDetails from "./blocks/FinancialDetails";
 import LegalAndRegistrationDetails from "./blocks/LegalAndRegistrationDetails";
+import PropertyUploadForm from "./blocks/Documents";
+import Documents from "./blocks/Documents";
 
 const proposalFormSchema = z.object({
   // Personal Details
@@ -276,13 +278,14 @@ export default function CreateProposal() {
                 <Card>
                   <CardHeader>
                     <CardTitle>
-                      <SubHeading>Documents</SubHeading>
+                      {/* <SubHeading>Documents</SubHeading> */}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     {listLoading
                       ? <Loading />
-                      : <LoanProductDetails branchList={branchList} productTypeList={productTypeList} form={form} />}
+                      : 
+                      <Documents from={form}  />}
                   </CardContent>
                 </Card>
               </TabsContent>
