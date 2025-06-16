@@ -53,7 +53,7 @@ export default function Leads() {
       header: "Customer Name",
       accessorKey: "customer_name",
       sortable: true,
-      visible: true,
+      visible: true,  
     },
     {
       id: "phone",

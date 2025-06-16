@@ -6,6 +6,9 @@ import { BranchRepository } from "../repositories/branchRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { getSession } from "../session";
 
+import { VehicleFormValues } from "@/app/dashboard/settings/deveshi-test/blocks/CreateVehicle";
+import { EditVehicleFormValues } from "@/app/dashboard/settings/deveshi-test/blocks/EditVehicle";
+import { VehicleRepository } from "../repositories/vehicleRepository";
 export async function getRoles() {
   const session = await getSession();
 
@@ -102,4 +105,51 @@ export async function editUser(id: number, data: UserFormValues) {
 
   const userRepository = new UserRepository(session.company_id);
   return await userRepository.editUser(id, data, session.user_id);
+}
+
+//deveshi-test createvehicle 
+export async function createVehicle(data: VehicleFormValues) {
+  const session = await getSession();
+  
+  const vehicleRepository = new VehicleRepository(session.company_id);
+  const result = await vehicleRepository.createVehicle(session.user_id, data);
+
+  return result;
+}
+
+
+export async function getVehicles() {
+  const session = await getSession();
+  
+  const vehicleRepository = new VehicleRepository(session.company_id);
+  const result = await vehicleRepository.getVehiclesData();
+
+  return result;
+}
+
+export async function getVehicleById(vehicleId: number) {
+  const session = await getSession();
+  
+  const vehicleRepository = new VehicleRepository(session.company_id);
+  const result = await vehicleRepository.getVehicleById(vehicleId);
+
+  return result;
+}
+
+export async function getVehicleCompany() {
+  const session = await getSession();
+  
+  const vehicleRepository = new VehicleRepository(session.company_id);
+  const result = await vehicleRepository.getVehicleCompany();
+
+  return result;
+}
+
+export async function editVehicle(vehicleId: number, vehicle: EditVehicleFormValues) {
+  const session = await getSession();
+  
+  const vehicleRepository = new VehicleRepository(session.company_id);
+  const result = await vehicleRepository.editVehicle(vehicleId,vehicle);
+
+  return result;
 }
