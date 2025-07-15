@@ -42,7 +42,7 @@ export class VehicleRepository extends RepositoryBase {
            `
 
       const result = await executeQuery(sql, [vehicleId]) as any[]
-
+      
       if (result.length > 0) {
         return this.success(result[0])
       }

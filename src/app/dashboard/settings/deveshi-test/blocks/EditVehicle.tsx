@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import Loading from "@/app/dashboard/loading";
 import { useEffect, useState } from "react";
 import { Edit } from "lucide-react";
-import { editVehicle ,getVehicleById } from "@/lib/actions/settings";
+import { editVehicle, getVehicleById } from "@/lib/actions/settings";
 import { Icons } from "@/components/icons";
 import { FormLabelWithIcon } from "@/components/ui/form-label-with-icon";
 import { Input } from "@/components/ui/input";
@@ -50,54 +50,54 @@ type EditVehicleProps = {
     vehicleId: number
 };
 
-export default function EditVehicle({ setOpen, setReload,vehicleId }: EditVehicleProps) {
+export default function EditVehicle({ setOpen, setReload, vehicleId }: EditVehicleProps) {
     const [companies, setCompanies] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
     const form = useForm<EditVehicleFormValues>({
         resolver: zodResolver(vehicleFormScheme),
     })
-     
 
-     useEffect(() => {
+
+    useEffect(() => {
         (async () => {
-          setLoading(true);
-    
-          const vehicle_data = await getVehicleById(vehicleId);
-    
-          if (vehicle_data.success) {
-            var formItem = {
-              ...vehicle_data.result,
-              status: String(vehicle_data.result.status)
+            setLoading(true);
+
+            const vehicle_data = await getVehicleById(vehicleId);
+
+            if (vehicle_data.success) {
+                var formItem = {
+                    ...vehicle_data.result,
+                    status: String(vehicle_data.result.status)
+                }
+                form.reset(formItem);
             }
-            form.reset(formItem);
-          }
-          setLoading(false);
+            setLoading(false);
         })();
 
-       (async () => {
-                   const response = await getVehicleCompany();
-                   console.log(response)
-       
-                   if (response.success) {
-                       const names = response.result.map((item: { company: string }) => item.company);
-       
-                       console.log(names)
-       
-                       setCompanies(names);
-       
-                   } else {
-                       console.error("Failed to fetch companies:", response.error);
-                   }
-               })();
+        (async () => {
+            const response = await getVehicleCompany();
+            console.log(response)
 
-      }, [vehicleId, form]);
+            if (response.success) {
+                const names = response.result.map((item: { company: string }) => item.company);
+
+                console.log(names)
+
+                setCompanies(names);
+
+            } else {
+                console.error("Failed to fetch companies:", response.error);
+            }
+        })();
+
+    }, [vehicleId, form]);
 
 
     async function onSubmit(data: EditVehicleFormValues) {
         setLoading(true);
 
-        const result = await editVehicle(vehicleId ,data)
+        const result = await editVehicle(vehicleId, data)
 
         setLoading(false);
         if (result.success) {
@@ -196,35 +196,35 @@ export default function EditVehicle({ setOpen, setReload,vehicleId }: EditVehicl
                                                 </FormItem>
                                             )}
                                         /> */}
-<FormField
-                                        control={form.control}
-                                        name="company"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {/* <div className="flex justify-between items-center"> */}
+                                        <FormField
+                                            control={form.control}
+                                            name="company"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    {/* <div className="flex justify-between items-center"> */}
                                                     <FormLabelWithIcon icon={Icons.user}>Company</FormLabelWithIcon>
                                                     {/* <Button variant="outline" size="sm" onClick={() => setOpenDialog(true)}>
                                                         + Add Company
                                                     </Button> */}
-                                                {/* </div> */}
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select Company" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {companies.map((company) => (
-                                                            <SelectItem key={company} value={company}>
-                                                                {company}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                                    {/* </div> */}
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select Company" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            {companies.map((company) => (
+                                                                <SelectItem key={company} value={company}>
+                                                                    {company}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
                                         <FormField
                                             control={form.control}
